@@ -8,6 +8,9 @@ library(lubridate)
 
 #Clean up percentages and 'mins' etc.
 
+
+########################### Clean the data #################################################################################
+
 dataImpClean<-function(x,y){
 x<-as.data.frame(lapply(x, FUN = function(t) gsub("%", "", t)))
 x[,c(1:28,37:137)]<-as.data.frame(lapply(x[,c(1:28,37:137)], FUN = function(t) as.numeric(as.character(t))))
@@ -27,13 +30,8 @@ dataImpWhole$MainPtDataDateofAdmission<-as.Date(dataImpWhole$MainPtDataDateofAdm
 dataImpWhole$VisitDate<-as.Date(ifelse(is.na(dataImpWhole$VisitDate),as.character(dataImpWhole$MainProcProcedureStart),as.character(dataImpWhole$VisitDate)),format="%Y-%m-%d",origin="30/12/1899")
 dataImpWhole$VisitDate<-as.Date(ifelse(is.na(dataImpWhole$VisitDate),as.character(dataImpWhole$MainPtDataDateofAdmission),as.character(dataImpWhole$VisitDate)),format="%Y-%m-%d",origin="30/12/1899")
 
-###################################### ###################################### ###################################### 
-###################################### ###################################### ###################################### 
-###################################### ###################################### ###################################### 
-###################################### Impedance Subset Preparer ################################################### 
-###################################### ###################################### ###################################### 
-###################################### ###################################### ###################################### 
-###################################### ###################################### ###################################### 
+###################################### Impedance Symptom Subset Prepare ################################################### 
+
 #Get the symptoms in each row then into own dataset so that each dataset contains the findings for those symptoms
 #To extract the symptoms into their own box:
 
@@ -54,7 +52,8 @@ dataImpWhole$Symptom<-gsub("NO,","",dataImpWhole$Symptom)
 dataImpWhole$Symptom<-gsub(",NO","",dataImpWhole$Symptom)
 dataImpWhole$Symptom<-gsub("NO","",dataImpWhole$Symptom)
 dataImpWhole<-dataImpWhole[,colSums(is.na(dataImpWhole))<nrow(dataImpWhole)-5]
-########Need to change the symptom extraction so that all the symptoms for each episode are recorded in one box################################
+
+#Change the symptom extraction so that all the symptoms for each episode are recorded in one box################################
 dataImpWholeSymptomsPlotter<-dataImpWhole[nchar(dataImpWhole$Symptom)>0,]
 
 

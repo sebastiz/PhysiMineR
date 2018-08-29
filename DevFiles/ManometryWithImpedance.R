@@ -58,7 +58,6 @@ AbsentPeristalsis_NonAcidNonAchalasia<-AbsentPeristalsis_NonAcidNonAchalasia[!is
 #Subdivide by LOS
 AbsentPeristalsis_NonAcidNonAchalasia_NormalLOS<-AbsentPeristalsis_NonAcidNonAchalasia[AbsentPeristalsis_NonAcidNonAchalasia$LowerOesoph=="Normal",]
 AbsentPeristalsis_NonAcidNonAchalasia_AbNormalLOS<-AbsentPeristalsis_NonAcidNonAchalasia[AbsentPeristalsis_NonAcidNonAchalasia$LowerOesoph!="Normal",]
-#######################################################################################
 
 
 # #How much impedance by year?

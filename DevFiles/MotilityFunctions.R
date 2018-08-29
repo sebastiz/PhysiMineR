@@ -1,14 +1,10 @@
 #Motility functions
 
-#Get the HRM data and convert the dates
-# HRMDateCleanUp<-function(dataHRM){
-#   
-#   #Convert to the other way around
-#   dataHRM$VisitDate<-gsub("(\\d*)_(\\d*)_(0[5-9])","\\1_\\2_20\\3",dataHRM$VisitDate)
-#   dataHRM$VisitDate<-dataHRM$FileCreationDate
-#   return(dataHRM) 
-# }
 library(lubridate)
+
+########################### Clean the motility data #################################################################################
+
+
 
 HRMCleanUp1<-function(x){
   if(!is.Date(x$VisitDate)){
@@ -53,12 +49,10 @@ HRMCleanUp1<-function(x){
 }
 
 
-  ###############################################################################################################################
-  ###############################################################################################################################
-  ###############################################################################################################################
+
+
+
   ########################### Classify the data #################################################################################
-  ###############################################################################################################################
-  ###############################################################################################################################
 HRMCleanUp<-function(x){
   data$dx<-ifelse(data$ResidualmeanmmHg>15&data$failedChicagoClassification==100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"AchalasiaType1",
                   ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$prematurecontraction>=20,"AchalasiaType2",
@@ -80,10 +74,8 @@ HRMCleanUp<-function(x){
  return(data)
 }
 
-#######################################################################################################################################
-#######################################################################################################################################
-#######################################################################################################################################
-#######################################################################################################################################
+
+########################### Some metrics #################################################################################
 
 MotilityTimeSeries <- function(x) {
 xTimePlot<-x %>%
@@ -93,7 +85,6 @@ xTimePlot$MergeCol<-paste("01",xTimePlot$month, xTimePlot$year, sep=" ")
 xTimePlot<-data.frame(table(xTimePlot$MergeCol))
 names(xTimePlot)<-c("Date","Freq")
 xTimePlot<-subset(xTimePlot,!xTimePlot$Date=="NA/NA")
-#xTimePlot$Date<-as.character(xTimePlot$Date)
 xTimePlot$Date<-as.Date(xTimePlot$Date,format="%d %m %Y")
 
 PlotName<-deparse(substitute(x))
@@ -109,11 +100,7 @@ myplot<-ggplot(xTimePlot) +
    theme(axis.text.x=element_text(angle=-90)) +
    theme(legend.position="top")
 }
-#######################################################################################################################################
-#######################################################################################################################################
-#######################################################################################################################################
-#######################################################################################################################################
-#######################################################################################################################################
+
 
 BasicBoxplots <- function(x,y) {
 par(mar =rep(2,4))  
@@ -193,11 +180,7 @@ PlotName<-deparse(substitute(x))
 title(paste(PlotName," vs Normal"),outer=T, line=-35)
 }
 
-#######################################################################################################################################
-#######################################################################################################################################
-#######################################################################################################################################
-#######################################################################################################################################
-#######################################################################################################################################
+
 
 SymptomsNoPlot<- function (x){
   a<-nrow(subset(x,x$Dysphagia=="Yes"))
@@ -215,7 +198,7 @@ SymptomsNoPlot<- function (x){
   return(n)
   
 }
-Symptoms<- function (x){
+Symptom_Plot<- function (x){
   a<-nrow(subset(x,x$Dysphagia=="Yes"))
   b<-nrow(subset(x,x$Heartburn=="Yes"))
   c<-nrow(subset(x,x$Throat=="Yes"))
@@ -243,16 +226,3 @@ Symptoms<- function (x){
   return(mybarplot)
 }
 
-SymptomExtractor<-function(x){
-  a<-nrow(subset(x,x$Dysphagia=="Yes"))
-  b<-nrow(subset(x,x$Heartburn=="Yes"))
-  c<-nrow(subset(x,x$Throat=="Yes"))
-  d<-nrow(subset(x,x$Cough=="Yes"))
-  e<-nrow(subset(x,x$ChestPain=="Yes"))
-  f<-nrow(subset(x,x$AbdoPain=="Yes"))
-  g<-nrow(subset(x,x$Hoarseness=="Yes"))
-  h<-nrow(subset(x,x$Regurgitation=="Yes"))
-  i<-nrow(subset(x,x$Vomiting=="Yes"))
-  j<-nrow(subset(x,x$Belch=="Yes"))
-  
-}
