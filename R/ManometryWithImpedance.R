@@ -3,7 +3,7 @@ library(dplyr)
 library(ggplot2)
 
 #############################  Get the HRM data #######################################################################################
-.libPaths() 
+.libPaths()
 .libPaths("S:\\Gastroenterology\\Seb\\R\\R-3.3.1\\library")
 .libPaths()
 
@@ -31,7 +31,7 @@ data$HospNum_Id<-as.character(data$HospNum_Id)
 
 
 #############################  Get the impedance data #######################################################################################
-.libPaths() 
+.libPaths()
 .libPaths("S:\\Gastroenterology\\Seb\\R\\R-3.3.1\\library")
 .libPaths()
 
@@ -39,7 +39,7 @@ data$HospNum_Id<-as.character(data$HospNum_Id)
 channel <- odbcConnectAccess("S:\\Gastroenterology\\Seb\\JavaPortableLauncher\\PhysiPopDONOTTOUCH\\Physiology6.mdb")
 dataImp2 <- sqlQuery( channel , "SELECT Impedance2.*FROM Impedance2")
 dataImp_Symp <- sqlQuery( channel , "SELECT Imp_Symp.* FROM Imp_Symp")
- 
+
 source("S:\\Gastroenterology\\Seb\\R\\Scripts\\PhysiologyQuestions\\ImpedanceFunctions.R")
 dataImpWhole<-dataImpClean(dataImp2,dataImp_Symp)
 
@@ -64,28 +64,9 @@ AbsentPeristalsis_NonAcidNonAchalasia_AbNormalLOS<-AbsentPeristalsis_NonAcidNonA
  dates<-dataImpWhole[order(dataImpWhole$VisitDate),]
  dates<-dates%>%select(VisitDate)%>% mutate(year = format(dates$VisitDate, "%Y"))%>%mutate(month = format(dates$VisitDate, "%m")) %>%
    group_by(year,month)
-# 
+#
  dates<-as.data.frame(dates)
 table(dates$year,dates$month)
-###################### Question: Which structural abnormalities are most likely to give you reflux ###################### 
-
-
-
-
-
-######### Question: Is there a geriatric oesopahgus ie does the DCI decrease with age? ########################### 
-
-
-#dateDiff to get the age of the patients:
-
-data<-data[data$Age<100&data$Age>0,]
-data<-data[data$dx=="Normal",]
-data<-data[data$DCI<5000&data$DCI>0,]
-
-ggplot(data, aes(x=Age))+geom_density()
-
-#Now calculate how the DCI varies with age
-qplot(data$Age,data$DCI)+geom_smooth()
 
 
 

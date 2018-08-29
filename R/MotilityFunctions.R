@@ -56,10 +56,6 @@ HRMCleanUp1<-function(x){
 }
 
 
-
-
-
-
   ########################### Categorise the diagnoses #################################################################################
 
 MotilitySubtypes<-function(x){
