@@ -1,4 +1,5 @@
 
+
 #### Data acquisition ####
 
 channel <- odbcConnectAccess("S:\\Gastroenterology\\Seb\\JavaPortableLauncher\\PhysiPopDONOTTOUCH\\Physiology6.mdb")
@@ -529,4 +530,3 @@ Fruc$main<-gsub("\\a","",Fruc$main)
 Fruc$main<-strsplit(Fruc$main, ",",perl=T)
 #From here you can do individual graphs
 }
-
