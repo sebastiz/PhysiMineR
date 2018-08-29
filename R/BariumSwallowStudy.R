@@ -1,5 +1,5 @@
 #+ setup, include=FALSE
-knitr::opts_chunk$set(warning=FALSE,message=FALSE,dev = "svg",fig.ext = ".svg")
+knitr::opts_chunk$set(warning=FALSE,message=FALSE,dev = "svg",fig.ext = ".svg") #testline
 library(ggplot2)
 library(lattice)
 library(compare)
@@ -22,7 +22,7 @@ local({
     if (!grepl('\\.svg', x)) return(hook_plot(x, options))
     # read the content of the svg image and write it out without <?xml ... ?>
     paste(readLines(x)[-1], collapse = '\n')
-    paste("<figure><img src=\"", opts_knit$get("base.url"), paste(x, collapse = "."), 
+    paste("<figure><img src=\"", opts_knit$get("base.url"), paste(x, collapse = "."),
           "\"><figcaption>", options$fig.cap, "</figcaption></figure>", sep = "")
   })
 })
@@ -176,7 +176,7 @@ OrderByGroup<-ggplot(MyBariumGroups,aes(MyBariumGroups$Name,y=MyBariumGroups$n))
   geom_bar(aes(Name),stat="identity")+
   theme(legend.position="none") +
   labs(title="Number of barium swallows filtered \nfor >100 Total since 1/1/2008)") +
-  xlab("Speciality") + 
+  xlab("Speciality") +
   ylab("Number of barium swallows") +
   theme(axis.text.x=element_text(angle=-90))
 
@@ -227,9 +227,9 @@ BaSwallowBySymptom<-ggplot(mydf,aes(year,n))+
   scale_colour_discrete(guide = 'none') +
   scale_x_discrete(expand=c(0, 1)) +
   geom_dl(aes(label = variable), method = list("smart.grid", cex = 1,hjust=-.5))+
-  xlab("Year") + 
+  xlab("Year") +
   ylab("Freq")+
-  scale_colour_discrete(guide = 'none')  +    
+  scale_colour_discrete(guide = 'none')  +
   theme(plot.margin = unit(c(1,3,1,1), "lines")) +
   theme(axis.text.x=element_text(size=18)) +
   theme(axis.text.y=element_text(size=18)) +
@@ -239,7 +239,7 @@ BaSwallowBySymptom<-ggplot(mydf,aes(year,n))+
 
 
 MyBariumData_GastroTBB$DatesMerge<-paste(MyBariumData_GastroTBB$year,MyBariumData_GastroTBB$month,sep=" ")
-#   
+#
 
 
 
@@ -298,7 +298,7 @@ NumBaSwallowByRequestorInGastro<-ggplot(mydf,aes(x=year,y=n,fill=Requestor))+geo
 ###################################################################################################
 ###################################################################################################
 
-.libPaths() 
+.libPaths()
 .libPaths("S:\\Gastroenterology\\Seb\\R\\R-3.3.1\\library")
 .libPaths()
 
@@ -419,14 +419,14 @@ MyBariumDataWithHRMSpastic<-MyBariumDataWithHRM[!grepl("FrequentFailedPeristalsi
 SpasticSensAndSpecDatafr<-MotilTableSensAndSpec(MyBariumDataWithHRMSpastic)
 
 
-#Now do for AChalasia/EGOO only from the spastic dataset- make sure that all the diagnoses that are not achalasia are called normal for this situation       
+#Now do for AChalasia/EGOO only from the spastic dataset- make sure that all the diagnoses that are not achalasia are called normal for this situation
 MyBariumDataWithHRMAchalasia<-MyBariumDataWithHRMSpastic
 MyBariumDataWithHRMAchalasia$dx<-ifelse(!grepl(".*EGOO.*|.*[Aa]chalasia.*",MyBariumDataWithHRMAchalasia$dx,perl=TRUE),"Normal","Achalasia")
 
 AchaslasiaSensAndSpecDatafr<-MotilTableSensAndSpec(MyBariumDataWithHRMAchalasia)
 
 
-#Now do only for type 1 achalasia 
+#Now do only for type 1 achalasia
 MyBariumDataWithHRMAchalasia_Type1<-MyBariumDataWithHRMSpastic
 #This time need to subset the data to get Type1's only as barium doesn't subtype
 MyBariumDataWithHRMAchalasia_Type1<-MyBariumDataWithHRMAchalasia_Type1[MyBariumDataWithHRMAchalasia_Type1$dx=="AchalasiaType1",]
@@ -457,10 +457,10 @@ MyBariumDataWithHRM_Achalsia_Yes<-MyBariumDataWithHRM_Achalsia[grepl("Yes",MyBar
 MyBariumDataWithHRM_Achalsia_No<-MyBariumDataWithHRM_Achalsia[grepl("NO",MyBariumDataWithHRM_Achalsia$Achalasia),]
 
 
-# 
+#
  ggplot(MyBariumDataWithHRM_Achalsia,aes(x=ResidualmeanmmHg,fill=Achalasia))+
    geom_histogram()
-# 
+#
 
 #Get the subsetted data
 MyBariumDataWithHRMTertiary<-MyBariumDataWithHRM[MyBariumDataWithHRM$Tertiary=="Yes",]
@@ -487,7 +487,7 @@ MyBariumDataWithHRMDLab<-paste("All Barium swallows \nwith HRM <365 day differen
 MyBariumDataWithHRMNoDupsLab<-paste("Closest HRM and Bariums only",nrow(MyBariumDataWithHRMNoDups), sep = ": ")
 
 
-nodes <- create_nodes(nodes = c(AllIndexPreLabel, MyBariumDataSwallLab, MyBariumDataWithHRMAnyLab,MyBariumDataWithHRMDLab,MyBariumDataWithHRMNoDupsLab),                     
+nodes <- create_nodes(nodes = c(AllIndexPreLabel, MyBariumDataSwallLab, MyBariumDataWithHRMAnyLab,MyBariumDataWithHRMDLab,MyBariumDataWithHRMNoDupsLab),
                       label = TRUE,
                       fontsize = 55,
                       fontcolour = "White",
@@ -498,9 +498,9 @@ nodes <- create_nodes(nodes = c(AllIndexPreLabel, MyBariumDataSwallLab, MyBarium
                       x = c(0,0,0,0,0),
                       y = c(600,300,0,-300,-600,-900))
 
-edges <- create_edges(from = c(AllIndexPreLabel, MyBariumDataSwallLab, MyBariumDataWithHRMAnyLab,MyBariumDataWithHRMDLab), 
+edges <- create_edges(from = c(AllIndexPreLabel, MyBariumDataSwallLab, MyBariumDataWithHRMAnyLab,MyBariumDataWithHRMDLab),
                       to = c(MyBariumDataSwallLab, MyBariumDataWithHRMAnyLab,MyBariumDataWithHRMDLab,MyBariumDataWithHRMNoDupsLab),
-                      rel = c(nrow(MyBariumDataAll), nrow(MyBariumDataSwall), nrow(MyBariumDataWithHRMAny), 
+                      rel = c(nrow(MyBariumDataAll), nrow(MyBariumDataSwall), nrow(MyBariumDataWithHRMAny),
                               nrow(MyBariumDataWithHRMD)),
                       arrowhead = rep("normal", 60),
                       # color = c("red", "red", "red", "red", "red", "red"),
@@ -525,7 +525,7 @@ render_graph(graph, output = "vivagraph")
 #' date: November 12th, 2016
 #'      St Thomas' Barium Swallow Requests
 #' ---
-#' 
+#'
 
 #+results='asis', echo=FALSE
 knitr::kable(MyBariumGroups, digits = 2)
