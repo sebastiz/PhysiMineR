@@ -4,7 +4,14 @@ library(lubridate)
 
 ########################### Clean the motility data #################################################################################
 
-
+#' A Cat Function
+#'
+#' This function allows you to express your love of cats.
+#' @param love Do you love cats? Defaults to TRUE.
+#' @keywords cats
+#' @export
+#' @examples
+#' cat_function()
 
 HRMCleanUp1<-function(x){
   if(!is.Date(x$VisitDate)){
@@ -35,7 +42,7 @@ HRMCleanUp1<-function(x){
   data$Distallatency<-as.numeric(as.character((data$Distallatency)))
   data$ResidualmeanmmHg<-as.numeric(as.character((data$ResidualmeanmmHg)))
   data$DCI<-ifelse(!rowSums(is.na(data[c("DistalcontractileintegralhighestmmHgcms", "DistalcontractileintegralmeanmmHgcms")])), data$DistalcontractileintegralhighestmmHgcms, rowSums(data[c("DistalcontractileintegralhighestmmHgcms", "DistalcontractileintegralmeanmmHgcms")], na.rm=TRUE) )
-  
+
   data$DistalcontractileintegralhighestmmHgcms[is.na(data$DistalcontractileintegralhighestmmHgcms)]=0
   data$DistalcontractileintegralmeanmmHgcms[is.na(data$DistalcontractileintegralmeanmmHgcms)]=0
   data$DistalcontractileintegralhighestmmHgcms<-NULL
@@ -52,33 +59,28 @@ HRMCleanUp1<-function(x){
 
 
 
-<<<<<<< HEAD
+
   ########################### Categorise the diagnoses #################################################################################
+
 MotilitySubtypes<-function(x){
-=======
-  ########################### Classify the data #################################################################################
-HRMCleanUp<-function(x){
->>>>>>> 32cb242ddbec043b79d89fed1127b5134fd83c33
   data$dx<-ifelse(data$ResidualmeanmmHg>15&data$failedChicagoClassification==100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"AchalasiaType1",
                   ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$prematurecontraction>=20,"AchalasiaType2",
                          ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$panesophagealpressurization>=20,"AchalasiaType3",
                                 ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$panesophagealpressurization<20&data$panesophagealpressurization<20,"EGOO",
                   ifelse(data$ResidualmeanmmHg<15&data$ResidualmeanmmHg>10&!is.na(data$ResidualmeanmmHg)&data$failedChicagoClassification==100&!is.na(data$failedChicagoClassification),"PossibleAchalasia",
                          ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg),"AchalasiaType2or3orEGOO",
-                         ifelse(data$ResidualmeanmmHg<=15&data$failedChicagoClassification==100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"AbsentPeristalsis",  
+                         ifelse(data$ResidualmeanmmHg<=15&data$failedChicagoClassification==100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"AbsentPeristalsis",
                                 ifelse(data$ResidualmeanmmHg<=15&(data$prematurecontraction>=20|data$Simultaneous>=20|data$Distallatency<4.5)&data$DCI>=450&!is.na(data$ResidualmeanmmHg)&(!is.na(data$prematurecontraction)&!is.na(data$Simultaneous))&!is.na(data$DCI),"DES",
                                        ifelse(data$ResidualmeanmmHg<=15&(data$DCI>=8000)|(data$DCI>=8000|data$DCI>=8000)&!is.na(data$ResidualmeanmmHg)&!is.na(data$DCI),"JackHammer",
                                                      ifelse(data$ResidualmeanmmHg<15&data$Contractilefrontvelocitycms>9&data$Distallatency>=4.5&!is.na(data$ResidualmeanmmHg)&!is.na(data$Contractilefrontvelocitycms)&!is.na(data$Distallatency),"RapidContraction",
                                                             ifelse(data$ResidualmeanmmHg<15&(data$DCI>=5000|data$DCI>=5000)&data$Distallatency>=4.5&!is.na(data$ResidualmeanmmHg)&!is.na(data$Distallatency)&!is.na(data$DCI),"HypertensivePeristalsis",
                                                                    ifelse(data$ResidualmeanmmHg<=15&data$smallbreaks>=30&data$largebreaks>=20&!is.na(data$ResidualmeanmmHg)&!is.na(data$smallbreaks)&!is.na(data$largebreaks),"WeakPeristalsis",
                                                                           ifelse(data$ResidualmeanmmHg<15&data$failedChicagoClassification>=30&data$failedChicagoClassification<=100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"FrequentFailedPeristalsis","Normal")))))))))))))
-  
-<<<<<<< HEAD
-=======
-  
-  
-  
->>>>>>> 32cb242ddbec043b79d89fed1127b5134fd83c33
+
+
+
+
+
  return(data)
 }
 
@@ -99,11 +101,11 @@ PlotName<-deparse(substitute(x))
 print(PlotName)
 
 xTimePlot<-xTimePlot[order(xTimePlot$Date),]
-myplot<-ggplot(xTimePlot) + 
+myplot<-ggplot(xTimePlot) +
    geom_point(aes(Date, Freq, color = "red"))+
    labs(title=PlotName) +
    scale_color_manual("",labels = c("SVStart", "SVEnd"), values = c("blue", "red")) +
-   xlab("Date") + 
+   xlab("Date") +
    ylab("Frequency") +
    theme(axis.text.x=element_text(angle=-90)) +
    theme(legend.position="top")
@@ -111,7 +113,7 @@ myplot<-ggplot(xTimePlot) +
 
 
 BasicBoxplots <- function(x,y) {
-par(mar =rep(2,4))  
+par(mar =rep(2,4))
 par(mfrow=c(6,3))
 
 #if the number of rows with na = the number of rows then ignore
@@ -201,10 +203,10 @@ SymptomsNoPlot<- function (x){
   h<-nrow(subset(x,x$Regurgitation=="Yes"))
   i<-nrow(subset(x,x$Vomiting=="Yes"))
   j<-nrow(subset(x,x$Belch=="Yes"))
-  
+
   n = c(a,b,c,d,e,f,g,h,i,j)
   return(n)
-  
+
 }
 Symptom_Plot<- function (x){
   a<-nrow(subset(x,x$Dysphagia=="Yes"))
@@ -219,15 +221,15 @@ Symptom_Plot<- function (x){
   j<-nrow(subset(x,x$Belch=="Yes"))
 
     n = c(a,b,c,d,e,f,g,h,i,j)
- 
-  s = c("Dysphagia", "Heartburn", "Throat","Cough","ChestPain","AbdoPain","Hoarseness","Regurgitation","Vomiting","Belch") 
+
+  s = c("Dysphagia", "Heartburn", "Throat","Cough","ChestPain","AbdoPain","Hoarseness","Regurgitation","Vomiting","Belch")
   Symp<-data.frame(s,n)
   PlotName<-deparse(substitute(x))
-  
-  mybarplot<-ggplot(Symp) + 
+
+  mybarplot<-ggplot(Symp) +
     geom_bar(aes(s,n,color = "red"),stat="identity")+
     labs(title=PlotName) +
-    xlab("Symptom") + 
+    xlab("Symptom") +
     ylab("Frequency") +
     theme(axis.text.x=element_text(angle=-45)) +
     theme(legend.position="top")

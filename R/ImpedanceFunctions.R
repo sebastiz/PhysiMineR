@@ -11,6 +11,15 @@ library(lubridate)
 
 ########################### Clean the data #################################################################################
 
+
+#' A Cat Function
+#'
+#' This function allows you to express your love of cats.
+#' @param love Do you love cats? Defaults to TRUE.
+#' @keywords cats
+#' @export
+#' @examples
+#' cat_function()
 dataImpClean<-function(x,y){
 x<-as.data.frame(lapply(x, FUN = function(t) gsub("%", "", t)))
 x[,c(1:28,37:137)]<-as.data.frame(lapply(x[,c(1:28,37:137)], FUN = function(t) as.numeric(as.character(t))))
@@ -38,7 +47,14 @@ return(dataImpWhole)
 #Get the symptoms in each row then into own dataset so that each dataset contains the findings for those symptoms
 #To extract the symptoms into their own box:
 
-
+#' A Cat Function
+#'
+#' This function allows you to express your love of cats.
+#' @param love Do you love cats? Defaults to TRUE.
+#' @keywords cats
+#' @export
+#' @examples
+#' cat_function()
 dataImpSymptoms<-function(x){
 x$Heartburn<-ifelse(!is.na(x$SxMainRSAPAcidHeartburn),"Heartburn","NO")
 x$Cough<-ifelse(!is.na(x$SxMainRSAPAcidCough),"Cough","NO")
@@ -67,6 +83,15 @@ return(x)
 
 ######Categorise the diagnoses ######
 #This creates the composite score and then subcategorises the reflux ie if acid reflux then it is recumbent vs upright vs postprandial etc. (postprandial to be done)
+#' A Cat Function
+#'
+#' This function allows you to express your love of cats.
+#' @param love Do you love cats? Defaults to TRUE.
+#' @keywords cats
+#' @export
+#' @examples
+#' cat_function()
+
 AcidSubtypes<-function(x){
 #Calculate the composite score here:
 x$AcidRefluxScore<-x$MainAcidCompositeScorePatientScoreUprightTimeInReflux+
@@ -134,16 +159,40 @@ return(x)
 }
 
 #Will need to get this via natural language query from the text
+#' A Cat Function
+#'
+#' This function allows you to express your love of cats.
+#' @param love Do you love cats? Defaults to TRUE.
+#' @keywords cats
+#' @export
+#' @examples
+#' cat_function()
 SupragastricBelching<-function(x){
 
 }
 
 #Will need to get this via natural language query from the text I think..maybe
+#' A Cat Function
+#'
+#' This function allows you to express your love of cats.
+#' @param love Do you love cats? Defaults to TRUE.
+#' @keywords cats
+#' @export
+#' @examples
+#' cat_function()
 HypersensitiveOesophagus<-function(x){
 
 }
 
 #FunctionalHeartburn
+#' A Cat Function
+#'
+#' This function allows you to express your love of cats.
+#' @param love Do you love cats? Defaults to TRUE.
+#' @keywords cats
+#' @export
+#' @examples
+#' cat_function()
 FunctionalHeartburn<-function(x){
 
 }

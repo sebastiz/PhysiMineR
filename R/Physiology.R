@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #### Data acquisition ####
 
 channel <- odbcConnectAccess("S:\\Gastroenterology\\Seb\\JavaPortableLauncher\\PhysiPopDONOTTOUCH\\Physiology6.mdb")
