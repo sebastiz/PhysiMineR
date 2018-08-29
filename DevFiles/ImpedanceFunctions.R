@@ -30,13 +30,17 @@ dataImpWhole$MainPtDataDateofAdmission<-as.Date(dataImpWhole$MainPtDataDateofAdm
 dataImpWhole$VisitDate<-as.Date(ifelse(is.na(dataImpWhole$VisitDate),as.character(dataImpWhole$MainProcProcedureStart),as.character(dataImpWhole$VisitDate)),format="%Y-%m-%d",origin="30/12/1899")
 dataImpWhole$VisitDate<-as.Date(ifelse(is.na(dataImpWhole$VisitDate),as.character(dataImpWhole$MainPtDataDateofAdmission),as.character(dataImpWhole$VisitDate)),format="%Y-%m-%d",origin="30/12/1899")
 
+<<<<<<< HEAD
 return(dataImpWhole)
 }
-###################################### Impedance Symptom Subset Prepare ################################################### 
+=======
+>>>>>>> 32cb242ddbec043b79d89fed1127b5134fd83c33
+###################################### Impedance Symptom Subset Prepare ###################################################
 
 #Get the symptoms in each row then into own dataset so that each dataset contains the findings for those symptoms
 #To extract the symptoms into their own box:
 
+<<<<<<< HEAD
 dataImpSymptoms<-function(x){
 x$Heartburn<-ifelse(!is.na(x$SxMainRSAPAcidHeartburn),"Heartburn","NO")
 x$Cough<-ifelse(!is.na(x$SxMainRSAPAcidCough),"Cough","NO")
@@ -73,6 +77,37 @@ x$AcidRefluxScore<-x$MainAcidCompositeScorePatientScoreUprightTimeInReflux+
   x$MainAcidCompositeScorePatientScoreEpisodesOver5min+
   x$MainAcidCompositeScorePatientScoreLongestEpisode+
   x$MainAcidCompositeScorePatientScoreTotalEpisodes
+=======
+
+dataImpWhole$Heartburn<-ifelse(!is.na(dataImpWhole$SxMainRSAPAcidHeartburn),"Heartburn","NO")
+dataImpWhole$Cough<-ifelse(!is.na(dataImpWhole$SxMainRSAPAcidCough),"Cough","NO")
+dataImpWhole$StomachPain<-ifelse(!is.na(dataImpWhole$SxMainRSAPAcidStomachPain),"StomachPain","NO")
+dataImpWhole$Nausea<-ifelse(!is.na(dataImpWhole$SxMainRSAPAcidNausea),"Nausea","NO")
+dataImpWhole$Vomiting<-ifelse(!is.na(dataImpWhole$SxMainRSAPAcidVomiting),"Vomiting","NO")
+dataImpWhole$Regurgitation<-ifelse(!is.na(dataImpWhole$SxMainRSAPAcidRegurgitation),"Regurgitation","NO")
+dataImpWhole$Throat<-ifelse(!is.na(dataImpWhole$SxMainRSAPAcidThroat),"Throat","NO")
+dataImpWhole$Belch<-ifelse(!is.na(dataImpWhole$SxMainRSAPAcidBelch),"Belch","NO")
+dataImpWhole$Chest<-ifelse(!is.na(dataImpWhole$SxMainRSAPAcidChestPain),"Chest","NO")
+dataImpWhole$Symptom<-paste(dataImpWhole$Heartburn,dataImpWhole$Cough,dataImpWhole$StomachPain,
+                            dataImpWhole$Nausea,dataImpWhole$Vomiting
+                            ,dataImpWhole$Regurgitation,dataImpWhole$Throat,dataImpWhole$Belch,dataImpWhole$Chest,sep=",")
+dataImpWhole$Symptom<-gsub("NO,","",dataImpWhole$Symptom)
+dataImpWhole$Symptom<-gsub(",NO","",dataImpWhole$Symptom)
+dataImpWhole$Symptom<-gsub("NO","",dataImpWhole$Symptom)
+dataImpWhole<-dataImpWhole[,colSums(is.na(dataImpWhole))<nrow(dataImpWhole)-5]
+
+#Change the symptom extraction so that all the symptoms for each episode are recorded in one box################################
+dataImpWholeSymptomsPlotter<-dataImpWhole[nchar(dataImpWhole$Symptom)>0,]
+
+
+#Calculate the composite score here:
+dataImpWhole$AcidRefluxScore<-dataImpWhole$MainAcidCompositeScorePatientScoreUprightTimeInReflux+
+  dataImpWhole$MainAcidCompositeScorePatientScoreRecumbentTimeInReflux+
+  dataImpWhole$MainAcidCompositeScorePatientScoreTotalTimeInReflux+
+  dataImpWhole$MainAcidCompositeScorePatientScoreEpisodesOver5min+
+  dataImpWhole$MainAcidCompositeScorePatientScoreLongestEpisode+
+  dataImpWhole$MainAcidCompositeScorePatientScoreTotalEpisodes
+>>>>>>> 32cb242ddbec043b79d89fed1127b5134fd83c33
 
 
 #Need to classify whether the patient is predom acid vs non-acid reflux/recumbent vs upright reflux
@@ -94,6 +129,7 @@ dataImpWhole$PositionOfNonAcid<-ifelse(dataImpWhole$MainRflxEpisodeUprightNonaci
                                               ifelse(dataImpWhole$MainRflxEpisodeRecumbentNonacid/dataImpWhole$MainRflxEpisodeRecumbentAllReflux>0.5,"RecumbentNonAcid","Normal_NoNonAcid")))
 
 
+<<<<<<< HEAD
 #Postprandial reflux to be done
 
 
@@ -102,17 +138,17 @@ return(x)
 
 #Will need to get this via natural language query from the text
 SupragastricBelching<-function(x){
-  
+
 }
 
 #Will need to get this via natural language query from the text I think..maybe
 HypersensitiveOesophagus<-function(x){
-  
+
 }
 
 #FunctionalHeartburn
 FunctionalHeartburn<-function(x){
-  
+
 }
 
 
@@ -124,3 +160,6 @@ FunctionalHeartburn<-function(x){
 
   #Hypersensitive oesophagus
   #Supragastric belching
+=======
+return(dataImpWhole)
+}

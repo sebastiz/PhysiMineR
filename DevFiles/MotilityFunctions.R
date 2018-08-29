@@ -52,8 +52,13 @@ HRMCleanUp1<-function(x){
 
 
 
+<<<<<<< HEAD
   ########################### Categorise the diagnoses #################################################################################
 MotilitySubtypes<-function(x){
+=======
+  ########################### Classify the data #################################################################################
+HRMCleanUp<-function(x){
+>>>>>>> 32cb242ddbec043b79d89fed1127b5134fd83c33
   data$dx<-ifelse(data$ResidualmeanmmHg>15&data$failedChicagoClassification==100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"AchalasiaType1",
                   ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$prematurecontraction>=20,"AchalasiaType2",
                          ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$panesophagealpressurization>=20,"AchalasiaType3",
@@ -68,6 +73,12 @@ MotilitySubtypes<-function(x){
                                                                    ifelse(data$ResidualmeanmmHg<=15&data$smallbreaks>=30&data$largebreaks>=20&!is.na(data$ResidualmeanmmHg)&!is.na(data$smallbreaks)&!is.na(data$largebreaks),"WeakPeristalsis",
                                                                           ifelse(data$ResidualmeanmmHg<15&data$failedChicagoClassification>=30&data$failedChicagoClassification<=100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"FrequentFailedPeristalsis","Normal")))))))))))))
   
+<<<<<<< HEAD
+=======
+  
+  
+  
+>>>>>>> 32cb242ddbec043b79d89fed1127b5134fd83c33
  return(data)
 }
 
