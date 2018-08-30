@@ -1,6 +1,6 @@
 #### Data acquisition ####
 
-channel <- odbcConnectAccess("S:\\Gastroenterology\\Seb\\JavaPortableLauncher\\PhysiPopDONOTTOUCH\\Physiology6.mdb")
+#channel <- odbcConnectAccess("S:\\Gastroenterology\\Seb\\JavaPortableLauncher\\PhysiPopDONOTTOUCH\\Physiology6.mdb")
 
 #' dataHRM
 #' This cleans HRM data
@@ -9,7 +9,7 @@ channel <- odbcConnectAccess("S:\\Gastroenterology\\Seb\\JavaPortableLauncher\\P
 #' @export
 #' @examples dataHRM(x)
 
-dataHRM<-function(x){
+dataHRM<-function(x,channel){
   data <- sqlQuery( channel , "SELECT  HRMImportMain.* FROM HRMImportMain")
 }
 
@@ -21,7 +21,7 @@ dataHRM<-function(x){
 #' @examples dataImp2(x)
 
 
-dataImp2<-function(x){
+dataImp2<-function(x,channel){
   dataImp2 <- sqlQuery( channel , "SELECT Impedance2.*FROM Impedance2")
 }
 
@@ -32,7 +32,7 @@ dataImp2<-function(x){
 #' @export
 #' @examples dataImp_Symp(x)
 
-dataImp_Symp<-function(x){
+dataImp_Symp<-function(x,channel){
   dataImp_Symp <- sqlQuery( channel , "SELECT Imp_Symp.* FROM Imp_Symp")
 }
 
@@ -43,7 +43,7 @@ dataImp_Symp<-function(x){
 #' @export
 #' @examples dataImpWhole(x)
 
-dataImpWhole<-function(x){
+dataImpWhole<-function(x,channel){
   dataImpWhole<-dataImpClean(dataImp2,dataImp_Symp)
 }
 
@@ -54,7 +54,7 @@ dataImpWhole<-function(x){
 #' @export
 #' @examples BRAVO(x)
 
-BRAVO<-function(x){
+BRAVO<-function(x,channel){
   data <- sqlQuery( channel , "SELECT  BravoDay1And2.* FROM BravoDay1And2")
   return(data)
 }
@@ -66,7 +66,7 @@ BRAVO<-function(x){
 #' @export
 #' @examples HRMAndSwallows(x)
 
-HRMAndSwallows<-function(x){
+HRMAndSwallows<-function(x,channel){
 
 
   data <- sqlQuery( channel , "SELECT PatientData.*, HRMImportSwallows.*, HRMImportMain.*
@@ -82,7 +82,7 @@ HRMAndSwallows<-function(x){
 #' @export
 #' @examples HRMAndDiag(x)
 
-HRMAndDiag<-function(x){
+HRMAndDiag<-function(x,channel){
 
   data <- sqlQuery( channel , "SELECT DISTINCT HRMImportMain.*, Diag.IndicANDHx, Diag.*, PatientData.*
                     FROM (PatientData INNER JOIN Diag ON PatientData.HospNum_Id = Diag.HospNum_Id) INNER JOIN HRMImportMain ON PatientData.HospNum_Id = HRMImportMain.HospNum_Id
@@ -98,7 +98,7 @@ HRMAndDiag<-function(x){
 #' @examples dataBT(x)
 
 
-dataBT<-function(x){
+dataBT<-function(x,channel){
   dataBT <- sqlQuery( channel , "SELECT BreathTests.* FROM BreathTests")
 }
 
@@ -122,7 +122,7 @@ MyImpedanceDataWithHRM<-function(x){
 #' @examples HRMCleanUp1(x)
 
 
-HRMCleanUp1<-function(x){
+HRMCleanUp1<-function(x,channel){
   if(!is.Date(x$VisitDate)){
     data$VisitDate<-as.character(data$VisitDate)
     data$VisitDate<-as.Date(data$VisitDate,"%d_%m_%Y")
@@ -174,7 +174,7 @@ HRMCleanUp1<-function(x){
 #' @export
 #' @examples HRMCleanUp(x)
 
-HRMCleanUp<-function(x){
+HRMCleanUp<-function(x,channel){
   data$dx<-ifelse(data$ResidualmeanmmHg>15&data$failedChicagoClassification==100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"AchalasiaType1",
                   ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$prematurecontraction>=20,"AchalasiaType2",
                          ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$panesophagealpressurization>=20,"AchalasiaType3",
@@ -204,7 +204,7 @@ HRMCleanUp<-function(x){
 #' @export
 #' @examples MotilityTimeSeries(x)
 #'
-MotilityTimeSeries <- function(x) {
+MotilityTimeSeries <- function(x,channel) {
   xTimePlot<-x %>%
     mutate(month=format(VisitDate,"%m"), year= format(VisitDate,"%Y")) %>%
     group_by(month,year)

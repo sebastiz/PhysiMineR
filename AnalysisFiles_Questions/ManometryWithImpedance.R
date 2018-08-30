@@ -3,9 +3,9 @@ library(dplyr)
 library(ggplot2)
 
 #############################  Get the HRM data #######################################################################################
-.libPaths()
-.libPaths("S:\\Gastroenterology\\Seb\\R\\R-3.3.1\\library")
-.libPaths()
+#.libPaths()
+#.libPaths("S:\\Gastroenterology\\Seb\\R\\R-3.3.1\\library")
+#.libPaths()
 
 
 channel <- odbcConnectAccess("S:\\Gastroenterology\\Seb\\JavaPortableLauncher\\PhysiPopDONOTTOUCH\\Physiology6.mdb")
@@ -30,10 +30,10 @@ data$HospNum_Id<-as.character(data$HospNum_Id)
 #Separate into the patients with low LOS and then with hiatus hernia and then with both low LOS and hiatus hernia
 
 
-#############################  Get the impedance data #######################################################################################
-.libPaths()
-.libPaths("S:\\Gastroenterology\\Seb\\R\\R-3.3.1\\library")
-.libPaths()
+#############################  Get the impedance data ##################################################################
+#.libPaths()
+#.libPaths("S:\\Gastroenterology\\Seb\\R\\R-3.3.1\\library")
+#.libPaths()
 
 
 channel <- odbcConnectAccess("S:\\Gastroenterology\\Seb\\JavaPortableLauncher\\PhysiPopDONOTTOUCH\\Physiology6.mdb")
@@ -43,7 +43,7 @@ dataImp_Symp <- sqlQuery( channel , "SELECT Imp_Symp.* FROM Imp_Symp")
 source("S:\\Gastroenterology\\Seb\\R\\Scripts\\PhysiologyQuestions\\ImpedanceFunctions.R")
 dataImpWhole<-dataImpClean(dataImp2,dataImp_Symp)
 
-############################# Merge impedance data with HRM #######################################################################################
+############################# Merge impedance data with HRM ############################################################
 
 
 
