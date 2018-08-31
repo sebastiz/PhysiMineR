@@ -7,12 +7,13 @@
 dataImpSymptoms(x)
 }
 \arguments{
-\item{love}{Do you love cats? Defaults to TRUE.}
+\item{x}{the impedance dataframe for extraction}
 }
 \description{
-This function allows you to express your love of cats.
+This extracts the relevant symptoms from the impedance dataset
 }
 \examples{
-cat_function()
+#dataImpSymptoms(x)
 }
-\keyword{cats}
+\keyword{Impedance}
+\keyword{symptoms}

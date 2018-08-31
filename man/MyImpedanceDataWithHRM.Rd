@@ -2,26 +2,27 @@
 % Please edit documentation in R/Physiology.R
 \name{MyImpedanceDataWithHRM}
 \alias{MyImpedanceDataWithHRM}
-\title{MyImpedanceDataWithHRM
-This merges HRM with Impedancedata. This relies on the two previous functions to acquire the data
-first from the upper GI database, namely dataImpWhole and dataHRM}
+\title{Merge HRM and Impedance
+This merges the overall impedance dataset with the HRM dataset}
 \usage{
 MyImpedanceDataWithHRM(dataImpWhole, dataHRM)
 }
 \arguments{
-\item{dataImpWhole}{dataframe}
+\item{dataImpWhole}{the whole impedance dataset}
 
-\item{dataHRM}{dataframe}
+\item{dataHRM}{the whole HRM dataset}
 }
 \description{
-MyImpedanceDataWithHRM
-This merges HRM with Impedancedata. This relies on the two previous functions to acquire the data
-first from the upper GI database, namely dataImpWhole and dataHRM
+Merge HRM and Impedance
+This merges the overall impedance dataset with the HRM dataset
 }
 \examples{
-dataImpWhole<-dataImpWhole(channel)
-dataHRM<-dataHRM(channel)
-MyImpedanceDataWithHRM(dataImpWhole,data)
+#dataHRM<-dataHRM(channel)
+#dataImp2<-dataImp2(channel)
+#dataImp_Symp<-dataImp_Symp(channel)
+
+#dataImpWhole<-dataImpWhole(dataImp2,dataImp_Symp)
+#MyImpedanceDataWithHRM(dataImpWhole,dataHRM)
 }
-\keyword{CleanUp}
-\keyword{HRM}
+\keyword{HRMAndSwallows}
+\keyword{acquisition}

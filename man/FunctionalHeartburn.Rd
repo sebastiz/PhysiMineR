@@ -2,17 +2,18 @@
 % Please edit documentation in R/ImpedanceFunctions.R
 \name{FunctionalHeartburn}
 \alias{FunctionalHeartburn}
-\title{A Cat Function}
+\title{FunctionalHeartburn function}
 \usage{
 FunctionalHeartburn(x)
 }
 \arguments{
-\item{love}{Do you love cats? Defaults to TRUE.}
+\item{x}{the impedance dataset for extraction}
 }
 \description{
-This function allows you to express your love of cats.
+Extracts all the patients with Functional Heartburn
 }
 \examples{
-cat_function()
+#FunctionalHeartburn(x)
 }
-\keyword{cats}
+\keyword{Functional}
+\keyword{Heartburn}

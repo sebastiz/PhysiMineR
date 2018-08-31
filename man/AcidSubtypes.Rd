@@ -2,17 +2,20 @@
 % Please edit documentation in R/ImpedanceFunctions.R
 \name{AcidSubtypes}
 \alias{AcidSubtypes}
-\title{A Cat Function}
+\title{Acid subtype extractor
+This creates the composite score and then subcategorises the reflux ie if acid reflux then it is recumbent vs upright vs postprandial etc. (postprandial to be done)}
 \usage{
 AcidSubtypes(x)
 }
 \arguments{
-\item{love}{Do you love cats? Defaults to TRUE.}
+\item{x}{the impedance dataset for extraction}
 }
 \description{
-This function allows you to express your love of cats.
+Acid subtype extractor
+This creates the composite score and then subcategorises the reflux ie if acid reflux then it is recumbent vs upright vs postprandial etc. (postprandial to be done)
 }
 \examples{
-cat_function()
+#AcidSubtypes(x)
 }
-\keyword{cats}
+\keyword{Impedance}
+\keyword{acid}

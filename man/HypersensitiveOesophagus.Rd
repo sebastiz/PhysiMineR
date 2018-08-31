@@ -2,17 +2,18 @@
 % Please edit documentation in R/ImpedanceFunctions.R
 \name{HypersensitiveOesophagus}
 \alias{HypersensitiveOesophagus}
-\title{A Cat Function}
+\title{hypersensitive oesophagus function}
 \usage{
 HypersensitiveOesophagus(x)
 }
 \arguments{
-\item{love}{Do you love cats? Defaults to TRUE.}
+\item{x}{the impedance dataset for extraction}
 }
 \description{
-This function allows you to express your love of cats.
+Extracts all the patients with hypersensitive oesophagus
 }
 \examples{
-cat_function()
+#HypersensitiveOesophagus(x)
 }
-\keyword{cats}
+\keyword{hypersensitive}
+\keyword{oesophagus}

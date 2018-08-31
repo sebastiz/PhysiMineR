@@ -1,22 +1,69 @@
 #Motility functions
 
-library(lubridate)
+#### Data acquisition ####
+#This depends on forming a connection to the PhysiPop database. In windows the path is this:
+#channel <- odbcConnectAccess("S:\\Gastroenterology\\Seb\\JavaPortableLauncher\\PhysiPopDONOTTOUCH\\Physiology6.mdb")
+
+#' dataHRM
+#' This acquires HRM data from the database
+#' @param channel odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)
+#' @importFrom RODBC sqlQuery
+#' @keywords HRM data acquisition
+#' @export
+#' @examples #dataHRM(channel)
+
+dataHRM<-function(channel){
+  data <- sqlQuery(channel , "SELECT  HRMImportMain.* FROM HRMImportMain")
+  return(data)
+}
+
+
+
+#' HRMAndSwallows
+#' This acquires HRMSwallow data from the upper GI database
+#' @param channel odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)
+#' @keywords HRMAndSwallows acquisition
+#' @export
+#' @examples #HRMAndSwallows(channel)
+
+HRMAndSwallows<-function(channel){
+
+
+  data <- sqlQuery( channel , "SELECT PatientData.*, HRMImportSwallows.*, HRMImportMain.*
+                    FROM PatientData INNER JOIN (HRMImportMain INNER JOIN HRMImportSwallows ON HRMImportMain.HRM_Id = HRMImportSwallows.HRM_Id) ON PatientData.HospNum_Id = HRMImportMain.HospNum_Id
+                    WHERE HRMImportMain.HRM_Id=HRMImportSwallows.HRM_Id")
+  return(data)
+}
+
+#' HRMAndDiag
+#' This acquires HRM and associated diagnosis data from the upper GI database
+#' @param channel odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)
+#' @keywords HRM and Diag
+#' @export
+#' @examples #HRMAndDiag(channel)
+
+HRMAndDiag<-function(channel){
+
+  data <- sqlQuery( channel , "SELECT DISTINCT HRMImportMain.*, Diag.IndicANDHx, Diag.*, PatientData.*
+                    FROM (PatientData INNER JOIN Diag ON PatientData.HospNum_Id = Diag.HospNum_Id) INNER JOIN HRMImportMain ON PatientData.HospNum_Id = HRMImportMain.HospNum_Id
+                    WHERE HRMImportMain.VisitDate=Diag.VisitDate")
+  return(data)
+}
+
 
 ########################### Clean the motility data #################################################################################
-
-#' A Cat Function
-#'
-#' This function allows you to express your love of cats.
-#' @param love Do you love cats? Defaults to TRUE.
-#' @keywords cats
+#' HRMCleanUp1
+#' This cleans HRM data by making sure all the data is in the correct format
+#' @param x dataframe
+#' @keywords HRM CleanUp
 #' @export
-#' @examples
-#' cat_function()
+#' @examples #HRMCleanUp1(x)
+
 
 HRMCleanUp1<-function(x){
   if(!is.Date(x$VisitDate)){
-  data$VisitDate<-as.character(data$VisitDate)
-  data$VisitDate<-as.Date(data$VisitDate,"%d_%m_%Y")
+    data$VisitDate<-as.character(data$VisitDate)
+    data$VisitDate<-as.Date(data$VisitDate,"%d_%m_%Y")
   }
   data$DOBAge<-as.character(data$DOBAge)
   data$DOBAge<-gsub("(\\d+)_(\\d+)_(\\d{2}$)","\\1_\\2_19\\3",data$DOBAge)
@@ -50,39 +97,51 @@ HRMCleanUp1<-function(x){
   data$Simultaneous[is.na(data$Simultaneous)]=0
   data$LOS_relax<-ifelse(((data$ResidualmeanmmHg-data$BasalrespiratoryminmmHg/data$BasalrespiratorymeanmmHg)*100)<90,"NonRelaxLOS","NormalRelaxLOS")
   data$LowerOesoph<-ifelse(data$BasalrespiratoryminmmHg<4.7&data$Hiatalhernia=="Yes","HypotensiveLOSWithHH",
-                                                  ifelse(data$BasalrespiratoryminmmHg<4.7,"HypotensiveLOS",
-                                                         ifelse(data$Hiatalhernia=="Yes","HHOnly","Normal")))
+                           ifelse(data$BasalrespiratoryminmmHg<4.7,"HypotensiveLOS",
+                                  ifelse(data$Hiatalhernia=="Yes","HHOnly","Normal")))
   return(data)
 }
 
 
   ########################### Categorise the diagnoses #################################################################################
 
-MotilitySubtypes<-function(x){
+#' HRMDiagnoses
+#' This creates diagnoses from the HRM raw data based on the Chicago classification v4 (need to check)
+#' @param x dataframe
+#' @keywords HRM CleanUp
+#' @export
+#' @examples #HRMDiagnoses(x)
+
+HRMDiagnoses<-function(x){
   data$dx<-ifelse(data$ResidualmeanmmHg>15&data$failedChicagoClassification==100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"AchalasiaType1",
                   ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$prematurecontraction>=20,"AchalasiaType2",
                          ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$panesophagealpressurization>=20,"AchalasiaType3",
                                 ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$panesophagealpressurization<20&data$panesophagealpressurization<20,"EGOO",
-                  ifelse(data$ResidualmeanmmHg<15&data$ResidualmeanmmHg>10&!is.na(data$ResidualmeanmmHg)&data$failedChicagoClassification==100&!is.na(data$failedChicagoClassification),"PossibleAchalasia",
-                         ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg),"AchalasiaType2or3orEGOO",
-                         ifelse(data$ResidualmeanmmHg<=15&data$failedChicagoClassification==100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"AbsentPeristalsis",
-                                ifelse(data$ResidualmeanmmHg<=15&(data$prematurecontraction>=20|data$Simultaneous>=20|data$Distallatency<4.5)&data$DCI>=450&!is.na(data$ResidualmeanmmHg)&(!is.na(data$prematurecontraction)&!is.na(data$Simultaneous))&!is.na(data$DCI),"DES",
-                                       ifelse(data$ResidualmeanmmHg<=15&(data$DCI>=8000)|(data$DCI>=8000|data$DCI>=8000)&!is.na(data$ResidualmeanmmHg)&!is.na(data$DCI),"JackHammer",
-                                                     ifelse(data$ResidualmeanmmHg<15&data$Contractilefrontvelocitycms>9&data$Distallatency>=4.5&!is.na(data$ResidualmeanmmHg)&!is.na(data$Contractilefrontvelocitycms)&!is.na(data$Distallatency),"RapidContraction",
-                                                            ifelse(data$ResidualmeanmmHg<15&(data$DCI>=5000|data$DCI>=5000)&data$Distallatency>=4.5&!is.na(data$ResidualmeanmmHg)&!is.na(data$Distallatency)&!is.na(data$DCI),"HypertensivePeristalsis",
-                                                                   ifelse(data$ResidualmeanmmHg<=15&data$smallbreaks>=30&data$largebreaks>=20&!is.na(data$ResidualmeanmmHg)&!is.na(data$smallbreaks)&!is.na(data$largebreaks),"WeakPeristalsis",
-                                                                          ifelse(data$ResidualmeanmmHg<15&data$failedChicagoClassification>=30&data$failedChicagoClassification<=100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"FrequentFailedPeristalsis","Normal")))))))))))))
+                                       ifelse(data$ResidualmeanmmHg<15&data$ResidualmeanmmHg>10&!is.na(data$ResidualmeanmmHg)&data$failedChicagoClassification==100&!is.na(data$failedChicagoClassification),"PossibleAchalasia",
+                                              ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg),"AchalasiaType2or3orEGOO",
+                                                     ifelse(data$ResidualmeanmmHg<=15&data$failedChicagoClassification==100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"AbsentPeristalsis",
+                                                            ifelse(data$ResidualmeanmmHg<=15&(data$prematurecontraction>=20|data$Simultaneous>=20|data$Distallatency<4.5)&data$DCI>=450&!is.na(data$ResidualmeanmmHg)&(!is.na(data$prematurecontraction)&!is.na(data$Simultaneous))&!is.na(data$DCI),"DES",
+                                                                   ifelse(data$ResidualmeanmmHg<=15&(data$DCI>=8000)|(data$DCI>=8000|data$DCI>=8000)&!is.na(data$ResidualmeanmmHg)&!is.na(data$DCI),"JackHammer",
+                                                                          ifelse(data$ResidualmeanmmHg<15&data$Contractilefrontvelocitycms>9&data$Distallatency>=4.5&!is.na(data$ResidualmeanmmHg)&!is.na(data$Contractilefrontvelocitycms)&!is.na(data$Distallatency),"RapidContraction",
+                                                                                 ifelse(data$ResidualmeanmmHg<15&(data$DCI>=5000|data$DCI>=5000)&data$Distallatency>=4.5&!is.na(data$ResidualmeanmmHg)&!is.na(data$Distallatency)&!is.na(data$DCI),"HypertensivePeristalsis",
+                                                                                        ifelse(data$ResidualmeanmmHg<=15&data$smallbreaks>=30&data$largebreaks>=20&!is.na(data$ResidualmeanmmHg)&!is.na(data$smallbreaks)&!is.na(data$largebreaks),"WeakPeristalsis",
+                                                                                               ifelse(data$ResidualmeanmmHg<15&data$failedChicagoClassification>=30&data$failedChicagoClassification<=100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"FrequentFailedPeristalsis","Normal")))))))))))))
 
 
 
 
-
- return(data)
+  return(data)
 }
 
 
 ########################### Some metrics #################################################################################
-
+#' MotilityTimeSeries
+#' Plots the Tests over time. Probably redundant
+#' @param x dataframe
+#' @keywords HRM Motility
+#' @export
+#' @examples #MotilityTimeSeries(x)
+#'
 MotilityTimeSeries <- function(x) {
 xTimePlot<-x %>%
   mutate(month=format(VisitDate,"%m"), year= format(VisitDate,"%Y")) %>%
@@ -108,7 +167,15 @@ myplot<-ggplot(xTimePlot) +
 }
 
 
-BasicBoxplots <- function(x,y) {
+
+#' BasicBoxplots
+#' This boxplots HRM measurements. Very likely redundant
+#' @param x dataframe
+#' @keywords HRM CleanUp
+#' @examples #BasicBoxplots(x)
+
+
+BasicBoxplots <- function(x) {
 par(mar =rep(2,4))
 par(mfrow=c(6,3))
 
@@ -188,6 +255,13 @@ title(paste(PlotName," vs Normal"),outer=T, line=-35)
 
 
 
+#' SymptomsNoPlot
+#' This get the number symptoms. Very likely redundant
+#' @param x dataframe
+#' @keywords HRM CleanUp
+#' @export
+#' @examples #SymptomsNoPlot(x)
+#'
 SymptomsNoPlot<- function (x){
   a<-nrow(subset(x,x$Dysphagia=="Yes"))
   b<-nrow(subset(x,x$Heartburn=="Yes"))
@@ -204,6 +278,14 @@ SymptomsNoPlot<- function (x){
   return(n)
 
 }
+
+#' Symptoms
+#' This barcharts the symptoms
+#' @param x dataframe
+#' @keywords HRM CleanUp
+#' @export
+#' @examples #Symptoms(x)
+
 Symptom_Plot<- function (x){
   a<-nrow(subset(x,x$Dysphagia=="Yes"))
   b<-nrow(subset(x,x$Heartburn=="Yes"))
@@ -232,3 +314,24 @@ Symptom_Plot<- function (x){
   return(mybarplot)
 }
 
+
+#' SymptomExtractor
+#' This extracts the symptoms
+#' @param x dataframe
+#' @keywords HRM CleanUp
+#' @export
+#' @examples #SymptomExtractor(x)
+#'
+SymptomExtractor<-function(x){
+  a<-nrow(subset(x,x$Dysphagia=="Yes"))
+  b<-nrow(subset(x,x$Heartburn=="Yes"))
+  c<-nrow(subset(x,x$Throat=="Yes"))
+  d<-nrow(subset(x,x$Cough=="Yes"))
+  e<-nrow(subset(x,x$ChestPain=="Yes"))
+  f<-nrow(subset(x,x$AbdoPain=="Yes"))
+  g<-nrow(subset(x,x$Hoarseness=="Yes"))
+  h<-nrow(subset(x,x$Regurgitation=="Yes"))
+  i<-nrow(subset(x,x$Vomiting=="Yes"))
+  j<-nrow(subset(x,x$Belch=="Yes"))
+
+}

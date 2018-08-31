@@ -2,17 +2,17 @@
 % Please edit documentation in R/ImpedanceFunctions.R
 \name{SupragastricBelching}
 \alias{SupragastricBelching}
-\title{A Cat Function}
+\title{Supragastric belching function}
 \usage{
 SupragastricBelching(x)
 }
 \arguments{
-\item{love}{Do you love cats? Defaults to TRUE.}
+\item{x}{the impedance dataset for extraction}
 }
 \description{
-This function allows you to express your love of cats.
+Extracts all the patients with supragastric belchng
 }
 \examples{
-cat_function()
+#SupragastricBelching(x)
 }
-\keyword{cats}
+\keyword{belching}
