@@ -3,19 +3,23 @@
 \name{dataImpWhole}
 \alias{dataImpWhole}
 \title{dataImpWhole
-This cleans HRM data}
+This merges the main impedance and the impedance symptoms data frames together
+It relies on the acquisition of the data from the functions dataImp2 and dataImp_Symp}
 \usage{
-dataImpWhole(x, channel)
+dataImpWhole(dataImp2, dataImp_Symp)
 }
 \arguments{
-\item{x}{dataframe}
+\item{channel}{odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)}
 }
 \description{
 dataImpWhole
-This cleans HRM data
+This merges the main impedance and the impedance symptoms data frames together
+It relies on the acquisition of the data from the functions dataImp2 and dataImp_Symp
 }
 \examples{
-dataImpWhole(x)
+dataImp2<-dataImp2(channel),
+dataImp_Symp<-dataImp_Symp(channel)
+dataImpWhole(dataImp2,dataImp_Symp)
 }
 \keyword{CleanUp}
 \keyword{ImpWhole}

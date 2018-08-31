@@ -3,16 +3,16 @@
 \name{dataImp2}
 \alias{dataImp2}
 \title{dataImp2
-This cleans HRM data}
+This acquires impedance data from the upper GI database main impedance table called Impedance2}
 \usage{
-dataImp2(x, channel)
+dataImp2(channel)
 }
 \arguments{
-\item{x}{dataframe}
+\item{channel}{odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)}
 }
 \description{
 dataImp2
-This cleans HRM data
+This acquires impedance data from the upper GI database main impedance table called Impedance2
 }
 \examples{
 dataImp2(x)

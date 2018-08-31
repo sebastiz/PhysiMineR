@@ -1,72 +1,76 @@
 #### Data acquisition ####
-
+#This depends on forming a connection to the PhysiPop database. In windows the path is this:
 #channel <- odbcConnectAccess("S:\\Gastroenterology\\Seb\\JavaPortableLauncher\\PhysiPopDONOTTOUCH\\Physiology6.mdb")
 
 #' dataHRM
-#' This cleans HRM data
-#' @param x dataframe
-#' @keywords HRM CleanUp
+#' This acquires HRM data from the database
+#' @param channel odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)
+#' @keywords HRM data acquisition
 #' @export
-#' @examples dataHRM(x)
+#' @examples dataHRM(channel)
 
-dataHRM<-function(x,channel){
-  data <- sqlQuery( channel , "SELECT  HRMImportMain.* FROM HRMImportMain")
+dataHRM<-function(channel){
+  data <- sqlQuery(channel , "SELECT  HRMImportMain.* FROM HRMImportMain")
+  return(data)
 }
 
 #' dataImp2
-#' This cleans HRM data
-#' @param x dataframe
+#' This acquires impedance data from the upper GI database main impedance table called Impedance2
+#' @param channel odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)
 #' @keywords Imp CleanUp
 #' @export
 #' @examples dataImp2(x)
 
 
-dataImp2<-function(x,channel){
+dataImp2<-function(channel){
   dataImp2 <- sqlQuery( channel , "SELECT Impedance2.*FROM Impedance2")
 }
 
 #' dataImp_Symp
-#' This cleans HRM data
-#' @param x dataframe
-#' @keywords Imp_Symp CleanUp
+#' This acquires impedance symptoms data from the upper GI database
+#' @param channel odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)
+#' @keywords Imp_Symp Extraction
 #' @export
-#' @examples dataImp_Symp(x)
+#' @examples dataImp_Symp(channel)
 
-dataImp_Symp<-function(x,channel){
+dataImp_Symp<-function(channel){
   dataImp_Symp <- sqlQuery( channel , "SELECT Imp_Symp.* FROM Imp_Symp")
 }
 
 #' dataImpWhole
-#' This cleans HRM data
-#' @param x dataframe
+#' This merges the main impedance and the impedance symptoms data frames together
+#' It relies on the acquisition of the data from the functions dataImp2 and dataImp_Symp
+#' @param channel odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)
 #' @keywords ImpWhole CleanUp
 #' @export
-#' @examples dataImpWhole(x)
+#' @examples dataImp2<-dataImp2(channel),
+#' dataImp_Symp<-dataImp_Symp(channel)
+#' dataImpWhole(dataImp2,dataImp_Symp)
 
-dataImpWhole<-function(x,channel){
+dataImpWhole<-function(dataImp2,dataImp_Symp){
   dataImpWhole<-dataImpClean(dataImp2,dataImp_Symp)
 }
 
 #' BRAVO
-#' This cleans HRM data
-#' @param x dataframe
+#' This acquires BRAVO data from the upper GI database
+#' @param channel odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)
 #' @keywords BRAVO CleanUp
 #' @export
-#' @examples BRAVO(x)
+#' @examples BRAVO(channel)
 
-BRAVO<-function(x,channel){
+BRAVO<-function(channel){
   data <- sqlQuery( channel , "SELECT  BravoDay1And2.* FROM BravoDay1And2")
   return(data)
 }
 
 #' HRMAndSwallows
-#' This cleans HRM data
-#' @param x dataframe
-#' @keywords HRMAndSwallows CleanUp
+#' This acquires HRMSwallow data from the upper GI database
+#' @param channel odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)
+#' @keywords HRMAndSwallows acquisition
 #' @export
-#' @examples HRMAndSwallows(x)
+#' @examples HRMAndSwallows(channel)
 
-HRMAndSwallows<-function(x,channel){
+HRMAndSwallows<-function(channel){
 
 
   data <- sqlQuery( channel , "SELECT PatientData.*, HRMImportSwallows.*, HRMImportMain.*
@@ -76,13 +80,13 @@ HRMAndSwallows<-function(x,channel){
 }
 
 #' HRMAndDiag
-#' This cleans HRM data
-#' @param x dataframe
+#' This acquires HRM and associated diagnosis data from the upper GI database
+#' @param channel odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)
 #' @keywords HRM and Diag
 #' @export
-#' @examples HRMAndDiag(x)
+#' @examples HRMAndDiag(channel)
 
-HRMAndDiag<-function(x,channel){
+HRMAndDiag<-function(channel){
 
   data <- sqlQuery( channel , "SELECT DISTINCT HRMImportMain.*, Diag.IndicANDHx, Diag.*, PatientData.*
                     FROM (PatientData INNER JOIN Diag ON PatientData.HospNum_Id = Diag.HospNum_Id) INNER JOIN HRMImportMain ON PatientData.HospNum_Id = HRMImportMain.HospNum_Id
@@ -91,38 +95,48 @@ HRMAndDiag<-function(x,channel){
 }
 
 #' dataBT
-#' This cleans HRM data
-#' @param x dataframe
+#' This acquires Breath test data from the upper GI database
+#' @param channel odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)
 #' @keywords BT CleanUp
 #' @export
-#' @examples dataBT(x)
+#' @examples dataBT(channel)
 
 
-dataBT<-function(x,channel){
-  dataBT <- sqlQuery( channel , "SELECT BreathTests.* FROM BreathTests")
+dataBT<-function(channel){
+  dataBT <- sqlQuery(channel , "SELECT BreathTests.* FROM BreathTests")
 }
 
 #' MyImpedanceDataWithHRM
-#' This merges HRM with Impedancedata
-#' @param x dataframe
+#' This merges HRM with Impedancedata. This relies on the two previous functions to acquire the data
+#' first from the upper GI database, namely dataImpWhole and dataHRM
+#' @param dataImpWhole dataframe
+#'@param dataHRM dataframe
 #' @keywords HRM CleanUp
 #' @export
-#' @examples MyImpedanceDataWithHRM(x)
+#' @examples dataImpWhole<-dataImpWhole(channel)
+#' dataHRM<-dataHRM(channel)
+#' MyImpedanceDataWithHRM(dataImpWhole,data)
 
-MyImpedanceDataWithHRM<-function(x){
-  MyImpedanceDataWithHRM<-merge(dataImpWhole,data,by=c("HospNum_Id"),all=TRUE)
+MyImpedanceDataWithHRM<-function(dataImpWhole,dataHRM){
+  MyImpedanceDataWithHRM<-merge(dataImpWhole,dataHRM,by=c("HospNum_Id"),all=TRUE)
+  return(MyImpedanceDataWithHRM)
 }
+
+
+
+
+
 #### HRM ####
 
 #' HRMCleanUp1
-#' This cleans HRM data
+#' This cleans HRM data by making sure all the data is in the correct format
 #' @param x dataframe
 #' @keywords HRM CleanUp
 #' @export
 #' @examples HRMCleanUp1(x)
 
 
-HRMCleanUp1<-function(x,channel){
+HRMCleanUp1<-function(x){
   if(!is.Date(x$VisitDate)){
     data$VisitDate<-as.character(data$VisitDate)
     data$VisitDate<-as.Date(data$VisitDate,"%d_%m_%Y")
@@ -167,14 +181,14 @@ HRMCleanUp1<-function(x,channel){
 
 
 
-#' HRMCleanUp
-#' This cleans HRM data
+#' HRMDiagnoses
+#' This creates diagnoses from the HRM raw data based on the Chicago classification v4 (need to check)
 #' @param x dataframe
 #' @keywords HRM CleanUp
 #' @export
 #' @examples HRMCleanUp(x)
 
-HRMCleanUp<-function(x,channel){
+HRMDiagnoses<-function(x){
   data$dx<-ifelse(data$ResidualmeanmmHg>15&data$failedChicagoClassification==100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"AchalasiaType1",
                   ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$prematurecontraction>=20,"AchalasiaType2",
                          ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$panesophagealpressurization>=20,"AchalasiaType3",
@@ -200,11 +214,11 @@ HRMCleanUp<-function(x,channel){
 #' MotilityTimeSeries
 #' Plots the Tests over time. Probably redundant
 #' @param x dataframe
-#' @keywords
+#' @keywords HRM Motility
 #' @export
 #' @examples MotilityTimeSeries(x)
 #'
-MotilityTimeSeries <- function(x,channel) {
+MotilityTimeSeries <- function(x) {
   xTimePlot<-x %>%
     mutate(month=format(VisitDate,"%m"), year= format(VisitDate,"%Y")) %>%
     group_by(month,year)
@@ -235,7 +249,6 @@ MotilityTimeSeries <- function(x,channel) {
 #' This boxplots HRM measurements. Very likely redundant
 #' @param x dataframe
 #' @keywords HRM CleanUp
-#' @export
 #' @examples BasicBoxplots(x,y)
 
 BasicBoxplots <- function(x,y) {

@@ -3,19 +3,19 @@
 \name{BRAVO}
 \alias{BRAVO}
 \title{BRAVO
-This cleans HRM data}
+This acquires BRAVO data from the upper GI database}
 \usage{
-BRAVO(x, channel)
+BRAVO(channel)
 }
 \arguments{
-\item{x}{dataframe}
+\item{channel}{odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)}
 }
 \description{
 BRAVO
-This cleans HRM data
+This acquires BRAVO data from the upper GI database
 }
 \examples{
-BRAVO(x)
+BRAVO(channel)
 }
 \keyword{BRAVO}
 \keyword{CleanUp}

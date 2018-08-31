@@ -3,19 +3,19 @@
 \name{dataBT}
 \alias{dataBT}
 \title{dataBT
-This cleans HRM data}
+This acquires Breath test data from the upper GI database}
 \usage{
-dataBT(x, channel)
+dataBT(channel)
 }
 \arguments{
-\item{x}{dataframe}
+\item{channel}{odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)}
 }
 \description{
 dataBT
-This cleans HRM data
+This acquires Breath test data from the upper GI database
 }
 \examples{
-dataBT(x)
+dataBT(channel)
 }
 \keyword{BT}
 \keyword{CleanUp}

@@ -5,7 +5,7 @@
 \title{MotilityTimeSeries
 Plots the Tests over time. Probably redundant}
 \usage{
-MotilityTimeSeries(x, channel)
+MotilityTimeSeries(x)
 }
 \arguments{
 \item{x}{dataframe}
@@ -18,3 +18,5 @@ Plots the Tests over time. Probably redundant
 MotilityTimeSeries(x)
 
 }
+\keyword{HRM}
+\keyword{Motility}

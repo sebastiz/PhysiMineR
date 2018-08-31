@@ -5,9 +5,9 @@
 \alias{HRMCleanUp1}
 \title{A Cat Function}
 \usage{
-HRMCleanUp1(x, channel)
+HRMCleanUp1(x)
 
-HRMCleanUp1(x, channel)
+HRMCleanUp1(x)
 }
 \arguments{
 \item{x}{dataframe}
@@ -18,7 +18,7 @@ HRMCleanUp1(x, channel)
 This function allows you to express your love of cats.
 
 HRMCleanUp1
-This cleans HRM data
+This cleans HRM data by making sure all the data is in the correct format
 }
 \examples{
 cat_function()

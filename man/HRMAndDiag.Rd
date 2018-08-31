@@ -3,19 +3,19 @@
 \name{HRMAndDiag}
 \alias{HRMAndDiag}
 \title{HRMAndDiag
-This cleans HRM data}
+This acquires HRM and associated diagnosis data from the upper GI database}
 \usage{
-HRMAndDiag(x, channel)
+HRMAndDiag(channel)
 }
 \arguments{
-\item{x}{dataframe}
+\item{channel}{odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)}
 }
 \description{
 HRMAndDiag
-This cleans HRM data
+This acquires HRM and associated diagnosis data from the upper GI database
 }
 \examples{
-HRMAndDiag(x)
+HRMAndDiag(channel)
 }
 \keyword{Diag}
 \keyword{HRM}

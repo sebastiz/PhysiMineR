@@ -3,19 +3,19 @@
 \name{HRMAndSwallows}
 \alias{HRMAndSwallows}
 \title{HRMAndSwallows
-This cleans HRM data}
+This acquires HRMSwallow data from the upper GI database}
 \usage{
-HRMAndSwallows(x, channel)
+HRMAndSwallows(channel)
 }
 \arguments{
-\item{x}{dataframe}
+\item{channel}{odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)}
 }
 \description{
 HRMAndSwallows
-This cleans HRM data
+This acquires HRMSwallow data from the upper GI database
 }
 \examples{
-HRMAndSwallows(x)
+HRMAndSwallows(channel)
 }
-\keyword{CleanUp}
 \keyword{HRMAndSwallows}
+\keyword{acquisition}

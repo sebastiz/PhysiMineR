@@ -3,19 +3,25 @@
 \name{MyImpedanceDataWithHRM}
 \alias{MyImpedanceDataWithHRM}
 \title{MyImpedanceDataWithHRM
-This merges HRM with Impedancedata}
+This merges HRM with Impedancedata. This relies on the two previous functions to acquire the data
+first from the upper GI database, namely dataImpWhole and dataHRM}
 \usage{
-MyImpedanceDataWithHRM(x)
+MyImpedanceDataWithHRM(dataImpWhole, dataHRM)
 }
 \arguments{
-\item{x}{dataframe}
+\item{dataImpWhole}{dataframe}
+
+\item{dataHRM}{dataframe}
 }
 \description{
 MyImpedanceDataWithHRM
-This merges HRM with Impedancedata
+This merges HRM with Impedancedata. This relies on the two previous functions to acquire the data
+first from the upper GI database, namely dataImpWhole and dataHRM
 }
 \examples{
-MyImpedanceDataWithHRM(x)
+dataImpWhole<-dataImpWhole(channel)
+dataHRM<-dataHRM(channel)
+MyImpedanceDataWithHRM(dataImpWhole,data)
 }
 \keyword{CleanUp}
 \keyword{HRM}

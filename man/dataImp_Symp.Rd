@@ -3,19 +3,19 @@
 \name{dataImp_Symp}
 \alias{dataImp_Symp}
 \title{dataImp_Symp
-This cleans HRM data}
+This acquires impedance symptoms data from the upper GI database}
 \usage{
-dataImp_Symp(x, channel)
+dataImp_Symp(channel)
 }
 \arguments{
-\item{x}{dataframe}
+\item{channel}{odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)}
 }
 \description{
 dataImp_Symp
-This cleans HRM data
+This acquires impedance symptoms data from the upper GI database
 }
 \examples{
-dataImp_Symp(x)
+dataImp_Symp(channel)
 }
-\keyword{CleanUp}
+\keyword{Extraction}
 \keyword{Imp_Symp}

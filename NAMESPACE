@@ -2,12 +2,11 @@
 
 export(AcidSubtypes)
 export(BRAVO)
-export(BasicBoxplots)
 export(FunctionalHeartburn)
 export(HRMAndDiag)
 export(HRMAndSwallows)
-export(HRMCleanUp)
 export(HRMCleanUp1)
+export(HRMDiagnoses)
 export(HypersensitiveOesophagus)
 export(MotilityTimeSeries)
 export(MyImpedanceDataWithHRM)

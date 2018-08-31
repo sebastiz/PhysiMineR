@@ -3,19 +3,20 @@
 \name{dataHRM}
 \alias{dataHRM}
 \title{dataHRM
-This cleans HRM data}
+This acquires HRM data from the database}
 \usage{
-dataHRM(x, channel)
+dataHRM(channel)
 }
 \arguments{
-\item{x}{dataframe}
+\item{channel}{odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)}
 }
 \description{
 dataHRM
-This cleans HRM data
+This acquires HRM data from the database
 }
 \examples{
-dataHRM(x)
+dataHRM(channel)
 }
-\keyword{CleanUp}
 \keyword{HRM}
+\keyword{acquisition}
+\keyword{data}
