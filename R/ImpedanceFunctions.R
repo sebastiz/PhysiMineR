@@ -92,10 +92,10 @@ dataImpClean<-function(x,y){
 #Get the symptoms in each row then into own dataset so that each dataset contains the findings for those symptoms
 #To extract the symptoms into their own box:
 
-#' A Cat Function
+#' Impedance symptom extractor function
 #'
 #' This extracts the relevant symptoms from the impedance dataset
-#' @param x the impedance dataframe for extraction
+#' @param x the impedance dataframe for extraction from RSAP as probably more accurate as patient entered (rather than from summary)
 #' @keywords Impedance symptoms
 #' @export
 #' @examples
@@ -118,7 +118,7 @@ dataImpSymptoms<-function(x){
   dataImpWhole$Symptom<-gsub(",NO","",dataImpWhole$Symptom)
   dataImpWhole$Symptom<-gsub("NO","",dataImpWhole$Symptom)
   dataImpWhole<-dataImpWhole[,colSums(is.na(dataImpWhole))<nrow(dataImpWhole)-5]
-  ########Need to change the symptom extraction so that all the symptoms for each episode are recorded in one box################################
+#TODO: Need to change the symptom extraction so that all the symptoms for each episode are recorded in one box
   dataImpWholeSymptomsPlotter<-dataImpWhole[nchar(dataImpWhole$Symptom)>0,]
 
 
@@ -206,5 +206,4 @@ HypersensitiveOesophagus<-function(x){
 #' @examples #FunctionalHeartburn(x)
 
 FunctionalHeartburn<-function(x){
-
 }

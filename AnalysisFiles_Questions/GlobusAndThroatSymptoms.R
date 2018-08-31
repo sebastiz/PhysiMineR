@@ -11,7 +11,7 @@ library(anytime)
 
 
 
-.libPaths() 
+.libPaths()
 .libPaths("S:\\Gastroenterology\\Seb\\R\\R-3.3.1\\library")
 .libPaths()
 
@@ -52,14 +52,14 @@ nor = scale(z,center=means,scale=sds)
 distance = dist(nor)
 
 
-# Hierarchical agglomerative clustering using default complete linkage 
+# Hierarchical agglomerative clustering using default complete linkage
 mydata.hclust = hclust(distance)
 plot(mydata.hclust)
 plot(mydata.hclust,labels=dfwNonAcid$Company,main='Default from hclust')
 plot(mydata.hclust,hang=-1)
 
 
-# Hierarchical agglomerative clustering using "average" linkage 
+# Hierarchical agglomerative clustering using "average" linkage
 mydata.hclust<-hclust(distance,method="average")
 plot(mydata.hclust,hang=-1)
 
@@ -69,7 +69,7 @@ member = cutree(mydata.hclust,3)
 table(member)
 
 
-#Characterizing clusters 
+#Characterizing clusters
 aggregate(nor,list(member),mean)
 mine<-as.data.frame(t(aggregate(dfwNon[,-c(1,1)],list(member),mean)))
 names(mine)<-c("Gp1","Gp2","Gp3")
@@ -77,7 +77,7 @@ mine<-mine[-1,]
 mine<-mine[order(mine$Gp1),]
 
 
-#Here you need to select the data in rattle, then transform to rescale, then cluster via ewkm  
+#Here you need to select the data in rattle, then transform to rescale, then cluster via ewkm
 library(rattle)
 rattle()
 #Then do, to get the weights in order
@@ -98,12 +98,12 @@ myweights_Gp3<-myweights[order(myweights$Gp3),]
 
 
 
-########### So can identify symptoms individually########### ########### ########### ########### 
+########### So can identify symptoms individually########### ########### ########### ###########
 
 SxPlotter<-function(x,dataImpWholeSymptomsPlotter){
-  this_is_a_name <- x; 
+  this_is_a_name <- x;
   print(this_is_a_name)
-  
+
   #This is to make sure that I get the data from the dataframe as I am passing the names into the function
   x <- data.frame(dataImpWholeSymptomsPlotter[[x]],dataImpWholeSymptomsPlotter$Symptom)
   #print(nrow(x))
@@ -123,12 +123,12 @@ source("S:\\Gastroenterology\\Seb\\R\\Scripts\\Generics\\CleanUp.R")
 mygraphs<-lapply(names(dataImpWholeSymptomsPlotter),SxPlotter,dataImpWholeSymptomsPlotter=dataImpWholeSymptomsPlotter)
 try(multiplot(plotlist=mygraphs))
 
-###################################### ###################################### ###################################### 
-###################################### ###################################### ###################################### 
-###################################### ###################################### ###################################### 
-###################################### ###################################### ###################################### 
-###################################### ###################################### ###################################### 
-###################################### ###################################### ###################################### 
+###################################### ###################################### ######################################
+###################################### ###################################### ######################################
+###################################### ###################################### ######################################
+###################################### ###################################### ######################################
+###################################### ###################################### ######################################
+###################################### ###################################### ######################################
 
 
 
@@ -141,12 +141,12 @@ corrplot(crs$cor[1:100], mar=c(2,0,0,10),tl.cex = 0.4,tl.offset = 3)
 
 
 
-###################################### ###################################### ###################################### 
-###################################### ###################################### ###################################### 
+###################################### ###################################### ######################################
+###################################### ###################################### ######################################
 #####################################  Measurement Symptom Chopper########### ######################################
-###################################### ###################################### ###################################### 
-###################################### ###################################### ###################################### 
-###################################### ###################################### ###################################### 
+###################################### ###################################### ######################################
+###################################### ###################################### ######################################
+###################################### ###################################### ######################################
 
 boxplot(dataImp_Symp$MainSxRSIAcidRegurgitation)
 
@@ -201,11 +201,11 @@ names(mylist)<-c("MainSxCorrSymptomAcidrel",
 #iterate through each data frame and then gsub the name of the dataframe from the column names
 #Then ggplot the column
 SxPlotter<-function(x,mylist){
-  
-  
-  this_is_a_name <- x; 
+
+
+  this_is_a_name <- x;
   print(this_is_a_name)
-  
+
   #This is to make sure that I get the data from the dataframe as I am passing the names into the function
   x <- data.frame(mylist[[x]],stringsAsFactors=F)
   #class(x)
@@ -217,7 +217,7 @@ SxPlotter<-function(x,mylist){
   try(meltdf<-melt(x))
  if(exists("meltdf")){
    if("variable" %in% colnames(meltdf)){
-     
+
 
 try(ggplot(meltdf,aes(x=variable,y=value))+
   geom_boxplot(fill="red",outlier.shape = NA)+
@@ -240,31 +240,31 @@ multiplot(plotlist=mygraphs)
 #Now split-apply-combine into a series of bar charts grouped by symptoms
 #Convert symptom variables to long format so they can be split
 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
 # PClst<-split(dataImp_SympLong,dataImp_SympLong$Symptom)
-# #gsub the symptoms 
-# 
+# #gsub the symptoms
+#
 
-# 
-# 
-# 
+#
+#
+#
 # #If the row has a number on it for a symptom then chalk up the symptom so you can then split-apply-combine it
 # source("S:\\Gastroenterology\\Seb\\R\\Scripts\\Generics\\CleanUp.R")
-# 
+#
 # source("S:\\Gastroenterology\\Seb\\R\\Scripts\\Generics\\CleanUp.R")
 # #Some cleaning up
 # #Need to apply this to one column only
 # #data<-replace(data[1:ncol(data)], is.na(data[1:ncol(data)]), "Nought")
 # data$VisitDate<-as.character(data$VisitDate)
 # data$VisitDate<-as.Date(data$VisitDate,"%d_%m_%Y")
-# 
+#
 # source("S:\\Gastroenterology\\Seb\\R\\Scripts\\Manometry\\MotilityFunctions.R")
 # data<-HRMCleanUp1(data)
 # data<-HRMCleanUp(data)
-# 
+#
 # data$dx[is.na(data$dx)]=0
 
 
@@ -274,7 +274,7 @@ multiplot(plotlist=mygraphs)
 
 ######################################################################################################################################
 ######################################################################################################################################
-################################### Subset spinning using dplyr ###################################################################### 
+################################### Subset spinning using dplyr ######################################################################
 ######################################################################################################################################
 ######################################################################################################################################
 
@@ -312,7 +312,7 @@ dataImpWholeCough<-filter(dataImpWhole,Cough=="Cough")
 dataImpWholeNonAcid<-select(dataImpWhole,contains("Non"),Cough,Vomiting,StomachPain,Nausea,Regurgitation,Belch,Chest) %>%
 gather(variable, value, Cough:Chest)%>%
 group_by(value)%>%
-summarise_each(funs(mean = mean(., na.rm = TRUE))) 
+summarise_each(funs(mean = mean(., na.rm = TRUE)))
 
 #Then plot it:
 #Get the columns that are not RSI etc symptom specific
@@ -329,16 +329,16 @@ ggplot(dataImpWholeNonAcid_Long, aes(Col,Value,group = Sx)) + geom_point()+ geom
 dataImpWholeNonAcid_Long$Col<-str_wrap(dataImpWholeNonAcid_Long$Col,5)
 ggplot(dataImpWholeNonAcid_Long, aes(Sx,Value,group=Col)) + geom_point()+ geom_line(colour="red")+ facet_grid(Col ~ .,scales="free")+
   labs(title="Non acid reflux and relationship to symptoms")
-  
+
 
 #Question - is there a difference between Acid events depending on symptom:
 #make data long according to the symptom:
 
-dataImpWholeAcid<-select(dataImpWhole,contains("cid"),Cough,Vomiting,StomachPain,Nausea,Regurgitation,Belch,Chest) 
+dataImpWholeAcid<-select(dataImpWhole,contains("cid"),Cough,Vomiting,StomachPain,Nausea,Regurgitation,Belch,Chest)
 dataImpWholeAcid<-select(dataImpWholeAcid,-contains("Non"),Cough,Vomiting,StomachPain,Nausea,Regurgitation,Belch,Chest) %>%
   gather(variable, value, Cough:Chest)%>%
   group_by(value)%>%
-  summarise_each(funs(mean = mean(., na.rm = TRUE))) 
+  summarise_each(funs(mean = mean(., na.rm = TRUE)))
 
 #Then plot it:
 #Get the columns that are not RSI etc symptom specific
@@ -397,10 +397,10 @@ boxplot(dataImpWholeUpright[,24],dataImpWholeRecumb[,24])
 
 ###################################################################################################
 ###################################################################################################
-########################Cross reference HRM with Impedance data ######################################
+######################## Cross reference HRM with Impedance data ######################################
 ###################################################################################################
 
-.libPaths() 
+.libPaths()
 .libPaths("S:\\Gastroenterology\\Seb\\R\\R-3.3.1\\library")
 .libPaths()
 
@@ -461,13 +461,13 @@ MyImpedanceDataWithHRMNoDups$VisitDate.y<-NULL
 #MyImpedanceDataWithHRMNoDups<-Filter(is.numeric,MyImpedanceDataWithHRMNoDups)
 
 MyImpedanceDataWithHRMNoDups[is.na(MyImpedanceDataWithHRMNoDups)] <- 0
-############### For acid reflux are there subtypes eg reduced clearance vs other?????############### 
+############### For acid reflux are there subtypes eg reduced clearance vs other?????###############
 MyImpedanceDataWithHRMNoDupsAcid<-subset(MyImpedanceDataWithHRMNoDups,MyImpedanceDataWithHRMNoDups$TypeOfAcid=="Acid")
 
 
 
 
-##################### Question: For each manometry diagnosis determine the impedance ##################### 
+##################### Question: For each manometry diagnosis determine the impedance #####################
 
 # Need to separate the impedance columns into groups as there are too many of them
 #Then group by diagnosis on manometry
@@ -475,13 +475,13 @@ MyImpedanceDataWithHRMNoDupsAcid<-subset(MyImpedanceDataWithHRMNoDups,MyImpedanc
 
 #do as function
 
- 
+
 
 ImpedanceVsHRMDiagnoses<-function(x,y){
 x<-select(x,contains(y),dx)%>%
   gather(variable, value, dx)%>%
   group_by(value)%>%
-  summarise_each(funs(mean = mean(., na.rm = TRUE))) 
+  summarise_each(funs(mean = mean(., na.rm = TRUE)))
 x <- melt(x ,  id.vars = 'value', variable.name = 'series')
 names(x)<-c("Sx","Col","Value")
 x$Col<-strwrap(x$Col,width=5)
@@ -506,12 +506,12 @@ ImpedanceVsHRMDiagnoses(MyImpedanceDataWithHRMNoDups,"SxMainRSAP")
 
 #Now compare types of reflux to manometry:
 TheHRMBit<-MyImpedanceDataWithHRMNoDups[,207:247]
-#Also remove the 
+#Also remove the
 RefluxSubtypesVsManometry<-function(x,y){
 x<-x%>%
 gather(variable, value, match(y,names(.)))%>%
 group_by(value)%>%
-  summarise_each(funs(mean = mean(., na.rm = TRUE))) 
+  summarise_each(funs(mean = mean(., na.rm = TRUE)))
 
 x<-x[,c(1,13:ncol(x)-3)]
 x <- melt(x ,  id.vars = 'value', variable.name = 'series')
@@ -530,7 +530,7 @@ RefluxSubtypesVsManometry(MyImpedanceDataWithHRMNoDups[,207:247],"PositionOfNonA
 #Do the same according to reflux type
 
 
-#Do the same according to symptom 
+#Do the same according to symptom
 
 
 
@@ -547,7 +547,7 @@ RefluxSubtypesVsManometry(MyImpedanceDataWithHRMNoDups[,207:247],"PositionOfNonA
 
 
 
-##################### Question: For each impedance subtype determine the manometric findings ##################### 
+##################### Question: For each impedance subtype determine the manometric findings #####################
 
 #Import breath test data into the mix as well
 
