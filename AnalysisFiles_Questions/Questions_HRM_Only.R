@@ -10,4 +10,5 @@
 # Question:HRM predictors of progression from EGF to achalasia. How to differentiate EGF subtypes.
 # Question:does myotomy worsen peristalsis- have a look at any patients with pre and post myotomy HRM.
 # Question:Fluctuation over time in HRM- look at repeat HRM and plot each parameter as a timeline
+# Question: Are there different phenotypes of IOM ..see....https://www.nature.com/articles/ctg20174....but what about redoing by clustering
 
