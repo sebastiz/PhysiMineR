@@ -71,6 +71,9 @@ HRMCleanUp1<-function(x){
   data$Age<-data$VisitDate-data$DOBAge
   data$Age<-difftime(data$VisitDate,data$DOBAge,units="days")/366.25
   data$Age<-as.numeric(data$Age)
+
+  #Format the columns so they are correct
+
   data$DistalLESfromnarescm<-as.numeric(as.character((data$DistalLESfromnarescm)))
   data$LESmidpointfromnarescm<-as.numeric(as.character((data$LESmidpointfromnarescm)))
   data$EsophageallengthLESUEScenterscm<-as.numeric(as.character((data$EsophageallengthLESUEScenterscm)))
@@ -90,6 +93,8 @@ HRMCleanUp1<-function(x){
   data$ResidualmeanmmHg<-as.numeric(as.character((data$ResidualmeanmmHg)))
   data$DCI<-ifelse(!rowSums(is.na(data[c("DistalcontractileintegralhighestmmHgcms", "DistalcontractileintegralmeanmmHgcms")])), data$DistalcontractileintegralhighestmmHgcms, rowSums(data[c("DistalcontractileintegralhighestmmHgcms", "DistalcontractileintegralmeanmmHgcms")], na.rm=TRUE) )
 
+
+  #Sort out the DCI, simultaneous contractions and LOS relaxation
   data$DistalcontractileintegralhighestmmHgcms[is.na(data$DistalcontractileintegralhighestmmHgcms)]=0
   data$DistalcontractileintegralmeanmmHgcms[is.na(data$DistalcontractileintegralmeanmmHgcms)]=0
   data$DistalcontractileintegralhighestmmHgcms<-NULL
