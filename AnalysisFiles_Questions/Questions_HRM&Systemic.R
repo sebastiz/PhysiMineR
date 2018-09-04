@@ -13,3 +13,7 @@
 # Question:Aperistaltic oesophagus and scleroderma-hook up with rheumatologist and get EPR dataset with diagnostic criteria.
 # Question:Eosinophilia count versus HRM measurements as per this paper: https://www.giejournal.org/article/S0016-5107(18)32989-4/fulltext use the same methodology
 # Question:Solid vs water swallows based on background illness.
+# Oesophageal diverticula- are there any HRM abnormalities? see
+#Pandolfino Esophageal diverticula are associated with propagating peristalsis: a study utilizing high-resolution manometry.
+#Carlson DA, Gluskin AB, Mogni B, Koo J, Sood R, Lin Z, Pandolfino JE.
+#Neurogastroenterol Motil. 2016 Mar;28(3):392-8. doi: 10.1111/nmo.12739. Epub 2015 Dec 8.

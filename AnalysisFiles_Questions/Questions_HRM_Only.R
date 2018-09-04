@@ -1,5 +1,9 @@
 #HRM Only Questions
 
+#Generics:
+# Time based questions swallows over time- to determine patterns over time esp with the swallows
+# Subclassification/clustering functions
+
 
 #Normal parameters
 # Question:Improvement in swallow over time.
@@ -27,9 +31,13 @@
 # Question: Are there different phenotypes of IOM ..see....https://www.nature.com/articles/ctg20174.... and In ineffective esophageal motility, failed swallows are more functionally relevant than weak swallows....but what about redoing by clustering
 # Subclassification questions
 
+#Changes before and after a procedure
+#Question: Before and after fundoplication
+#Question: Before and after myotomy
+#Question: Before and after any other procedure
+
 
 ############### SYMPTOM RELATED QUESTIONS ##########
-
 
 
 #Which HRM findings are specific to which symptoms?
