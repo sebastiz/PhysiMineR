@@ -12,3 +12,13 @@
 # Question:Fluctuation over time in HRM- look at repeat HRM and plot each parameter as a timeline
 # Question: Are there different phenotypes of IOM ..see....https://www.nature.com/articles/ctg20174....but what about redoing by clustering
 
+#Import the test data
+library(PhysiMineR)
+
+data<-read_xlsx("/home/rstudio/PhysiMineR/data/HRMAll.xlsx")
+
+data2<-HRMCleanUp1(data)
+data2<-HRMDiagnoses(data2)
+
+
+

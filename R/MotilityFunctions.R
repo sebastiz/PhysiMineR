@@ -61,36 +61,28 @@ HRMAndDiag<-function(channel){
 
 
 HRMCleanUp1<-function(x){
-  if(!is.Date(x$VisitDate)){
+
+  #Clean the demographics
+  is.date <- function(x) inherits(x, 'Date')
+  if(!is.date(x$VisitDate)){
     data$VisitDate<-as.character(data$VisitDate)
     data$VisitDate<-as.Date(data$VisitDate,"%d_%m_%Y")
   }
   data$DOBAge<-as.character(data$DOBAge)
+  data$DOBAge<-gsub("-","_",data$DOBAge)
   data$DOBAge<-gsub("(\\d+)_(\\d+)_(\\d{2}$)","\\1_\\2_19\\3",data$DOBAge)
-  data$DOBAge<-as.Date(data$DOBAge,"%d_%m_%Y")
+  data$DOBAge<-as.Date(data$DOBAge,"%Y_%m_%d")
   data$Age<-data$VisitDate-data$DOBAge
   data$Age<-difftime(data$VisitDate,data$DOBAge,units="days")/366.25
   data$Age<-as.numeric(data$Age)
 
   #Format the columns so they are correct
-
-  data$DistalLESfromnarescm<-as.numeric(as.character((data$DistalLESfromnarescm)))
-  data$LESmidpointfromnarescm<-as.numeric(as.character((data$LESmidpointfromnarescm)))
-  data$EsophageallengthLESUEScenterscm<-as.numeric(as.character((data$EsophageallengthLESUEScenterscm)))
-  data$PIPfromnarescm<-as.numeric(as.character((data$PIPfromnarescm)))
-  data$IntraabdominalLESlengthcm<-as.numeric(as.character((data$IntraabdominalLESlengthcm)))
+  #if contains mmHg or cm make sure they are as.numeric(as.character()).
+  data[i1] <- lapply(data[grepl("cm|mmHg", names(data))], function(x) as.numeric(as.character(x)))
   data$Hiatalhernia<-as.character((data$Hiatalhernia))
-  data$BasalrespiratoryminmmHg<-as.numeric(as.character((data$BasalrespiratoryminmmHg)))
-  data$BasalrespiratorymeanmmHg<-as.numeric(as.character((data$BasalrespiratorymeanmmHg)))
-  data$UESMeanResidLocationcenterfrnarescm<-as.numeric(as.character((data$UESMeanResidLocationcenterfrnarescm)))
-  data$ResidMeanbasalpressuremmHg<-as.numeric(as.character((data$ResidMeanbasalpressuremmHg)))
-  data$ResidMeanresidualpressuremmHg<-as.numeric(as.character((data$ResidMeanresidualpressuremmHg)))
-  data$DistalcontractileintegralhighestmmHgcms<-as.numeric(as.character((data$DistalcontractileintegralhighestmmHgcms)))
-  data$DistalcontractileintegralmeanmmHgcms<-as.numeric(as.character((data$DistalcontractileintegralmeanmmHgcms)))
-  data$Contractilefrontvelocitycms<-as.numeric(as.character((data$Contractilefrontvelocitycms)))
-  data$IntraboluspressureATLESRmmHg<-as.numeric(as.character((data$IntraboluspressureATLESRmmHg)))
+
+  #Convert other columns to numeric
   data$Distallatency<-as.numeric(as.character((data$Distallatency)))
-  data$ResidualmeanmmHg<-as.numeric(as.character((data$ResidualmeanmmHg)))
   data$DCI<-ifelse(!rowSums(is.na(data[c("DistalcontractileintegralhighestmmHgcms", "DistalcontractileintegralmeanmmHgcms")])), data$DistalcontractileintegralhighestmmHgcms, rowSums(data[c("DistalcontractileintegralhighestmmHgcms", "DistalcontractileintegralmeanmmHgcms")], na.rm=TRUE) )
 
 
@@ -119,22 +111,19 @@ HRMCleanUp1<-function(x){
 
 HRMDiagnoses<-function(x){
   data$dx<-ifelse(data$ResidualmeanmmHg>15&data$failedChicagoClassification==100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"AchalasiaType1",
-                  ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$prematurecontraction>=20,"AchalasiaType2",
-                         ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$panesophagealpressurization>=20,"AchalasiaType3",
-                                ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$panesophagealpressurization<20&data$panesophagealpressurization<20,"EGOO",
-                                       ifelse(data$ResidualmeanmmHg<15&data$ResidualmeanmmHg>10&!is.na(data$ResidualmeanmmHg)&data$failedChicagoClassification==100&!is.na(data$failedChicagoClassification),"PossibleAchalasia",
-                                              ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg),"AchalasiaType2or3orEGOO",
-                                                     ifelse(data$ResidualmeanmmHg<=15&data$failedChicagoClassification==100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"AbsentPeristalsis",
-                                                            ifelse(data$ResidualmeanmmHg<=15&(data$prematurecontraction>=20|data$Simultaneous>=20|data$Distallatency<4.5)&data$DCI>=450&!is.na(data$ResidualmeanmmHg)&(!is.na(data$prematurecontraction)&!is.na(data$Simultaneous))&!is.na(data$DCI),"DES",
-                                                                   ifelse(data$ResidualmeanmmHg<=15&(data$DCI>=8000)|(data$DCI>=8000|data$DCI>=8000)&!is.na(data$ResidualmeanmmHg)&!is.na(data$DCI),"JackHammer",
-                                                                          ifelse(data$ResidualmeanmmHg<15&data$Contractilefrontvelocitycms>9&data$Distallatency>=4.5&!is.na(data$ResidualmeanmmHg)&!is.na(data$Contractilefrontvelocitycms)&!is.na(data$Distallatency),"RapidContraction",
-                                                                                 ifelse(data$ResidualmeanmmHg<15&(data$DCI>=5000|data$DCI>=5000)&data$Distallatency>=4.5&!is.na(data$ResidualmeanmmHg)&!is.na(data$Distallatency)&!is.na(data$DCI),"HypertensivePeristalsis",
-                                                                                        ifelse(data$ResidualmeanmmHg<=15&data$smallbreaks>=30&data$largebreaks>=20&!is.na(data$ResidualmeanmmHg)&!is.na(data$smallbreaks)&!is.na(data$largebreaks),"WeakPeristalsis",
-                                                                                               ifelse(data$ResidualmeanmmHg<15&data$failedChicagoClassification>=30&data$failedChicagoClassification<=100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"FrequentFailedPeristalsis","Normal")))))))))))))
+ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$prematurecontraction>=20,"AchalasiaType2",
+ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$panesophagealpressurization>=20,"AchalasiaType3",
+ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$failedChicagoClassification>0,"EGOO",
+ifelse(data$ResidualmeanmmHg<15&data$ResidualmeanmmHg>10&!is.na(data$ResidualmeanmmHg)&data$failedChicagoClassification==100&!is.na(data$failedChicagoClassification),"PossibleAchalasia",
+ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg),"AchalasiaType2or3orEGOO",
 
-
-
-
+ifelse(data$ResidualmeanmmHg<=15&data$failedChicagoClassification==100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"AbsentPeristalsis",
+ifelse(data$ResidualmeanmmHg<=15&(data$prematurecontraction>=20|data$Simultaneous>=20|data$Distallatency<4.5)&data$DCI>=450&!is.na(data$ResidualmeanmmHg)&(!is.na(data$prematurecontraction)&!is.na(data$Simultaneous))&!is.na(data$DCI),"DES",
+ifelse(data$ResidualmeanmmHg<=15&(data$DCI>=8000)|(data$DCI>=8000|data$DCI>=8000)&!is.na(data$ResidualmeanmmHg)&!is.na(data$DCI),"JackHammer",
+ifelse(data$ResidualmeanmmHg<15&data$Contractilefrontvelocitycms>9&data$Distallatency>=4.5&!is.na(data$ResidualmeanmmHg)&!is.na(data$Contractilefrontvelocitycms)&!is.na(data$Distallatency),"RapidContraction",
+ifelse(data$ResidualmeanmmHg<15&(data$DCI>=5000|data$DCI>=5000)&data$Distallatency>=4.5&!is.na(data$ResidualmeanmmHg)&!is.na(data$Distallatency)&!is.na(data$DCI),"HypertensivePeristalsis",
+ifelse(data$ResidualmeanmmHg<=15&data$smallbreaks>=30&data$largebreaks>=20&!is.na(data$ResidualmeanmmHg)&!is.na(data$smallbreaks)&!is.na(data$largebreaks),"WeakPeristalsis",
+ifelse(data$ResidualmeanmmHg<15&data$failedChicagoClassification>=30&data$failedChicagoClassification<=100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"FrequentFailedPeristalsis","Normal")))))))))))))
   return(data)
 }
 
