@@ -7,6 +7,7 @@
 # Question:Barrett's vs impedance.
 # Question:Also consider contacting ENT re reflux and FNE findings or reflux and their scoring system. See if can integrate their dataset.
 # Question: -what proportion of impedance is requested by me relative to all internals and what proportion of heartburn has acid (this should be known) ie should I just send all heartburn ppi refractory to Bravo.
+# Question:FODMAP and heartburn outcomes for patients with bloating and heartburn overlap
 
 
 #Pathological GERD was defined on MII-pH study by the following criteria:
