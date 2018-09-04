@@ -5,23 +5,36 @@
 # Question:Improvement in swallow over time.
 # Question:Fluctuation over time in HRM- look at repeat HRM and plot each parameter as a timeline
 
+
+########## HRM DIAGNOSIS RELATED QUESTIONS #############
 #Aperistalsis
 # Question:Full description of the aperistaltic oesophagus and it's potential causes. TICK
-
+# Subclassification questions
 
 #Achalasia
 # Question:Achalasia - HRM vs outcomes. HRM vs endoscopy findings.
 # Question:Proportion of normal IRP achalasia by looking at relaxation OR relaxation cut off for achalasia as a separate metric.
 # Question:does myotomy worsen peristalsis- have a look at any patients with pre and post myotomy HRM.
+# Subclassification questions
 
 #EGOO
 # Question:Swallow in patients with EGJ obstruction with intermittent normality.
 # Question:HRM predictors of progression from EGF to achalasia. How to differentiate EGF subtypes.
-
+# Subclassification questions
 
 #IOM
 # Question:Age vs IOM...Is there are chance a thing as degenerative oesophagus. Age vs DCI?
-# Question: Are there different phenotypes of IOM ..see....https://www.nature.com/articles/ctg20174....but what about redoing by clustering
+# Question: Are there different phenotypes of IOM ..see....https://www.nature.com/articles/ctg20174.... and In ineffective esophageal motility, failed swallows are more functionally relevant than weak swallows....but what about redoing by clustering
+# Subclassification questions
+############### SYMPTOM RELATED QUESTIONS ##########
+
+# see https://www.ncbi.nlm.nih.gov/pubmed/29969856
+
+
+
+
+
+
 
 #Import the test data
 library(PhysiMineR)
