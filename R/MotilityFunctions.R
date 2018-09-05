@@ -100,7 +100,34 @@ HRMCleanUp1<-function(x){
 }
 
 
-  ########################### Categorise the diagnoses #################################################################################
+########################### HRM Symptom Subset Prepare #################################################################################
+
+
+SymptomsExtraction
+
+#' SymptomsExtraction
+#' This extracts the symptoms from a pre-specified column into its own column per symptom
+#' @param x dataframe
+#' @param y the column of interest
+#' @keywords Symptom
+#' @export
+#' @examples #SymptomsExtraction(data,IndicANDHx)
+
+SymptomsExtraction<-function(x,y){
+  x$Dysphagia<-ifelse(grepl(".*[Dd]ysph.*",x$y,perl=TRUE)|grepl(".*[Oo]dyn.*",x$y,perl=TRUE)|grepl(".*[Ss]tuck.*",x$y,perl=TRUE)|grepl(".*[Ss]tick.*",x$y,perl=TRUE),"Yes","No")
+  x$Heartburn<-ifelse(grepl(".*[Hh]eart.*",x$y,perl=TRUE)|grepl(".*[Rr]eflu.*",x$y,perl=TRUE)|grepl(".*[Rr]etro.*",x$y,perl=TRUE)|grepl(".*[Bb]urn.*",x$y,perl=TRUE),"Yes","No")
+  x$Throat<-ifelse(grepl(".*[Tt]hroat.*",x$y,perl=TRUE)|grepl(".*[Nn]eck.*",x$y,perl=TRUE),"Yes","No")
+  x$Cough<-ifelse(grepl(".*[Cc]ough.*",x$y,perl=TRUE)|grepl(".*[Cc]hok.*",x$y,perl=TRUE),"Yes","No")
+  x$ChestPain<-ifelse(grepl(".*[Ch]est.*",x$y,perl=TRUE),"Yes","No")
+  x$AbdoPain<-ifelse(grepl(".*[Ss]tomach.*",x$y,perl=TRUE)|grepl(".*[Ee]piga.*",x$y,perl=TRUE)|grepl(".*[Aa]bdom.*",x$y,perl=TRUE),"Yes","No")
+  x$Hoarseness<-ifelse(grepl(".*[Hh]oarse.*",x$y,perl=TRUE),"Yes","No")
+  x$Regurgitation<-ifelse(grepl(".*[Rr]egur.*",x$y,perl=TRUE)|grepl(".*[Tt]aste.*",x$y,perl=TRUE),"Yes","No")
+  x$Vomiting<-ifelse(grepl(".*[Vv]omit.*",x$y,perl=TRUE),"Yes","No")
+  x$Belch<-ifelse(grepl(".*[Bb]elch.*",x$y,perl=TRUE)|grepl(".*[Bb]urp.*",x$y,perl=TRUE),"Yes","No")
+}
+
+
+  ########################### Categorise the HRM diagnoses #################################################################################
 
 #' HRMDiagnoses
 #' This creates diagnoses from the HRM raw data based on the Chicago classification v4 (need to check)
@@ -247,111 +274,94 @@ PlotName<-deparse(substitute(x))
 title(paste(PlotName," vs Normal"),outer=T, line=-35)
 }
 
-SymptomsExtraction
 
-#' SymptomsExtraction
-#' This extracts the symptoms from a pre-specified column into its own column per symptom
-#' @param x dataframe
-#' @param y the column of interest
-#' @keywords Symptom
-#' @export
-#' @examples #SymptomsExtraction(data,IndicANDHx)
-#'
 
-SymptomsExtraction<-function(x,y){
-  x$Dysphagia<-ifelse(grepl(".*[Dd]ysph.*",x$y,perl=TRUE)|grepl(".*[Oo]dyn.*",x$y,perl=TRUE)|grepl(".*[Ss]tuck.*",x$y,perl=TRUE)|grepl(".*[Ss]tick.*",x$y,perl=TRUE),"Yes","No")
-  x$Heartburn<-ifelse(grepl(".*[Hh]eart.*",x$y,perl=TRUE)|grepl(".*[Rr]eflu.*",x$y,perl=TRUE)|grepl(".*[Rr]etro.*",x$y,perl=TRUE)|grepl(".*[Bb]urn.*",x$y,perl=TRUE),"Yes","No")
-  x$Throat<-ifelse(grepl(".*[Tt]hroat.*",x$y,perl=TRUE)|grepl(".*[Nn]eck.*",x$y,perl=TRUE),"Yes","No")
-  x$Cough<-ifelse(grepl(".*[Cc]ough.*",x$y,perl=TRUE)|grepl(".*[Cc]hok.*",x$y,perl=TRUE),"Yes","No")
-  x$ChestPain<-ifelse(grepl(".*[Ch]est.*",x$y,perl=TRUE),"Yes","No")
-  x$AbdoPain<-ifelse(grepl(".*[Ss]tomach.*",x$y,perl=TRUE)|grepl(".*[Ee]piga.*",x$y,perl=TRUE)|grepl(".*[Aa]bdom.*",x$y,perl=TRUE),"Yes","No")
-  x$Hoarseness<-ifelse(grepl(".*[Hh]oarse.*",x$y,perl=TRUE),"Yes","No")
-  x$Regurgitation<-ifelse(grepl(".*[Rr]egur.*",x$y,perl=TRUE)|grepl(".*[Tt]aste.*",x$y,perl=TRUE),"Yes","No")
-  x$Vomiting<-ifelse(grepl(".*[Vv]omit.*",x$y,perl=TRUE),"Yes","No")
-  x$Belch<-ifelse(grepl(".*[Bb]elch.*",x$y,perl=TRUE)|grepl(".*[Bb]urp.*",x$y,perl=TRUE),"Yes","No")
+
+
+
+
+
+
+
+##### Symptom vs Parameter
+#eg. Question:What proportion of NERD is related to acid vs non acid. ie What proportion of {condition} is related to {parameter}
+#1. Chronic Cough Is Associated With Long Breaks in Esophageal Peristaltic Integrity on High-resolution Manometry. J Neurogastroenterol Motil. 2018 Jul 30;24(3):387-394. doi: 10.5056/jnm17126.
+
+#################{symptom} is associated with {parameter}
+
+#2. Factors predictive of gastroesophageal reflux disease and esophageal motility disorders in patients with non-cardiac chest pain. Gomez Cifuentes J1, Lopez R2, Thota PN3. Scand J Gastroenterol. 2018 Jun;53(6):643-649. doi: 10.1080/00365521.2018.1452975.
+
+{symptom subgroup} {parameter} predicts {condition}
+
+##### Parameter vs Condition
+#1. Swallow-induced esophageal shortening in patients without hiatal hernia is associated with gastroesophageal reflux. #Masuda T, Singhal S, Akimoto S, Bremner RM, Mittal SK. Dis Esophagus. 2018 May 1;31(5). doi: 10.1093/dote/dox152. PMID: 29293978
+
+{parameter} is associated with {condition}
+
+#2. Comparison of esophageal motility in gastroesophageal reflux disease with and without globus sensation. Tang Y, Huang J, Zhu Y, Qian A, Xu B, Yao W.#Rev Esp Enferm Dig. 2017 Dec;109(12):850-855. doi: 10.17235/reed.2017.4449/2016.
+
+{symptom subgroup} {parameter} is associated with {condition}
+
+#3. High-resolution manometry in patients with and without globus pharyngeus and/or symptoms of laryngopharyngeal reflux. #Ding H, Duan Z, Yang D, Zhang Z, Wang L, Sun X, Yao Y, Lin X, Yang H, Wang S, Chen JDZ. BMC Gastroenterol. 2017 Oct 23;17(1):109. doi: 10.1186/s12876-017-0666-x. PMID: 29061118 Free PMC Article{symptom subgroup} {parameter} is associated with {condition}
+{symptom subgroup} {parameter} is associated with {condition}
+
+#4. Distribution of Esophageal Motor Disorders in Diabetic Patients With Dysphagia. George NS, Rangan V, Geng Z, Khan F, Kichler A, Gabbard S, Ganocy S, Fass R. J Clin Gastroenterol. 2017 Nov/Dec;51(10):890-895. doi: 10.1097/MCG.0000000000000894. PMID: 28746079
+{symptom subgroup} {parameter} is associated with {condition}
+
+#5 Upper esophageal sphincter (UES) metrics on high-resolution manometry (HRM) differentiate achalasia subtypes.
+{condition subgroup} {parameter} is associated with {condition}
+
+###### Parameter pre and post an intervention
+
+#1. Esophageal Motility after Extensive Circumferential Endoscopic Submucosal Dissection for Superficial Esophageal Cancer.#Digestion. 2018 Jun 5;98(3):153-160. doi: 10.1159/000487751. [Epub ahead of print]
+
+#2. Impact of thoracic surgery on esophageal motor function-Evaluation by high resolution manometry.Wäsche A, Kandulski A, Malfertheiner P, Riedel S, Zardo P, Hachenberg T, Schreiber J.J Thorac Dis. 2017 Jun;9(6):1557-1564. doi: 10.21037/jtd.2017.05.43.PMID: 28740669 Free PMC Article
+
+
+###### Condition vs Parameter
+
+#1.GERD: Presence and Size of Hiatal Hernia Influence Clinical Presentation, Esophageal Function, Reflux Profile, and Degree of Mucosal Injury. # Schlottmann F, Andolfi C, Herbella FA, Rebecchi F, Allaix ME, Patti MG.Am Surg. 2018 Jun 1;84(6):978-982.
+
+
+
+#2.Esophageal Motor Disorders Are a Strong and Independant Associated Factor of Barrett's Esophagus. #Bazin C, Benezech A, Alessandrini M, Grimaud JC, Vitton V. #J Neurogastroenterol Motil. 2018 Apr 30;24(2):216-225. doi: 10.5056/jnm17090. #PMID: 29605977 Free PMC Article
+{condition} is associated with  {parameter}
+
+#3. Esophagogastric junction outflow obstruction is often associated with coexistent abnormal esophageal body motility and abnormal bolus transit. #Zheng E, Gideon RM, Sloan J, Katz PO. Dis Esophagus. 2017 Oct 1;30(10):1-4. doi: 10.1093/dote/dox066.
+{parameter} is associated with {condition}
+
+
+Filtered subgroup
+
+function(subgroup,parameter OR symptom OR condition,parameter OR symptom OR condition ){
 }
 
 
 
 
 
-#' SymptomsNoPlot
-#' This get the number symptoms. Very likely redundant
-#' @param x dataframe
-#' @keywords HRM CleanUp
-#' @export
-#' @examples #SymptomsNoPlot(x)
-#'
-SymptomsNoPlot<- function (x){
-  a<-nrow(subset(x,x$Dysphagia=="Yes"))
-  b<-nrow(subset(x,x$Heartburn=="Yes"))
-  c<-nrow(subset(x,x$Throat=="Yes"))
-  d<-nrow(subset(x,x$Cough=="Yes"))
-  e<-nrow(subset(x,x$ChestPain=="Yes"))
-  f<-nrow(subset(x,x$AbdoPain=="Yes"))
-  g<-nrow(subset(x,x$Hoarseness=="Yes"))
-  h<-nrow(subset(x,x$Regurgitation=="Yes"))
-  i<-nrow(subset(x,x$Vomiting=="Yes"))
-  j<-nrow(subset(x,x$Belch=="Yes"))
 
-  n = c(a,b,c,d,e,f,g,h,i,j)
-  return(n)
+
+Filtered subgroup:Non cardiac_Chest_pain
+
+Is a associated with b
+eg Specific<-function(Non-cardiac_Chest_pain,Age, achalasia){
+}
+
+Is there a variable in  a subgroup that can predict b
+Multifac<-function(Non-cardiac_Chest_pain,all_device_parameters, achalasia){
 
 }
 
-#' Symptoms
-#' This barcharts the symptoms
-#' @param x dataframe
-#' @keywords HRM CleanUp
-#' @export
-#' @examples #Symptoms(x)
+###### Condition description (ie subclassification)
 
-Symptom_Plot<- function (x){
-  a<-nrow(subset(x,x$Dysphagia=="Yes"))
-  b<-nrow(subset(x,x$Heartburn=="Yes"))
-  c<-nrow(subset(x,x$Throat=="Yes"))
-  d<-nrow(subset(x,x$Cough=="Yes"))
-  e<-nrow(subset(x,x$ChestPain=="Yes"))
-  f<-nrow(subset(x,x$AbdoPain=="Yes"))
-  g<-nrow(subset(x,x$Hoarseness=="Yes"))
-  h<-nrow(subset(x,x$Regurgitation=="Yes"))
-  i<-nrow(subset(x,x$Vomiting=="Yes"))
-  j<-nrow(subset(x,x$Belch=="Yes"))
+#1. Clinical and manometric characteristics of patients with oesophagogastric outflow obstruction: towards a new classification George Triadafilopoulos, John O Clarke
 
-    n = c(a,b,c,d,e,f,g,h,i,j)
-
-  s = c("Dysphagia", "Heartburn", "Throat","Cough","ChestPain","AbdoPain","Hoarseness","Regurgitation","Vomiting","Belch")
-  Symp<-data.frame(s,n)
-  PlotName<-deparse(substitute(x))
-
-  mybarplot<-ggplot(Symp) +
-    geom_bar(aes(s,n,color = "red"),stat="identity")+
-    labs(title=PlotName) +
-    xlab("Symptom") +
-    ylab("Frequency") +
-    theme(axis.text.x=element_text(angle=-45)) +
-    theme(legend.position="top")
-  return(mybarplot)
-}
+##### Device vs device
+#
+#
+# Both vs future outcomes
+# Both vs future conditions
 
 
-#' SymptomExtractor
-#' This extracts the symptoms
-#' @param x dataframe
-#' @keywords HRM CleanUp
-#' @export
-#' @examples #SymptomExtractor(x)
-#'
-SymptomExtractor<-function(x){
-  a<-nrow(subset(x,x$Dysphagia=="Yes"))
-  b<-nrow(subset(x,x$Heartburn=="Yes"))
-  c<-nrow(subset(x,x$Throat=="Yes"))
-  d<-nrow(subset(x,x$Cough=="Yes"))
-  e<-nrow(subset(x,x$ChestPain=="Yes"))
-  f<-nrow(subset(x,x$AbdoPain=="Yes"))
-  g<-nrow(subset(x,x$Hoarseness=="Yes"))
-  h<-nrow(subset(x,x$Regurgitation=="Yes"))
-  i<-nrow(subset(x,x$Vomiting=="Yes"))
-  j<-nrow(subset(x,x$Belch=="Yes"))
 
-}
