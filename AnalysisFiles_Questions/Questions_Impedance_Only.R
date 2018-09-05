@@ -2,13 +2,27 @@
 
 
 # Question:Chance of positive reflux in patients with negative pH impedance but have IOM with any symptoms or classic symptoms. ?Case control
+
+
+Question areas
+
+Symptom vs Parameter
 # Question:What proportion of NERD is related to acid vs non acid.
-# Question:Parameters predicting upright and supine and postprandial reflux from impedance.
-# Question:Barrett's vs impedance.
-# Question:Also consider contacting ENT re reflux and FNE findings or reflux and their scoring system. See if can integrate their dataset.
-# Question:What proportion of impedance is requested by me relative to all internals and what proportion of heartburn has acid (this should be known) ie should I just send all heartburn ppi refractory to Bravo.
+# What proportion of heartburn has acid (this should be known) ie should I just send all heartburn ppi refractory to Bravo.
 # Question:FODMAP and heartburn outcomes for patients with bloating and heartburn overlap
 
+Parameter vs Condition
+# Question:Parameters predicting upright and supine and postprandial reflux from impedance.
+# Question:Barrett's vs impedance.
+
+
+Condition vs Parameter
+
+Device vs device
+
+
+Both vs future outcomes
+Both vs future conditions
 
 #Pathological GERD was defined on MII-pH study by the following criteria:
 #Excess total number of reflux episodes (≥48 episodes/24 h on or off PPI);
