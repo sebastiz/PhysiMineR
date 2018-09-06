@@ -12,13 +12,15 @@
 
 ########## HRM DIAGNOSIS RELATED QUESTIONS #############
 #Aperistalsis
-# Question:Full description of the aperistaltic oesophagus and it's potential causes. TICK
-# Subclassification questions
+# Question:Full description of the aperistaltic oesophagus and it's potential causes.
+# Questions: Difference in parameters between different components of the Eckhardt score.
+# Subclassification questions eg difference between GERD related achalasia and non-GERD related achalasia.
 
 #Achalasia
 # Question: Achalasia - HRM vs outcomes. HRM vs endoscopy findings.
 # Question: Proportion of normal IRP achalasia by looking at relaxation OR relaxation cut off for achalasia as a separate metric.
 # Question: Does myotomy worsen peristalsis- have a look at any patients with pre and post myotomy HRM.
+# Question: Is there any difference in parameters between normal IRP achalasia and classic achalasia?
 # Subclassification questions
 
 #EGOO

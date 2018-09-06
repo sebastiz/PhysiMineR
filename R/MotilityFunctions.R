@@ -278,11 +278,6 @@ title(paste(PlotName," vs Normal"),outer=T, line=-35)
 
 
 
-
-
-
-
-
 ##### Symptom vs Parameter
 #eg. Question:What proportion of NERD is related to acid vs non acid. ie What proportion of {condition} is related to {parameter}
 #1. Chronic Cough Is Associated With Long Breaks in Esophageal Peristaltic Integrity on High-resolution Manometry. J Neurogastroenterol Motil. 2018 Jul 30;24(3):387-394. doi: 10.5056/jnm17126.
@@ -318,10 +313,9 @@ title(paste(PlotName," vs Normal"),outer=T, line=-35)
 #2. Impact of thoracic surgery on esophageal motor function-Evaluation by high resolution manometry.Wäsche A, Kandulski A, Malfertheiner P, Riedel S, Zardo P, Hachenberg T, Schreiber J.J Thorac Dis. 2017 Jun;9(6):1557-1564. doi: 10.21037/jtd.2017.05.43.PMID: 28740669 Free PMC Article
 
 
-###### Condition vs Parameter
+###### Condition vs Parameter- mainly descriptive
 
 #1.GERD: Presence and Size of Hiatal Hernia Influence Clinical Presentation, Esophageal Function, Reflux Profile, and Degree of Mucosal Injury. # Schlottmann F, Andolfi C, Herbella FA, Rebecchi F, Allaix ME, Patti MG.Am Surg. 2018 Jun 1;84(6):978-982.
-
 
 
 #2.Esophageal Motor Disorders Are a Strong and Independant Associated Factor of Barrett's Esophagus. #Bazin C, Benezech A, Alessandrini M, Grimaud JC, Vitton V. #J Neurogastroenterol Motil. 2018 Apr 30;24(2):216-225. doi: 10.5056/jnm17090. #PMID: 29605977 Free PMC Article
@@ -333,25 +327,90 @@ title(paste(PlotName," vs Normal"),outer=T, line=-35)
 
 Filtered subgroup
 
+#Predictive variables
+#Subclassifying algorithms
+
 function(subgroup,parameter OR symptom OR condition,parameter OR symptom OR condition ){
 }
 
 
 
+What {Parameter/condition/symptom} in this subgroup are associated with {Parameter/condition/symptom}?
 
+library(rattle)
 
 
 
 Filtered subgroup:Non cardiac_Chest_pain
 
 Is a associated with b
-eg Specific<-function(Non-cardiac_Chest_pain,Age, achalasia){
+eg Specific<-function(Non-subgroup,one Parameter, achalasia){
+
+
 }
 
 Is there a variable in  a subgroup that can predict b
 Multifac<-function(Non-cardiac_Chest_pain,all_device_parameters, achalasia){
 
+
+
 }
+
+Symptom<-as.list(c("Non-cardiac chest pain",
+                   "Heartburn",
+                   "Regurgitation",
+                   "Hoarse voice",
+                   "Dysphagia",
+                   "Cough",
+                   "Globus",
+                   "Throat clearing",
+                   "abdominal pain"))
+
+Parameterz<-as.list(c("DistalLESfromnarescm",
+                     "LESmidpointfromnarescm",
+                     "ProximalLESfromnarescm",
+                     "LESlengthcm",
+                     "EsophageallengthLESUEScenterscm",
+                     "PIPfromnarescm",
+                     "IntraabdominalLESlengthcm",
+                     "Hiatalhernia",
+                     "BasalrespiratoryminmmHg",
+                     "BasalrespiratorymeanmmHg",
+                     "ResidualmeanmmHg",
+                     "UESMeanResidLocationcenterfrnarescm",
+                     "ResidMeanbasalpressuremmHg",
+                     "ResidMeanresidualpressuremmHg",
+                     "Numberofswallowsevaluated",
+                     "DistalcontractileintegralhighestmmHgcms",
+                     "DistalcontractileintegralmeanmmHgcms",
+                     "Contractilefrontvelocitycms",
+                     "IntraboluspressureATLESRmmHg",
+                     "Distallatency",
+                     "failedChicagoClassification",
+                     "panesophagealpressurization",
+                     "largebreaks",
+                     "Simultaneous",
+                     "prematurecontraction",
+                     "rapidcontraction",
+                     "smallbreaks",
+                     "VisitDate",
+                     "DOBAge"))
+
+Condition<-as.list(c("Achalasia type 1",
+                     "Achalasia type 2",
+                     "Achalasia type 3",
+                     "EGOO",
+                     "DES",
+                     "Jackhammer",
+                     "Aperistaltic",
+                     "Frequent failed Peristalsis",
+                     "Ineffective oesophageal motility"))
+
+paste("Investigating the association between ",Condition," and ",Parameterz, "in patients with ",Symptom )
+
+#Patients with condition and a symptom analysis of parameters
+#ie which parameters are significantly elevated in patients with specific symptoms and a specific condition
+
 
 ###### Condition description (ie subclassification)
 
