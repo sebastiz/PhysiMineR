@@ -102,28 +102,38 @@ dataImpClean<-function(x,y){
 #' #dataImpSymptoms(x)
 
 dataImpSymptoms<-function(x){
-  dataImpWhole$Heartburn<-ifelse(!is.na(dataImpWhole$SxMainRSAPAcidHeartburn),"Heartburn","NO")
-  dataImpWhole$Cough<-ifelse(!is.na(dataImpWhole$SxMainRSAPAcidCough),"Cough","NO")
-  dataImpWhole$StomachPain<-ifelse(!is.na(dataImpWhole$SxMainRSAPAcidStomachPain),"StomachPain","NO")
-  dataImpWhole$Nausea<-ifelse(!is.na(dataImpWhole$SxMainRSAPAcidNausea),"Nausea","NO")
-  dataImpWhole$Vomiting<-ifelse(!is.na(dataImpWhole$SxMainRSAPAcidVomiting),"Vomiting","NO")
-  dataImpWhole$Regurgitation<-ifelse(!is.na(dataImpWhole$SxMainRSAPAcidRegurgitation),"Regurgitation","NO")
-  dataImpWhole$Throat<-ifelse(!is.na(dataImpWhole$SxMainRSAPAcidThroat),"Throat","NO")
-  dataImpWhole$Belch<-ifelse(!is.na(dataImpWhole$SxMainRSAPAcidBelch),"Belch","NO")
-  dataImpWhole$Chest<-ifelse(!is.na(dataImpWhole$SxMainRSAPAcidChestPain),"Chest","NO")
-  dataImpWhole$Symptom<-paste(dataImpWhole$Heartburn,dataImpWhole$Cough,dataImpWhole$StomachPain,
-                              dataImpWhole$Nausea,dataImpWhole$Vomiting
-                              ,dataImpWhole$Regurgitation,dataImpWhole$Throat,dataImpWhole$Belch,dataImpWhole$Chest,sep=",")
-  dataImpWhole$Symptom<-gsub("NO,","",dataImpWhole$Symptom)
-  dataImpWhole$Symptom<-gsub(",NO","",dataImpWhole$Symptom)
-  dataImpWhole$Symptom<-gsub("NO","",dataImpWhole$Symptom)
-  dataImpWhole<-dataImpWhole[,colSums(is.na(dataImpWhole))<nrow(dataImpWhole)-5]
+  x$Heartburn<-ifelse(!is.na(x$SxMainRSAPAcidHeartburn),"Heartburn","NO")
+  x$Cough<-ifelse(!is.na(x$SxMainRSAPAcidCough),"Cough","NO")
+  x$StomachPain<-ifelse(!is.na(x$SxMainRSAPAcidStomachPain),"StomachPain","NO")
+  x$Nausea<-ifelse(!is.na(x$SxMainRSAPAcidNausea),"Nausea","NO")
+  x$Vomiting<-ifelse(!is.na(x$SxMainRSAPAcidVomiting),"Vomiting","NO")
+  x$Regurgitation<-ifelse(!is.na(x$SxMainRSAPAcidRegurgitation),"Regurgitation","NO")
+  x$Throat<-ifelse(!is.na(x$SxMainRSAPAcidThroat),"Throat","NO")
+  x$Belch<-ifelse(!is.na(x$SxMainRSAPAcidBelch),"Belch","NO")
+  x$Chest<-ifelse(!is.na(x$SxMainRSAPAcidChestPain),"Chest","NO")
+  x$AllImpSymptom<-paste(x$Heartburn,x$Cough,x$StomachPain,
+                              x$Nausea,x$Vomiting
+                              ,x$Regurgitation,x$Throat,x$Belch,x$Chest,sep=",")
+  x$AllImpSymptom<-gsub("NO,","",x$AllImpSymptom)
+  x$AllImpSymptom<-gsub(",NO","",x$AllImpSymptom)
+  x$AllImpSymptom<-gsub("NO","",x$AllImpSymptom)
+  x<-x[,colSums(is.na(x))<nrow(x)-5]
 #TODO: Need to change the symptom extraction so that all the symptoms for each episode are recorded in one box
-  dataImpWholeSymptomsPlotter<-dataImpWhole[nchar(dataImpWhole$Symptom)>0,]
+  dataImpWholeSymptomsPlotter<-x[nchar(x$AllImpSymptom)>0,]
 
-
-  return(x)
+  x$Heartburn<-NULL
+  x$Throat<-NULL
+  x$Cough<-NULL
+  x$StomachPain<-NULL
+  x$Throat<-NULL
+  x$Nausea<-NULL
+  x$Regurgitation<-NULL
+  x$Vomiting<-NULL
+  x$Belch<-NULL
+  x$Chest<-NULL
+  return (x)
 }
+
 
 
 

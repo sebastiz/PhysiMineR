@@ -106,7 +106,8 @@ HRMCleanUp1<-function(x){
 SymptomsExtraction
 
 #' SymptomsExtraction
-#' This extracts the symptoms from a pre-specified column into its own column per symptom
+#' This extracts the symptoms from a pre-specified column into its own column per symptom. Usually these are extracted from the
+#' associated diagnosis table as the HRM main table doesnt keep free text stuff
 #' @param x dataframe
 #' @param y the column of interest
 #' @keywords Symptom
@@ -114,17 +115,37 @@ SymptomsExtraction
 #' @examples #SymptomsExtraction(data,IndicANDHx)
 
 SymptomsExtraction<-function(x,y){
-  x$Dysphagia<-ifelse(grepl(".*[Dd]ysph.*",x$y,perl=TRUE)|grepl(".*[Oo]dyn.*",x$y,perl=TRUE)|grepl(".*[Ss]tuck.*",x$y,perl=TRUE)|grepl(".*[Ss]tick.*",x$y,perl=TRUE),"Yes","No")
-  x$Heartburn<-ifelse(grepl(".*[Hh]eart.*",x$y,perl=TRUE)|grepl(".*[Rr]eflu.*",x$y,perl=TRUE)|grepl(".*[Rr]etro.*",x$y,perl=TRUE)|grepl(".*[Bb]urn.*",x$y,perl=TRUE),"Yes","No")
-  x$Throat<-ifelse(grepl(".*[Tt]hroat.*",x$y,perl=TRUE)|grepl(".*[Nn]eck.*",x$y,perl=TRUE),"Yes","No")
-  x$Cough<-ifelse(grepl(".*[Cc]ough.*",x$y,perl=TRUE)|grepl(".*[Cc]hok.*",x$y,perl=TRUE),"Yes","No")
-  x$ChestPain<-ifelse(grepl(".*[Ch]est.*",x$y,perl=TRUE),"Yes","No")
-  x$AbdoPain<-ifelse(grepl(".*[Ss]tomach.*",x$y,perl=TRUE)|grepl(".*[Ee]piga.*",x$y,perl=TRUE)|grepl(".*[Aa]bdom.*",x$y,perl=TRUE),"Yes","No")
-  x$Hoarseness<-ifelse(grepl(".*[Hh]oarse.*",x$y,perl=TRUE),"Yes","No")
-  x$Regurgitation<-ifelse(grepl(".*[Rr]egur.*",x$y,perl=TRUE)|grepl(".*[Tt]aste.*",x$y,perl=TRUE),"Yes","No")
-  x$Vomiting<-ifelse(grepl(".*[Vv]omit.*",x$y,perl=TRUE),"Yes","No")
-  x$Belch<-ifelse(grepl(".*[Bb]elch.*",x$y,perl=TRUE)|grepl(".*[Bb]urp.*",x$y,perl=TRUE),"Yes","No")
-}
+
+  #Probably an easier way to do this but for the moment.....
+
+  x$Dysphagia<-ifelse(grepl(".*[Dd]ysph.*",x$y,perl=TRUE)|grepl(".*[Oo]dyn.*",x$y,perl=TRUE)|grepl(".*[Ss]tuck.*",x$y,perl=TRUE)|grepl(".*[Ss]tick.*",x$y,perl=TRUE),"Dysphagia","No")
+  x$Heartburn<-ifelse(grepl(".*[Hh]eart.*",x$y,perl=TRUE)|grepl(".*[Rr]eflu.*",x$y,perl=TRUE)|grepl(".*[Rr]etro.*",x$y,perl=TRUE)|grepl(".*[Bb]urn.*",x$y,perl=TRUE),"Heartburn","No")
+  x$Throat<-ifelse(grepl(".*[Tt]hroat.*",x$y,perl=TRUE)|grepl(".*[Nn]eck.*",x$y,perl=TRUE),"Throat","No")
+  x$Cough<-ifelse(grepl(".*[Cc]ough.*",x$y,perl=TRUE)|grepl(".*[Cc]hok.*",x$y,perl=TRUE),"Cough","No")
+  x$ChestPain<-ifelse(grepl(".*[Ch]est.*",x$y,perl=TRUE),"ChestPain","No")
+  x$AbdoPain<-ifelse(grepl(".*[Ss]tomach.*",x$y,perl=TRUE)|grepl(".*[Ee]piga.*",x$y,perl=TRUE)|grepl(".*[Aa]bdom.*",x$y,perl=TRUE),"AbdoPain","No")
+  x$Hoarseness<-ifelse(grepl(".*[Hh]oarse.*",x$y,perl=TRUE),"Hoarseness","No")
+  x$Regurgitation<-ifelse(grepl(".*[Rr]egur.*",x$y,perl=TRUE)|grepl(".*[Tt]aste.*",x$y,perl=TRUE),"Regurgitation","No")
+  x$Vomiting<-ifelse(grepl(".*[Vv]omit.*",x$y,perl=TRUE),"Vomiting","No")
+  x$Belch<-ifelse(grepl(".*[Bb]elch.*",x$y,perl=TRUE)|grepl(".*[Bb]urp.*",x$y,perl=TRUE),"Belch","No")
+
+  x$AllSymptoms<-paste(x$Dysphagia,",",x$Heartburn,",",x$Throat,",",x$Cough,",",x$ChestPain,",",x$AbdoPain,",",x$Hoarseness,",",x$Regurgitation,",",x$Vomiting,",",x$Belch,",")
+  x$AllSymptoms<-gsub("NO,","",x$AllSymptoms)
+  x$AllSymptoms<-gsub(",NO","",x$AllSymptoms)
+  x$AllSymptoms<-gsub("NO","",x$AllSymptoms)
+
+  x$Dysphagia<-NULL
+  x$Heartburn<-NULL
+  x$Throat<-NULL
+  x$Cough<-NULL
+  x$ChestPain<-NULL
+  x$AbdoPain<-NULL
+  x$Hoarseness<-NULL
+  x$Regurgitation<-NULL
+  x$Vomiting<-NULL
+  x$Belch<-NULL
+  return (x)
+  }
 
 
   ########################### Categorise the HRM diagnoses #################################################################################
@@ -276,6 +297,19 @@ title(paste(PlotName," vs Normal"),outer=T, line=-35)
 
 
 
+----------------------------Sandbox------------------------------------------------------
+
+
+  #Define multiple logistic regression and exploratory analysis first
+  #see https://rcompanion.org/rcompanion/e_07.html
+
+  library(PerformanceAnalytics)
+
+chart.Correlation(Data.num,
+                  method="spearman",
+                  histogram=TRUE,
+                  pch=16)
+
 
 
 ##### Symptom vs Parameter
@@ -286,25 +320,27 @@ title(paste(PlotName," vs Normal"),outer=T, line=-35)
 
 #2. Factors predictive of gastroesophageal reflux disease and esophageal motility disorders in patients with non-cardiac chest pain. Gomez Cifuentes J1, Lopez R2, Thota PN3. Scand J Gastroenterol. 2018 Jun;53(6):643-649. doi: 10.1080/00365521.2018.1452975.
 
-{symptom subgroup} {parameter} predicts {condition}
+###########{symptom subgroup} {parameter} predicts {condition}
 
 ##### Parameter vs Condition
 #1. Swallow-induced esophageal shortening in patients without hiatal hernia is associated with gastroesophageal reflux. #Masuda T, Singhal S, Akimoto S, Bremner RM, Mittal SK. Dis Esophagus. 2018 May 1;31(5). doi: 10.1093/dote/dox152. PMID: 29293978
 
-{parameter} is associated with {condition}
+###########{{parameter} is associated with {condition}
 
 #2. Comparison of esophageal motility in gastroesophageal reflux disease with and without globus sensation. Tang Y, Huang J, Zhu Y, Qian A, Xu B, Yao W.#Rev Esp Enferm Dig. 2017 Dec;109(12):850-855. doi: 10.17235/reed.2017.4449/2016.
 
-{symptom subgroup} {parameter} is associated with {condition}
+###########{{symptom subgroup} {parameter} is associated with {condition}
 
 #3. High-resolution manometry in patients with and without globus pharyngeus and/or symptoms of laryngopharyngeal reflux. #Ding H, Duan Z, Yang D, Zhang Z, Wang L, Sun X, Yao Y, Lin X, Yang H, Wang S, Chen JDZ. BMC Gastroenterol. 2017 Oct 23;17(1):109. doi: 10.1186/s12876-017-0666-x. PMID: 29061118 Free PMC Article{symptom subgroup} {parameter} is associated with {condition}
-{symptom subgroup} {parameter} is associated with {condition}
+###########{{symptom subgroup} {parameter} is associated with {condition}
 
 #4. Distribution of Esophageal Motor Disorders in Diabetic Patients With Dysphagia. George NS, Rangan V, Geng Z, Khan F, Kichler A, Gabbard S, Ganocy S, Fass R. J Clin Gastroenterol. 2017 Nov/Dec;51(10):890-895. doi: 10.1097/MCG.0000000000000894. PMID: 28746079
-{symptom subgroup} {parameter} is associated with {condition}
+###########{{symptom subgroup} {parameter} is associated with {condition}
 
 #5 Upper esophageal sphincter (UES) metrics on high-resolution manometry (HRM) differentiate achalasia subtypes.
-{condition subgroup} {parameter} is associated with {condition}
+###########{{condition subgroup} {parameter} is associated with {condition}
+
+
 
 ###### Parameter pre and post an intervention
 
@@ -319,108 +355,108 @@ title(paste(PlotName," vs Normal"),outer=T, line=-35)
 
 
 #2.Esophageal Motor Disorders Are a Strong and Independant Associated Factor of Barrett's Esophagus. #Bazin C, Benezech A, Alessandrini M, Grimaud JC, Vitton V. #J Neurogastroenterol Motil. 2018 Apr 30;24(2):216-225. doi: 10.5056/jnm17090. #PMID: 29605977 Free PMC Article
-{condition} is associated with  {parameter}
+###########{{condition} is associated with  {parameter}
 
 #3. Esophagogastric junction outflow obstruction is often associated with coexistent abnormal esophageal body motility and abnormal bolus transit. #Zheng E, Gideon RM, Sloan J, Katz PO. Dis Esophagus. 2017 Oct 1;30(10):1-4. doi: 10.1093/dote/dox066.
-{parameter} is associated with {condition}
+###########{{parameter} is associated with {condition}
 
 
-Filtered subgroup
+###########{Filtered subgroup
 
 #Predictive variables
 #Subclassifying algorithms
 
-function(subgroup,parameter OR symptom OR condition,parameter OR symptom OR condition ){
-}
+###########{function(subgroup,parameter OR symptom OR condition,parameter OR symptom OR condition ){
+###########{}
 
 
 
-What {Parameter/condition/symptom} in this subgroup are associated with {Parameter/condition/symptom}?
-
-library(rattle)
-
-
-
-Filtered subgroup:Non cardiac_Chest_pain
-
-Is a associated with b
-eg Specific<-function(Non-subgroup,one Parameter, achalasia){
-
-
-}
-
-Is there a variable in  a subgroup that can predict b
-Multifac<-function(Non-cardiac_Chest_pain,all_device_parameters, achalasia){
-
-
-
-}
-
-Symptom<-as.list(c("Non-cardiac chest pain",
-                   "Heartburn",
-                   "Regurgitation",
-                   "Hoarse voice",
-                   "Dysphagia",
-                   "Cough",
-                   "Globus",
-                   "Throat clearing",
-                   "abdominal pain"))
-
-Parameterz<-as.list(c("DistalLESfromnarescm",
-                     "LESmidpointfromnarescm",
-                     "ProximalLESfromnarescm",
-                     "LESlengthcm",
-                     "EsophageallengthLESUEScenterscm",
-                     "PIPfromnarescm",
-                     "IntraabdominalLESlengthcm",
-                     "Hiatalhernia",
-                     "BasalrespiratoryminmmHg",
-                     "BasalrespiratorymeanmmHg",
-                     "ResidualmeanmmHg",
-                     "UESMeanResidLocationcenterfrnarescm",
-                     "ResidMeanbasalpressuremmHg",
-                     "ResidMeanresidualpressuremmHg",
-                     "Numberofswallowsevaluated",
-                     "DistalcontractileintegralhighestmmHgcms",
-                     "DistalcontractileintegralmeanmmHgcms",
-                     "Contractilefrontvelocitycms",
-                     "IntraboluspressureATLESRmmHg",
-                     "Distallatency",
-                     "failedChicagoClassification",
-                     "panesophagealpressurization",
-                     "largebreaks",
-                     "Simultaneous",
-                     "prematurecontraction",
-                     "rapidcontraction",
-                     "smallbreaks",
-                     "VisitDate",
-                     "DOBAge"))
-
-Condition<-as.list(c("Achalasia type 1",
-                     "Achalasia type 2",
-                     "Achalasia type 3",
-                     "EGOO",
-                     "DES",
-                     "Jackhammer",
-                     "Aperistaltic",
-                     "Frequent failed Peristalsis",
-                     "Ineffective oesophageal motility"))
-
-paste("Investigating the association between ",Condition," and ",Parameterz, "in patients with ",Symptom )
-
-#Patients with condition and a symptom analysis of parameters
-#ie which parameters are significantly elevated in patients with specific symptoms and a specific condition
-
-
-###### Condition description (ie subclassification)
-
-#1. Clinical and manometric characteristics of patients with oesophagogastric outflow obstruction: towards a new classification George Triadafilopoulos, John O Clarke
-
-##### Device vs device
+# What {Parameter/condition/symptom} in this subgroup are associated with {Parameter/condition/symptom}?
+#
+# library(rattle)
 #
 #
-# Both vs future outcomes
-# Both vs future conditions
+#
+# Filtered subgroup:Non cardiac_Chest_pain
+#
+# Is a associated with b
+# eg Specific<-function(Non-subgroup,one Parameter, achalasia){
+#
+#
+# }
+#
+# Is there a variable in  a subgroup that can predict b
+# Multifac<-function(Non-cardiac_Chest_pain,all_device_parameters, achalasia){
+#
+#
+#
+# }
+#
+# Symptom<-as.list(c("Non-cardiac chest pain",
+#                    "Heartburn",
+#                    "Regurgitation",
+#                    "Hoarse voice",
+#                    "Dysphagia",
+#                    "Cough",
+#                    "Globus",
+#                    "Throat clearing",
+#                    "abdominal pain"))
+#
+# Parameterz<-as.list(c("DistalLESfromnarescm",
+#                      "LESmidpointfromnarescm",
+#                      "ProximalLESfromnarescm",
+#                      "LESlengthcm",
+#                      "EsophageallengthLESUEScenterscm",
+#                      "PIPfromnarescm",
+#                      "IntraabdominalLESlengthcm",
+#                      "Hiatalhernia",
+#                      "BasalrespiratoryminmmHg",
+#                      "BasalrespiratorymeanmmHg",
+#                      "ResidualmeanmmHg",
+#                      "UESMeanResidLocationcenterfrnarescm",
+#                      "ResidMeanbasalpressuremmHg",
+#                      "ResidMeanresidualpressuremmHg",
+#                      "Numberofswallowsevaluated",
+#                      "DistalcontractileintegralhighestmmHgcms",
+#                      "DistalcontractileintegralmeanmmHgcms",
+#                      "Contractilefrontvelocitycms",
+#                      "IntraboluspressureATLESRmmHg",
+#                      "Distallatency",
+#                      "failedChicagoClassification",
+#                      "panesophagealpressurization",
+#                      "largebreaks",
+#                      "Simultaneous",
+#                      "prematurecontraction",
+#                      "rapidcontraction",
+#                      "smallbreaks",
+#                      "VisitDate",
+#                      "DOBAge"))
+#
+# Condition<-as.list(c("Achalasia type 1",
+#                      "Achalasia type 2",
+#                      "Achalasia type 3",
+#                      "EGOO",
+#                      "DES",
+#                      "Jackhammer",
+#                      "Aperistaltic",
+#                      "Frequent failed Peristalsis",
+#                      "Ineffective oesophageal motility"))
+#
+# paste("Investigating the association between ",Condition," and ",Parameterz, "in patients with ",Symptom )
+#
+# #Patients with condition and a symptom analysis of parameters
+# #ie which parameters are significantly elevated in patients with specific symptoms and a specific condition
+#
+#
+# ###### Condition description (ie subclassification)
+#
+# #1. Clinical and manometric characteristics of patients with oesophagogastric outflow obstruction: towards a new classification George Triadafilopoulos, John O Clarke
+#
+# ##### Device vs device
+# #
+# #
+# # Both vs future outcomes
+# # Both vs future conditions
 
 
 
