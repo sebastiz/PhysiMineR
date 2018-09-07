@@ -77,7 +77,9 @@ dataImpClean<-function(x,y){
   dataImpWhole$VisitDate<-as.Date(ifelse(is.na(dataImpWhole$VisitDate),as.character(dataImpWhole$MainProcProcedureStart),as.character(dataImpWhole$VisitDate)),format="%Y-%m-%d",origin="30/12/1899")
   dataImpWhole$VisitDate<-as.Date(ifelse(is.na(dataImpWhole$VisitDate),as.character(dataImpWhole$MainPtDataDateofAdmission),as.character(dataImpWhole$VisitDate)),format="%Y-%m-%d",origin="30/12/1899")
 
-
+  dataImpWhole<-as.data.frame(lapply(dataImpWhole, FUN = function(t) gsub("_", ":", t)),stringsAsFactors=FALSE)
+  i1 <- grepl("Duration", names(dataImpWhole))
+  dataImpWhole[i1] <- lapply(dataImpWhole[i1], function(d) ifelse(grepl(":",d),(as.numeric(str_extract(d,"^\\d{2}"))*60)+(as.numeric(str_extract(d,"\\d{2}$"))),d))
   return(dataImpWhole)
 }
 
@@ -91,7 +93,6 @@ dataImpClean<-function(x,y){
 dataImpSympClean<-function(x){
   x<-as.data.frame(lapply(x, FUN = function(t) gsub("pcent", "", t)))
   x<-as.data.frame(lapply(x, FUN = function(t) as.numeric(t)))
-  #Need to convert characters to minutes
   return(x)
 }
 
@@ -104,9 +105,12 @@ dataImpSympClean<-function(x){
 #' @examples #dataImpClean(dataImp2,dataImp_Symp)
 
 dataBRAVOClean<-function(x){
-  x<-as.data.frame(lapply(x, FUN = function(t) gsub("_", "", t)))
-  i1 <- grepl("Duration", names(data))
-  x[i1] <- lapply(x[i1], function(t) as.numeric(as.character(t))/60)
+  x<-as.data.frame(lapply(x, FUN = function(t) gsub("_", ":", t)),stringsAsFactors=FALSE)
+  #This first filteres for all the Duration columns and then looks to see if a ":" is present indicating it is a time.
+  #Then the first half is extracted and interpreted as an hour and multiplies by 60, then added to the second half
+  i1 <- grepl("Duration", names(x))
+  x[i1] <- lapply(x[i1], function(d) ifelse(grepl(":",d),(as.numeric(str_extract(d,"^\\d{2}"))*60)+(as.numeric(str_extract(d,"\\d{2}$"))),d))
+
   return(x)
 }
 

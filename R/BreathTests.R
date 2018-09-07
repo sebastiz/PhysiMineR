@@ -49,5 +49,6 @@ dataFructose<-function(dataBT){
   Fruc$main<-gsub("(\\d+)\\a(\\d+)","\\1,\\2",Fruc$main)
   Fruc$main<-gsub("\\a","",Fruc$main)
   Fruc$main<-strsplit(Fruc$main, ",",perl=T)
+  return(Fruc)
   #From here you can do individual graphs
 }
