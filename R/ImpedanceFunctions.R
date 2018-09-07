@@ -66,23 +66,48 @@ dataImpClean<-function(x,y){
   x<-as.data.frame(lapply(x, FUN = function(t) gsub("%", "", t)))
   x[,c(1:28,37:137)]<-as.data.frame(lapply(x[,c(1:28,37:137)], FUN = function(t) as.numeric(as.character(t))))
   y<-as.data.frame(lapply(y, FUN = function(t) as.numeric(gsub("%", "", t))))
-
-
   y<-as.data.frame(y)
   dataImpWhole<-merge(x,y,by=c("Imp_Id"),all=TRUE)
   dataImpWhole$HospNum_Id<-as.character(dataImpWhole$HospNum_Id)
   dataImpWhole$VisitDate<-as.Date(dataImpWhole$VisitDate,format="%d_%m_%Y",origin="30/12/1899")
   dataImpWhole$MainProcProcedureStart<-ymd_hms(dataImpWhole$MainProcProcedureStart,tz=Sys.timezone())
   dataImpWhole$MainPtDataDateofAdmission<-ymd(dataImpWhole$MainPtDataDateofAdmission,tz=Sys.timezone())
-
   dataImpWhole$MainProcProcedureStart<-as.Date(as.character(dataImpWhole$MainProcProcedureStart),format="%Y-%m-%d",origin="30/12/1899")
   dataImpWhole$MainPtDataDateofAdmission<-as.Date(dataImpWhole$MainPtDataDateofAdmission,format="%Y-%m-%d",origin="30/12/1899")
-
   dataImpWhole$VisitDate<-as.Date(ifelse(is.na(dataImpWhole$VisitDate),as.character(dataImpWhole$MainProcProcedureStart),as.character(dataImpWhole$VisitDate)),format="%Y-%m-%d",origin="30/12/1899")
   dataImpWhole$VisitDate<-as.Date(ifelse(is.na(dataImpWhole$VisitDate),as.character(dataImpWhole$MainPtDataDateofAdmission),as.character(dataImpWhole$VisitDate)),format="%Y-%m-%d",origin="30/12/1899")
 
 
   return(dataImpWhole)
+}
+
+#' dataImpSympClean
+#' This extracts the symptoms from the ImpSymp table
+#' @param x dataframe usually the standard impedance data
+#' @keywords ImpSymp CleanUp
+#' @export
+#' @examples #dataImpSympClean(x)
+
+dataImpSympClean<-function(x){
+  x<-as.data.frame(lapply(x, FUN = function(t) gsub("pcent", "", t)))
+  x<-as.data.frame(lapply(x, FUN = function(t) as.numeric(t)))
+  #Need to convert characters to minutes
+  return(x)
+}
+
+#' dataBRAVOClean
+#' This cleans the BRAVO Data
+#' @param x dataframe usually the standard impedance data
+#' @param y the dataframe usually the symptom data
+#' @keywords HRM CleanUp
+#' @export
+#' @examples #dataImpClean(dataImp2,dataImp_Symp)
+
+dataBRAVOClean<-function(x){
+  x<-as.data.frame(lapply(x, FUN = function(t) gsub("_", "", t)))
+  i1 <- grepl("Duration", names(data))
+  x[i1] <- lapply(x[i1], function(t) as.numeric(as.character(t))/60)
+  return(x)
 }
 
 

@@ -78,7 +78,11 @@ HRMCleanUp1<-function(x){
 
   #Format the columns so they are correct
   #if contains mmHg or cm make sure they are as.numeric(as.character()).
-  data[i1] <- lapply(data[grepl("cm|mmHg", names(data))], function(x) as.numeric(as.character(x)))
+  i1 <- grepl("cm|mmHg", names(data))
+  data[i1] <- lapply(data[i1], as.numeric)
+
+
+  #data[i1] <- lapply(data[grepl("cm|mmHg", names(data))], function(x) as.numeric(as.character(x)))
   data$Hiatalhernia<-as.character((data$Hiatalhernia))
 
   #Convert other columns to numeric
@@ -103,8 +107,8 @@ HRMCleanUp1<-function(x){
 ########################### HRM Symptom Subset Prepare #################################################################################
 
 
-SymptomsExtraction
-
+#'SymptomsExtraction
+#'
 #' SymptomsExtraction
 #' This extracts the symptoms from a pre-specified column into its own column per symptom. Usually these are extracted from the
 #' associated diagnosis table as the HRM main table doesnt keep free text stuff
@@ -115,9 +119,6 @@ SymptomsExtraction
 #' @examples #SymptomsExtraction(data,IndicANDHx)
 
 SymptomsExtraction<-function(x,y){
-
-  #Probably an easier way to do this but for the moment.....
-
   x$Dysphagia<-ifelse(grepl(".*[Dd]ysph.*",x$y,perl=TRUE)|grepl(".*[Oo]dyn.*",x$y,perl=TRUE)|grepl(".*[Ss]tuck.*",x$y,perl=TRUE)|grepl(".*[Ss]tick.*",x$y,perl=TRUE),"Dysphagia","No")
   x$Heartburn<-ifelse(grepl(".*[Hh]eart.*",x$y,perl=TRUE)|grepl(".*[Rr]eflu.*",x$y,perl=TRUE)|grepl(".*[Rr]etro.*",x$y,perl=TRUE)|grepl(".*[Bb]urn.*",x$y,perl=TRUE),"Heartburn","No")
   x$Throat<-ifelse(grepl(".*[Tt]hroat.*",x$y,perl=TRUE)|grepl(".*[Nn]eck.*",x$y,perl=TRUE),"Throat","No")
@@ -318,18 +319,15 @@ title(paste(PlotName," vs Normal"),outer=T, line=-35)
 
 
 
-----------------------------Sandbox------------------------------------------------------
+#----------------------------Sandbox
 
 
   #Define multiple logistic regression and exploratory analysis first
   #see https://rcompanion.org/rcompanion/e_07.html
 
-  library(PerformanceAnalytics)
+#  library(PerformanceAnalytics)
 
-chart.Correlation(Data.num,
-                  method="spearman",
-                  histogram=TRUE,
-                  pch=16)
+#chart.Correlation(Data.num, method="spearman",histogram=TRUE,pch=16)
 
 
 

@@ -2,12 +2,12 @@
 % Please edit documentation in R/ImpedanceFunctions.R
 \name{dataImpSymptoms}
 \alias{dataImpSymptoms}
-\title{A Cat Function}
+\title{Impedance symptom extractor function}
 \usage{
 dataImpSymptoms(x)
 }
 \arguments{
-\item{x}{the impedance dataframe for extraction}
+\item{x}{the impedance dataframe for extraction from RSAP as probably more accurate as patient entered (rather than from summary)}
 }
 \description{
 This extracts the relevant symptoms from the impedance dataset
