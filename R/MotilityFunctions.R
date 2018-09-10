@@ -118,7 +118,7 @@ HRMCleanUp1<-function(x){
 #' @param y the column of interest
 #' @keywords Symptom
 #' @export
-#' @examples #SymptomsExtraction(data,IndicANDHx)
+#' @examples #SymptomsExtraction(x,IndicANDHx)
 
 SymptomsExtraction<-function(x,y){
   x$Dysphagia<-ifelse(grepl(".*[Dd]ysph.*",x$y,perl=TRUE)|grepl(".*[Oo]dyn.*",x$y,perl=TRUE)|grepl(".*[Ss]tuck.*",x$y,perl=TRUE)|grepl(".*[Ss]tick.*",x$y,perl=TRUE),"Dysphagia","No")
@@ -176,6 +176,20 @@ ifelse(data$ResidualmeanmmHg<15&(data$DCI>=5000|data$DCI>=5000)&data$Distallaten
 ifelse(data$ResidualmeanmmHg<=15&data$smallbreaks>=30&data$largebreaks>=20&!is.na(data$ResidualmeanmmHg)&!is.na(data$smallbreaks)&!is.na(data$largebreaks),"WeakPeristalsis",
 ifelse(data$ResidualmeanmmHg<15&data$failedChicagoClassification>=30&data$failedChicagoClassification<=100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"FrequentFailedPeristalsis","Normal")))))))))))))
   return(data)
+}
+
+
+
+#' HRMDiagnoses
+#' This creates diagnoses from the HRM raw data based on the Chicago classification v4 (need to check)
+#' @param x dataframe
+#' @keywords HRM CleanUp
+#' @export
+#' @examples #HRMDiagnoses(x)
+
+HRMDiagnoses<-function(x){
+
+
 }
 
 ##### Merging with another table ####

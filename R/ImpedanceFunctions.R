@@ -26,17 +26,31 @@ dataImp_Symp<-function(channel){
   dataImp_Symp <- sqlQuery( channel , "SELECT Imp_Symp.* FROM Imp_Symp")
 }
 
-#' dataImpWhole
-#' This merges the main impedance and the impedance symptoms data frames together
-#' It relies on the acquisition of the data from the functions dataImp2 and dataImp_Symp
-#' @param dataImp2 the first table from physipop
-#' @param dataImp_Symp the second table from physipop
-#' @keywords ImpWhole CleanUp
+#' dataBRAVOTotal
+#' Extracts from the BRAVOTotal table
+#' This acquires the first two BRAVO days data frmo the upper GI database
+#' @param channel odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)
+#' @keywords BRAVO total Extraction
 #' @export
-#' @examples #dataImp2<-dataImp2(channel)
-#' #dataImp_Symp<-dataImp_Symp(channel)
-#' #dataImpWhole(dataImp2,dataImp_Symp)
+#' #dataBRAVOTotal(channel)
+#'
+#'
+dataBRAVOTotal<-function(channel){
+dataImp2 <- sqlQuery( channel , "SELECT BRAVOTotal.*FROM BRAVOTotal.")
+}
 
+#' dataBRAVO
+#' Extracts from the BRAVO table
+#' This acquires the first two BRAVO days data frmo the upper GI database
+#' @param channel odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)
+#' @keywords BRAVO Extraction
+#' @export
+#' #dataBRAVO(channel)
+#'
+#'
+dataBRAVO<-function(channel){
+  dataImp2 <- sqlQuery( channel , "SELECT BRAVODay1And2.*FROM BRAVODay1And2.")
+}
 
 #' dataImpClean
 #' This extracts the symptoms
@@ -101,10 +115,9 @@ dataImpSympClean<-function(x){
 #' dataBRAVOClean
 #' This cleans the BRAVO Data
 #' @param x dataframe usually the standard impedance data
-#' @param y the dataframe usually the symptom data
-#' @keywords HRM CleanUp
+#' @keywords BRAVO CleanUp
 #' @export
-#' @examples #dataImpClean(dataImp2,dataImp_Symp)
+#' @examples #dataBRAVOClean(x)
 
 dataBRAVOClean<-function(x){
   x<-as.data.frame(lapply(x, FUN = function(t) gsub("_", ":", t)),stringsAsFactors=FALSE)
