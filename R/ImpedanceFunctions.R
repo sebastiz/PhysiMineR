@@ -78,7 +78,8 @@ dataImpClean<-function(x){
   x<-as.data.frame(lapply(x, FUN = function(t) gsub("sec", "", t)),stringsAsFactors=FALSE)
   i2 <- !grepl("MainPt", names(x))
   x[i2] <- lapply(x[i1], as.numeric)
- # x[,c(1:28,37:137)]<-as.data.frame(lapply(x[,c(1:28,37:137)], FUN = function(t) as.numeric(as.character(t))))
+ # x[,c(1:28,37:137)]<-as.data.frame(lapply(x[,c(1:28,37:137)], FUN = function(t) as.numeric(as.character(t))))#
+  x<-data.frame(x)
   return(x)
 }
 
@@ -93,6 +94,7 @@ dataImpSympClean<-function(x){
   x<-as.data.frame(lapply(x, FUN = function(t) gsub("%", "", t)))
   x<-as.data.frame(lapply(x, FUN = function(t) gsub("pcent", "", t)))
   x<-as.data.frame(lapply(x, FUN = function(t) as.numeric(t)))
+  x<-data.frame(x)
   return(x)
 }
 
@@ -111,6 +113,7 @@ dataBRAVOClean<-function(x){
   i1 <- grepl("Duration", names(x))
   x[i1] <- lapply(x[i1], function(d) ifelse(grepl(":",d),(as.numeric(str_extract(d,"^\\d{2}"))*60)+(as.numeric(str_extract(d,"\\d{2}$"))),d))
   x[6:ncol(x)]<-lapply(x[6:ncol(x)], as.numeric)
+  x<-data.frame(x)
   return(x)
 }
 
