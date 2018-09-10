@@ -17,7 +17,7 @@ a standard study design is used, or at least identifying that a study is observa
 design and helps to ensure that articles are correctly indexed in electronic databases (Benson and Hartz, 2000). In STROBE,
 item 1a only requests that a common study design term be used. However, in veterinary research, not all observational studies are
 easily categorized into cohort, case–control, or cross-sectional study designs. Therefore, we recommend including that the study
-was observational and, if possible, the study design or importantdesign characteristics, for example longitudinal, in the title.
+was observational and, if possible, the study design or important design characteristics, for example longitudinal, in the title.
 
 
 ---
@@ -72,15 +72,30 @@ knitr::opts_chunk$set(echo = TRUE)
 
 **$\color{red}{\text{E.Define the Dates}}$.**
 
+Get the dates from the minimum of the VisitDate column `r 1+1 `
+
+
 **$\color{red}{\text{F.Define the Location}}$.**
+Standard sentence here about GSTT
+The results of high resolution studies performed in patients with cough as part of the presenting complaint to the gastroenterology service at Guy's and St Thomas' NHS Trust were examined retrospectively between June 2008 and January 2018. 
 
 **$\color{red}{\text{F.Define the Eligibility}}$.**
+All patients selected were adults over the age of 18. Ethics was approved (IRAS number)and by the local ethics board.
 
 **$\color{red}{\text{F.Define the Exclusion}}$.**
+Patients with incomplete data sets were exluded from the study. Where x was not available fromt the report, the raw file was located and manually analysed
 
 **$\color{red}{\text{G.Define the Sampling}}$.**
 
-**$\color{red}{\text{H.Define the Statistical methods}}$.**
+Patients were selected according to Chicago Classification v3.
+Patients symptoms were selected from self reporting at impedance if this was done at the same time as high resolution manometry
+If this was not the case then the symptoms were extracted either from the final report summarising the patient's condition and physiological diagnosis, or from the clinicians details when ordering the investigation.
+
+**$\color{red}{\text{H.Define the data cleaning methodology methods}}$.**
+
+This involves how the relevant columns were accordionised (eg categorising the patients/and how subgroups were formed).
+
+**$\color{red}{\text{I.Define the Statistical methods}}$.**
 
 **eg** Clinical isolates of MRSP cases (n = 150) and methicillin-susceptible S. pseudintermedius (MSSP) controls (n = 133) and their corresponding host signalment and medical data covering the six months prior to staphylococcal isolation were analysed by multivariable logistic regression.
 
