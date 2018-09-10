@@ -100,6 +100,8 @@ HRMCleanUp1<-function(x){
   data$LowerOesoph<-ifelse(data$BasalrespiratoryminmmHg<4.7&data$Hiatalhernia=="Yes","HypotensiveLOSWithHH",
                            ifelse(data$BasalrespiratoryminmmHg<4.7,"HypotensiveLOS",
                                   ifelse(data$Hiatalhernia=="Yes","HHOnly","Normal")))
+
+  data<-data.frame(data)
   return(data)
 }
 
@@ -180,8 +182,8 @@ ifelse(data$ResidualmeanmmHg<15&data$failedChicagoClassification>=30&data$failed
 
 #' Merge HRM and Impedance
 #' This merges the overall impedance dataset with the HRM dataset
-#' @param dataImpWhole the whole impedance dataset
-#' @param dataHRM the whole HRM dataset
+#' @param x the whole impedance dataset
+#' @param y the whole HRM dataset
 #' @keywords HRMAndSwallows acquisition
 #' @export
 #' @examples
@@ -192,8 +194,8 @@ ifelse(data$ResidualmeanmmHg<15&data$failedChicagoClassification>=30&data$failed
 #' #dataImpWhole<-dataImpWhole(dataImp2,dataImp_Symp)
 #' #MyImpedanceDataWithHRM(dataImpWhole,dataHRM)
 
-MyImpedanceDataWithHRM<-function(dataImpWhole,dataHRM){
-  MyImpedanceDataWithHRM<-merge(dataImpWhole,dataHRM,by=c("HospNum_Id"),all=TRUE)
+MyImpedanceDataWithHRM<-function(x,y){
+  MyImpedanceDataWithHRM<-merge(x,y,by=c("HospNum_Id"),all=TRUE)
   return(MyImpedanceDataWithHRM)
 }
 
@@ -411,57 +413,59 @@ title(paste(PlotName," vs Normal"),outer=T, line=-35)
 #
 # }
 #
-# Symptom<-as.list(c("Non-cardiac chest pain",
-#                    "Heartburn",
-#                    "Regurgitation",
-#                    "Hoarse voice",
-#                    "Dysphagia",
-#                    "Cough",
-#                    "Globus",
-#                    "Throat clearing",
-#                    "abdominal pain"))
-#
-# Parameterz<-as.list(c("DistalLESfromnarescm",
-#                      "LESmidpointfromnarescm",
-#                      "ProximalLESfromnarescm",
-#                      "LESlengthcm",
-#                      "EsophageallengthLESUEScenterscm",
-#                      "PIPfromnarescm",
-#                      "IntraabdominalLESlengthcm",
-#                      "Hiatalhernia",
-#                      "BasalrespiratoryminmmHg",
-#                      "BasalrespiratorymeanmmHg",
-#                      "ResidualmeanmmHg",
-#                      "UESMeanResidLocationcenterfrnarescm",
-#                      "ResidMeanbasalpressuremmHg",
-#                      "ResidMeanresidualpressuremmHg",
-#                      "Numberofswallowsevaluated",
-#                      "DistalcontractileintegralhighestmmHgcms",
-#                      "DistalcontractileintegralmeanmmHgcms",
-#                      "Contractilefrontvelocitycms",
-#                      "IntraboluspressureATLESRmmHg",
-#                      "Distallatency",
-#                      "failedChicagoClassification",
-#                      "panesophagealpressurization",
-#                      "largebreaks",
-#                      "Simultaneous",
-#                      "prematurecontraction",
-#                      "rapidcontraction",
-#                      "smallbreaks",
-#                      "VisitDate",
-#                      "DOBAge"))
-#
-# Condition<-as.list(c("Achalasia type 1",
-#                      "Achalasia type 2",
-#                      "Achalasia type 3",
-#                      "EGOO",
-#                      "DES",
-#                      "Jackhammer",
-#                      "Aperistaltic",
-#                      "Frequent failed Peristalsis",
-#                      "Ineffective oesophageal motility"))
-#
-# paste("Investigating the association between ",Condition," and ",Parameterz, "in patients with ",Symptom )
+Symptom<-as.list(c("Non-cardiac chest pain",
+                   "Heartburn",
+                   "Regurgitation",
+                   "Hoarse voice",
+                   "Dysphagia",
+                   "Cough",
+                   "Globus",
+                   "Throat clearing",
+                   "abdominal pain"))
+
+Parameterz<-as.list(c("DistalLESfromnarescm",
+                     "LESmidpointfromnarescm",
+                     "ProximalLESfromnarescm",
+                     "LESlengthcm",
+                     "EsophageallengthLESUEScenterscm",
+                     "PIPfromnarescm",
+                     "IntraabdominalLESlengthcm",
+                     "Hiatalhernia",
+                     "BasalrespiratoryminmmHg",
+                     "BasalrespiratorymeanmmHg",
+                     "ResidualmeanmmHg",
+                     "UESMeanResidLocationcenterfrnarescm",
+                     "ResidMeanbasalpressuremmHg",
+                     "ResidMeanresidualpressuremmHg",
+                     "Numberofswallowsevaluated",
+                     "DistalcontractileintegralhighestmmHgcms",
+                     "DistalcontractileintegralmeanmmHgcms",
+                     "Contractilefrontvelocitycms",
+                     "IntraboluspressureATLESRmmHg",
+                     "Distallatency",
+                     "failedChicagoClassification",
+                     "panesophagealpressurization",
+                     "largebreaks",
+                     "Simultaneous",
+                     "prematurecontraction",
+                     "rapidcontraction",
+                     "smallbreaks",
+                     "VisitDate",
+                     "DOBAge"))
+
+Condition<-as.list(c("Achalasia type 1",
+                     "Achalasia type 2",
+                     "Achalasia type 3",
+                     "EGOO",
+                     "DES",
+                     "Jackhammer",
+                     "Aperistaltic",
+                     "Frequent failed Peristalsis",
+                     "Ineffective oesophageal motility"))
+
+paste("Investigating the association between ",Condition," and ",Parameterz, "in patients with ",Symptom )
+paste("Investigating the association between ",Symptom," and ",Parameterz, "in patients with ",Condition )
+paste("Investigating the association between ",Symptom," and ",Condition, "in patients with ", Parameterz)
 #
 # #Patients with condition and a symptom analysis of parameters
 # #ie which parameters are significantly elevated in patients with specific symptoms and a specific condition

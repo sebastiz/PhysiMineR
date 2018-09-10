@@ -37,60 +37,60 @@ dataImp_Symp<-function(channel){
 #' #dataImp_Symp<-dataImp_Symp(channel)
 #' #dataImpWhole(dataImp2,dataImp_Symp)
 
-dataImpWhole<-function(dataImp2,dataImp_Symp){
-  dataImpWhole<-dataImpClean(dataImp2,dataImp_Symp)
-}
-
-#' BRAVO
-#' This acquires BRAVO data from the upper GI database
-#' @param channel odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)
-#' @keywords BRAVO CleanUp
-#' @export
-#' @examples #BRAVO(channel)
-
-BRAVO<-function(channel){
-  data <- sqlQuery( channel , "SELECT  BravoDay1And2.* FROM BravoDay1And2")
-  return(data)
-}
-
 
 #' dataImpClean
 #' This extracts the symptoms
 #' @param x dataframe usually the standard impedance data
-#' @param y the dataframe usually the symptom data
+#' @param y the dataframe usually main Impedance table
 #' @keywords HRM CleanUp
 #' @export
-#' @examples #dataImpClean(dataImp2,dataImp_Symp)
+#' @examples #dataImpClean(Impedance2)
 
-dataImpClean<-function(x,y){
+dataImpClean<-function(x){
   x<-as.data.frame(lapply(x, FUN = function(t) gsub("%", "", t)))
-  x[,c(1:28,37:137)]<-as.data.frame(lapply(x[,c(1:28,37:137)], FUN = function(t) as.numeric(as.character(t))))
-  y<-as.data.frame(lapply(y, FUN = function(t) as.numeric(gsub("%", "", t))))
-  y<-as.data.frame(y)
-  dataImpWhole<-merge(x,y,by=c("Imp_Id"),all=TRUE)
-  dataImpWhole$HospNum_Id<-as.character(dataImpWhole$HospNum_Id)
-  dataImpWhole$VisitDate<-as.Date(dataImpWhole$VisitDate,format="%d_%m_%Y",origin="30/12/1899")
-  dataImpWhole$MainProcProcedureStart<-ymd_hms(dataImpWhole$MainProcProcedureStart,tz=Sys.timezone())
-  dataImpWhole$MainPtDataDateofAdmission<-ymd(dataImpWhole$MainPtDataDateofAdmission,tz=Sys.timezone())
-  dataImpWhole$MainProcProcedureStart<-as.Date(as.character(dataImpWhole$MainProcProcedureStart),format="%Y-%m-%d",origin="30/12/1899")
-  dataImpWhole$MainPtDataDateofAdmission<-as.Date(dataImpWhole$MainPtDataDateofAdmission,format="%Y-%m-%d",origin="30/12/1899")
-  dataImpWhole$VisitDate<-as.Date(ifelse(is.na(dataImpWhole$VisitDate),as.character(dataImpWhole$MainProcProcedureStart),as.character(dataImpWhole$VisitDate)),format="%Y-%m-%d",origin="30/12/1899")
-  dataImpWhole$VisitDate<-as.Date(ifelse(is.na(dataImpWhole$VisitDate),as.character(dataImpWhole$MainPtDataDateofAdmission),as.character(dataImpWhole$VisitDate)),format="%Y-%m-%d",origin="30/12/1899")
+ # y<-as.data.frame(lapply(y, FUN = function(t) as.numeric(gsub("%", "", t))))
+  #dataImpWhole<-merge(x,y,by=c("Imp_Id"),all=TRUE)
+  x$HospNum_Id<-as.character(x$HospNum_Id)
+  x$VisitDate<-as.Date(x$VisitDate,format="%d_%m_%Y",origin="30/12/1899")
+  x$MainPtDataPatientID<-as.character( x$MainPtDataPatientID)
+  x$MainProcProcedureStart<-ymd_hms(x$MainProcProcedureStart,tz=Sys.timezone())
+  x$MainPtDataDateofAdmission<-as.character(x$MainPtDataDateofAdmission)
+  x$MainPtDataDateofAdmission<-ymd(x$MainPtDataDateofAdmission,tz=Sys.timezone())
+  x$MainProcProcedureStart<-as.Date(as.character(x$MainProcProcedureStart),format="%Y-%m-%d",origin="30/12/1899")
+  x$MainPtDataDateofAdmission<-as.Date(x$MainPtDataDateofAdmission,format="%Y-%m-%d",origin="30/12/1899")
+  x$VisitDate<-as.Date(ifelse(is.na(x$VisitDate),as.character(x$MainProcProcedureStart),as.character(x$VisitDate)),format="%Y-%m-%d",origin="30/12/1899")
+  x$VisitDate<-as.Date(ifelse(is.na(x$VisitDate),as.character(x$MainPtDataDateofAdmission),as.character(x$VisitDate)),format="%Y-%m-%d",origin="30/12/1899")
 
-  dataImpWhole<-as.data.frame(lapply(dataImpWhole, FUN = function(t) gsub("_", ":", t)),stringsAsFactors=FALSE)
-  i1 <- grepl("Duration", names(dataImpWhole))
-  dataImpWhole[i1] <- lapply(dataImpWhole[i1], function(d) ifelse(grepl(":",d),(as.numeric(str_extract(d,"^\\d{2}"))*60)+(as.numeric(str_extract(d,"\\d{2}$"))),d))
-  return(dataImpWhole)
+  x$MainPtDataPatientName<-as.character(x$MainPtDataPatientName)
+  x$MainPtDataPatientID<-as.character(x$MainPtDataPatientID)
+  x$MainPtDataPhysician<-as.character(x$MainPtDataPhysician)
+  x$MainPtDataPatientSex<-as.character(x$MainPtDataPatientSex)
+
+  x$MainPtDataDateofBirth<-ymd(x$MainPtDataDateofBirth)
+  x$MainPtDataDateofBirth<-as.Date(as.character(x$MainPtDataDateofBirth),format="%Y-%m-%d",origin="30/12/1899")
+
+  x<-as.data.frame(lapply(x, FUN = function(t) gsub("_", ":", t)),stringsAsFactors=FALSE)
+  i1 <- grepl("Duration", names(x))
+  x[i1] <- lapply(x[i1], function(d) ifelse(grepl(":",d),(as.numeric(str_extract(d,"^\\d{2}"))*60)+(as.numeric(str_extract(d,"\\d{2}$"))),d))
+  x<-as.data.frame(lapply(x, FUN = function(t) gsub("%", "", t)),stringsAsFactors=FALSE)
+  x<-as.data.frame(lapply(x, FUN = function(t) gsub("pcent", "", t)),stringsAsFactors=FALSE)
+  x<-as.data.frame(lapply(x, FUN = function(t) gsub("min", "", t)),stringsAsFactors=FALSE)
+  x<-as.data.frame(lapply(x, FUN = function(t) gsub("sec", "", t)),stringsAsFactors=FALSE)
+  i2 <- !grepl("MainPt", names(x))
+  x[i2] <- lapply(x[i1], as.numeric)
+ # x[,c(1:28,37:137)]<-as.data.frame(lapply(x[,c(1:28,37:137)], FUN = function(t) as.numeric(as.character(t))))
+  return(x)
 }
 
 #' dataImpSympClean
-#' This extracts the symptoms from the ImpSymp table
+#' This cleans the data from the ImpSymp table and the main Impedance table
 #' @param x dataframe usually the standard impedance data
 #' @keywords ImpSymp CleanUp
 #' @export
 #' @examples #dataImpSympClean(x)
 
 dataImpSympClean<-function(x){
+  x<-as.data.frame(lapply(x, FUN = function(t) gsub("%", "", t)))
   x<-as.data.frame(lapply(x, FUN = function(t) gsub("pcent", "", t)))
   x<-as.data.frame(lapply(x, FUN = function(t) as.numeric(t)))
   return(x)
@@ -110,7 +110,7 @@ dataBRAVOClean<-function(x){
   #Then the first half is extracted and interpreted as an hour and multiplies by 60, then added to the second half
   i1 <- grepl("Duration", names(x))
   x[i1] <- lapply(x[i1], function(d) ifelse(grepl(":",d),(as.numeric(str_extract(d,"^\\d{2}"))*60)+(as.numeric(str_extract(d,"\\d{2}$"))),d))
-
+  x[6:ncol(x)]<-lapply(x[6:ncol(x)], as.numeric)
   return(x)
 }
 
