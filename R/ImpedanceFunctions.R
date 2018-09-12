@@ -84,6 +84,7 @@ dataImpClean<-function(x){
   #Get the file creation date properly formatted
   x$FileCreationDate<-stringr::str_extract(x$FileCreationDate,"^\\d{4}-\\d{2}-\\d{2}")
   x$FileCreationDate<-as.Date(as.character(x$FileCreationDate),format="%Y-%m-%d",origin="30/12/1899")
+
   x$MainPtDataPatientName<-as.character(x$MainPtDataPatientName)
   x$MainPtDataPatientID<-as.character(x$MainPtDataPatientID)
   x$MainPtDataPhysician<-as.character(x$MainPtDataPhysician)
@@ -135,11 +136,18 @@ dataImpSympClean<-function(x){
 #' @examples #dataBRAVOClean(x)
 
 dataBRAVOClean<-function(x){
-  x<-as.data.frame(lapply(x, FUN = function(t) gsub("_", ":", t)),stringsAsFactors=FALSE)
+  x<-as.data.frame(lapply(x, FUN = function(t) gsub("_", "-", t)),stringsAsFactors=FALSE)
+  #Get visit date formatted correctly
+  x$VisitDate<-as.Date(x$VisitDate,format="%d-%m-%Y",origin="30/12/1899")
+
+  #Get the file creation date properly formatted
+  x$FileCreationDate<-stringr::str_extract(x$FileCreationDate,"^\\d{4}-\\d{2}-\\d{2}")
+  x$FileCreationDate<-as.Date(as.character(x$FileCreationDate),format="%Y-%m-%d",origin="30/12/1899")
+
   #This first filteres for all the Duration columns and then looks to see if a ":" is present indicating it is a time.
   #Then the first half is extracted and interpreted as an hour and multiplies by 60, then added to the second half
   i1 <- grepl("Duration", names(x))
-  x[i1] <- lapply(x[i1], function(d) ifelse(grepl(":",d),(as.numeric(str_extract(d,"^\\d{2}"))*60)+(as.numeric(str_extract(d,"\\d{2}$"))),d))
+  x[i1] <- lapply(x[i1], function(d) ifelse(grepl(":",d),(as.numeric(stringr::str_extract(d,"^\\d{2}"))*60)+(as.numeric(stringr::str_extract(d,"\\d{2}$"))),d))
   x[6:ncol(x)]<-lapply(x[6:ncol(x)], as.numeric)
   x<-data.frame(x)
   return(x)

@@ -149,7 +149,8 @@ HRMAll_Diag4<-HRMDiagnoses(HRMAll_Diag3)
 
 ######################################### Data forking (filtering and subsetting)######################################### 
 
-HRMAll_Diag5AperistalsisAll<-HRMAll_Diag4[grepl("AbsentPeristalsis",HRMAll_Diag4$dx),]
+
+HRMAll_Diag5EGOO<-HRMAll_Diag4[grepl("EGOO",HRMAll_Diag4$dx),]
 
 
 # Symptom subgrouping:

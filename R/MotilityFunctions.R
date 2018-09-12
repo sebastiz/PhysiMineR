@@ -73,45 +73,43 @@ HRMCleanUp1<-function(x){
   #Clean the demographics
   is.date <- function(x) inherits(x, 'Date')
   if(!is.date(x$VisitDate)){
-    data$VisitDate<-as.character(data$VisitDate)
+    x$VisitDate<-as.character(x$VisitDate)
     x$VisitDate<-gsub("(^\\d{2}_\\d{2}_)(\\d{2}$)","\\120\\2",x$VisitDate)
-    data$VisitDate<-as.Date(data$VisitDate,"%d_%m_%Y")
+    x$VisitDate<-as.Date(x$VisitDate,"%d_%m_%Y")
   }
-  data$DOBAge<-as.character(data$DOBAge)
-  #data$DOBAge<-gsub("-","_",data$DOBAge)
- # data$DOBAge<-gsub("(\\d+)_(\\d+)_(\\d{2}$)","\\1_\\2_19\\3",data$DOBAge)
-  data$DOBAge<-as.Date(data$DOBAge,"%Y-%m-%d")
-  data$Age<-data$VisitDate-data$DOBAge
-  data$Age<-difftime(data$VisitDate,data$DOBAge,units="days")/366.25
-  data$Age<-as.numeric(data$Age)
+  x$DOBAge<-as.character(x$DOBAge)
+  x$DOBAge<-as.Date(x$DOBAge,"%Y-%m-%d")
+  x$Age<-x$VisitDate-x$DOBAge
+  x$Age<-difftime(x$VisitDate,x$DOBAge,units="days")/366.25
+  x$Age<-as.numeric(x$Age)
 
   #Format the columns so they are correct
   #if contains mmHg or cm make sure they are as.numeric(as.character()).
-  i1 <- grepl("cm|mmHg", names(data))
-  data[i1] <- lapply(data[i1], as.numeric)
+  i1 <- grepl("cm|mmHg", names(x))
+  x[i1] <- lapply(x[i1], as.numeric)
 
 
-  #data[i1] <- lapply(data[grepl("cm|mmHg", names(data))], function(x) as.numeric(as.character(x)))
-  data$Hiatalhernia<-as.character((data$Hiatalhernia))
+  #x[i1] <- lapply(x[grepl("cm|mmHg", names(x))], function(x) as.numeric(as.character(x)))
+  x$Hiatalhernia<-as.character((x$Hiatalhernia))
 
   #Convert other columns to numeric
-  data$Distallatency<-as.numeric(as.character((data$Distallatency)))
-  data$DCI<-ifelse(!rowSums(is.na(data[c("DistalcontractileintegralhighestmmHgcms", "DistalcontractileintegralmeanmmHgcms")])), data$DistalcontractileintegralhighestmmHgcms, rowSums(data[c("DistalcontractileintegralhighestmmHgcms", "DistalcontractileintegralmeanmmHgcms")], na.rm=TRUE) )
+  x$Distallatency<-as.numeric(as.character((x$Distallatency)))
+  x$DCI<-ifelse(!rowSums(is.na(x[c("DistalcontractileintegralhighestmmHgcms", "DistalcontractileintegralmeanmmHgcms")])), x$DistalcontractileintegralhighestmmHgcms, rowSums(x[c("DistalcontractileintegralhighestmmHgcms", "DistalcontractileintegralmeanmmHgcms")], na.rm=TRUE) )
 
 
   #Sort out the DCI, simultaneous contractions and LOS relaxation
-  data$DistalcontractileintegralhighestmmHgcms[is.na(data$DistalcontractileintegralhighestmmHgcms)]=0
-  data$DistalcontractileintegralmeanmmHgcms[is.na(data$DistalcontractileintegralmeanmmHgcms)]=0
-  data$DistalcontractileintegralhighestmmHgcms<-NULL
-  data$DistalcontractileintegralmeanmmHgcms<-NULL
-  data$Simultaneous[is.na(data$Simultaneous)]=0
-  data$LOS_relax<-ifelse(((data$ResidualmeanmmHg-data$BasalrespiratoryminmmHg/data$BasalrespiratorymeanmmHg)*100)<90,"NonRelaxLOS","NormalRelaxLOS")
-  data$LowerOesoph<-ifelse(data$BasalrespiratoryminmmHg<4.7&data$Hiatalhernia=="Yes","HypotensiveLOSWithHH",
-                           ifelse(data$BasalrespiratoryminmmHg<4.7,"HypotensiveLOS",
-                                  ifelse(data$Hiatalhernia=="Yes","HHOnly","Normal")))
+  x$DistalcontractileintegralhighestmmHgcms[is.na(x$DistalcontractileintegralhighestmmHgcms)]=0
+  x$DistalcontractileintegralmeanmmHgcms[is.na(x$DistalcontractileintegralmeanmmHgcms)]=0
+  x$DistalcontractileintegralhighestmmHgcms<-NULL
+  x$DistalcontractileintegralmeanmmHgcms<-NULL
+  x$Simultaneous[is.na(x$Simultaneous)]=0
+  x$LOS_relax<-ifelse(((x$ResidualmeanmmHg-x$BasalrespiratoryminmmHg/x$BasalrespiratorymeanmmHg)*100)<90,"NonRelaxLOS","NormalRelaxLOS")
+  x$LowerOesoph<-ifelse(x$BasalrespiratoryminmmHg<4.7&x$Hiatalhernia=="Yes","HypotensiveLOSWithHH",
+                           ifelse(x$BasalrespiratoryminmmHg<4.7,"HypotensiveLOS",
+                                  ifelse(x$Hiatalhernia=="Yes","HHOnly","Normal")))
 
-  data<-data.frame(data)
-  return(data)
+  x<-data.frame(x)
+  return(x)
 }
 
 
@@ -130,16 +128,16 @@ HRMCleanUp1<-function(x){
 #' @examples #SymptomsExtraction(x,IndicANDHx)
 
 SymptomsExtraction<-function(x,y){
-  x$Dysphagia<-ifelse(grepl(".*[Dd]ysph.*",x$y,perl=TRUE)|grepl(".*[Oo]dyn.*",x$y,perl=TRUE)|grepl(".*[Ss]tuck.*",x$y,perl=TRUE)|grepl(".*[Ss]tick.*",x$y,perl=TRUE),"Dysphagia","No")
-  x$Heartburn<-ifelse(grepl(".*[Hh]eart.*",x$y,perl=TRUE)|grepl(".*[Rr]eflu.*",x$y,perl=TRUE)|grepl(".*[Rr]etro.*",x$y,perl=TRUE)|grepl(".*[Bb]urn.*",x$y,perl=TRUE),"Heartburn","No")
-  x$Throat<-ifelse(grepl(".*[Tt]hroat.*",x$y,perl=TRUE)|grepl(".*[Nn]eck.*",x$y,perl=TRUE),"Throat","No")
-  x$Cough<-ifelse(grepl(".*[Cc]ough.*",x$y,perl=TRUE)|grepl(".*[Cc]hok.*",x$y,perl=TRUE),"Cough","No")
-  x$ChestPain<-ifelse(grepl(".*[Ch]est.*",x$y,perl=TRUE),"ChestPain","No")
-  x$AbdoPain<-ifelse(grepl(".*[Ss]tomach.*",x$y,perl=TRUE)|grepl(".*[Ee]piga.*",x$y,perl=TRUE)|grepl(".*[Aa]bdom.*",x$y,perl=TRUE),"AbdoPain","No")
-  x$Hoarseness<-ifelse(grepl(".*[Hh]oarse.*",x$y,perl=TRUE),"Hoarseness","No")
-  x$Regurgitation<-ifelse(grepl(".*[Rr]egur.*",x$y,perl=TRUE)|grepl(".*[Tt]aste.*",x$y,perl=TRUE),"Regurgitation","No")
-  x$Vomiting<-ifelse(grepl(".*[Vv]omit.*",x$y,perl=TRUE),"Vomiting","No")
-  x$Belch<-ifelse(grepl(".*[Bb]elch.*",x$y,perl=TRUE)|grepl(".*[Bb]urp.*",x$y,perl=TRUE),"Belch","No")
+  x$Dysphagia<-ifelse(grepl(".*[Dd]ysph.*",x[,y],perl=TRUE)|grepl(".*[Oo]dyn.*",x[,y],perl=TRUE)|grepl(".*[Ss]tuck.*",x[,y],perl=TRUE)|grepl(".*[Ss]tick.*",x[,y],perl=TRUE),"Dysphagia","No")
+  x$Heartburn<-ifelse(grepl(".*[Hh]eart.*",x[,y],perl=TRUE)|grepl(".*[Rr]eflu.*",x[,y],perl=TRUE)|grepl(".*[Rr]etro.*",x[,y],perl=TRUE)|grepl(".*[Bb]urn.*",x[,y],perl=TRUE),"Heartburn","No")
+  x$Throat<-ifelse(grepl(".*[Tt]hroat.*",x[,y],perl=TRUE)|grepl(".*[Nn]eck.*",x[,y],perl=TRUE),"Throat","No")
+  x$Cough<-ifelse(grepl(".*[Cc]ough.*",x[,y],perl=TRUE)|grepl(".*[Cc]hok.*",x[,y],perl=TRUE),"Cough","No")
+  x$ChestPain<-ifelse(grepl(".*[Ch]est.*",x[,y],perl=TRUE),"ChestPain","No")
+  x$AbdoPain<-ifelse(grepl(".*[Ss]tomach.*",x[,y],perl=TRUE)|grepl(".*[Ee]piga.*",x[,y],perl=TRUE)|grepl(".*[Aa]bdom.*",x[,y],perl=TRUE),"AbdoPain","No")
+  x$Hoarseness<-ifelse(grepl(".*[Hh]oarse.*",x[,y],perl=TRUE),"Hoarseness","No")
+  x$Regurgitation<-ifelse(grepl(".*[Rr]egur.*",x[,y],perl=TRUE)|grepl(".*[Tt]aste.*",x[,y],perl=TRUE),"Regurgitation","No")
+  x$Vomiting<-ifelse(grepl(".*[Vv]omit.*",x[,y],perl=TRUE),"Vomiting","No")
+  x$Belch<-ifelse(grepl(".*[Bb]elch.*",x[,y],perl=TRUE)|grepl(".*[Bb]urp.*",x[,y],perl=TRUE),"Belch","No")
 
   x$AllSymptoms<-paste(x$Dysphagia,",",x$Heartburn,",",x$Throat,",",x$Cough,",",x$ChestPain,",",x$AbdoPain,",",x$Hoarseness,",",x$Regurgitation,",",x$Vomiting,",",x$Belch,",")
   x$AllSymptoms<-gsub("NO,","",x$AllSymptoms)
@@ -165,41 +163,34 @@ SymptomsExtraction<-function(x,y){
 #' HRMDiagnoses
 #' This creates diagnoses from the HRM raw data based on the Chicago classification v4 (need to check)
 #' @param x dataframe
-#' @keywords HRM CleanUp
+#' @keywords HRM diagnoses
 #' @export
 #' @examples #HRMDiagnoses(x)
 
 HRMDiagnoses<-function(x){
-  data$dx<-ifelse(data$ResidualmeanmmHg>15&data$failedChicagoClassification==100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"AchalasiaType1",
-ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$prematurecontraction>=20,"AchalasiaType2",
-ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$panesophagealpressurization>=20,"AchalasiaType3",
-ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg)&data$failedChicagoClassification>0,"EGOO",
-ifelse(data$ResidualmeanmmHg<15&data$ResidualmeanmmHg>10&!is.na(data$ResidualmeanmmHg)&data$failedChicagoClassification==100&!is.na(data$failedChicagoClassification),"PossibleAchalasia",
-ifelse(data$ResidualmeanmmHg>=15&!is.na(data$ResidualmeanmmHg),"AchalasiaType2or3orEGOO",
-
-ifelse(data$ResidualmeanmmHg<=15&data$failedChicagoClassification==100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"AbsentPeristalsis",
-ifelse(data$ResidualmeanmmHg<=15&(data$prematurecontraction>=20|data$Simultaneous>=20|data$Distallatency<4.5)&data$DCI>=450&!is.na(data$ResidualmeanmmHg)&(!is.na(data$prematurecontraction)&!is.na(data$Simultaneous))&!is.na(data$DCI),"DES",
-ifelse(data$ResidualmeanmmHg<=15&(data$DCI>=8000)|(data$DCI>=8000|data$DCI>=8000)&!is.na(data$ResidualmeanmmHg)&!is.na(data$DCI),"JackHammer",
-ifelse(data$ResidualmeanmmHg<15&data$Contractilefrontvelocitycms>9&data$Distallatency>=4.5&!is.na(data$ResidualmeanmmHg)&!is.na(data$Contractilefrontvelocitycms)&!is.na(data$Distallatency),"RapidContraction",
-ifelse(data$ResidualmeanmmHg<15&(data$DCI>=5000|data$DCI>=5000)&data$Distallatency>=4.5&!is.na(data$ResidualmeanmmHg)&!is.na(data$Distallatency)&!is.na(data$DCI),"HypertensivePeristalsis",
-ifelse(data$ResidualmeanmmHg<=15&data$smallbreaks>=30&data$largebreaks>=20&!is.na(data$ResidualmeanmmHg)&!is.na(data$smallbreaks)&!is.na(data$largebreaks),"WeakPeristalsis",
-ifelse(data$ResidualmeanmmHg<15&data$failedChicagoClassification>=30&data$failedChicagoClassification<=100&!is.na(data$ResidualmeanmmHg)&!is.na(data$failedChicagoClassification),"FrequentFailedPeristalsis","Normal")))))))))))))
-  return(data)
+  x$dx<-ifelse(x$ResidualmeanmmHg>15&x$failedChicagoClassification==100&!is.na(x$ResidualmeanmmHg)&!is.na(x$failedChicagoClassification),"AchalasiaType1",
+ifelse(x$ResidualmeanmmHg>=15&!is.na(x$ResidualmeanmmHg)&x$prematurecontraction>=20,"AchalasiaType2",
+ifelse(x$ResidualmeanmmHg>=15&!is.na(x$ResidualmeanmmHg)&x$panesophagealpressurization>=20,"AchalasiaType3",
+ifelse(x$ResidualmeanmmHg>=15&!is.na(x$ResidualmeanmmHg)&x$failedChicagoClassification>0,"EGOO",
+ifelse(x$ResidualmeanmmHg<15&x$ResidualmeanmmHg>10&!is.na(x$ResidualmeanmmHg)&x$failedChicagoClassification==100&!is.na(x$failedChicagoClassification),"PossibleAchalasia",
+ifelse(x$ResidualmeanmmHg>=15&!is.na(x$ResidualmeanmmHg),"AchalasiaType2or3orEGOO",
+ifelse(x$ResidualmeanmmHg<=15&x$failedChicagoClassification==100&!is.na(x$ResidualmeanmmHg)&!is.na(x$failedChicagoClassification),"AbsentPeristalsis",
+ifelse(x$ResidualmeanmmHg<=15&(x$prematurecontraction>=20|x$Simultaneous>=20|x$Distallatency<4.5)&x$DCI>=450&!is.na(x$ResidualmeanmmHg)&(!is.na(x$prematurecontraction)&!is.na(x$Simultaneous))&!is.na(x$DCI),"DES",
+ifelse(x$ResidualmeanmmHg<=15&(x$DCI>=8000)|(x$DCI>=8000|x$DCI>=8000)&!is.na(x$ResidualmeanmmHg)&!is.na(x$DCI),"JackHammer",
+       ifelse(x$ResidualmeanmmHg<=15&xfailedChicagoClassification<100&xfailedChicagoClassification>50&!is.na(x$ResidualmeanmmHg)&!is.na(x$DCI),"IOM",
+#ifelse(x$ResidualmeanmmHg<15&x$Contractilefrontvelocitycms>9&x$Distallatency>=4.5&!is.na(x$ResidualmeanmmHg)&!is.na(x$Contractilefrontvelocitycms)&!is.na(x$Distallatency),"RapidContraction",
+#ifelse(x$ResidualmeanmmHg<15&(x$DCI>=5000|x$DCI>=5000)&x$Distallatency>=4.5&!is.na(x$ResidualmeanmmHg)&!is.na(x$Distallatency)&!is.na(x$DCI),"HypertensivePeristalsis",
+#ifelse(x$ResidualmeanmmHg<=15&x$smallbreaks>=30&x$largebreaks>=20&!is.na(x$ResidualmeanmmHg)&!is.na(x$smallbreaks)&!is.na(x$largebreaks),"WeakPeristalsis",
+ifelse(x$ResidualmeanmmHg<15&largebreaks>=50&!is.na(x$ResidualmeanmmHg)&!is.na(x$failedChicagoClassification),"FrequentFailedPeristalsis","Normal")))))))))))
+  return(x)
 }
 
 
-
-#' HRMDiagnoses
-#' This creates diagnoses from the HRM raw data based on the Chicago classification v4 (need to check)
-#' @param x dataframe
-#' @keywords HRM CleanUp
-#' @export
-#' @examples #HRMDiagnoses(x)
-
-HRMDiagnoses<-function(x){
+#Note Ineffective esophageal motility is diagnosed when >50% of swallows is ineffective, that is either failed (DCI <100mmHg cm s) or weak (DCI 100–450 mmHg cm s).
+#Fragmented peristalsis is defined as >50% of swallows with a large break (>5 cm) and not matching criteria for ineffective esophageal motility
 
 
-}
+
 
 ##### Merging with another table ####
 

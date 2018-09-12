@@ -149,8 +149,12 @@ HRMAll_Diag4<-HRMDiagnoses(HRMAll_Diag3)
 
 ######################################### Data forking (filtering and subsetting)######################################### 
 
-HRMAll_Diag5AperistalsisAll<-HRMAll_Diag4[grepl("AbsentPeristalsis",HRMAll_Diag4$dx),]
-
+HRMAll_Diag5AchalasiaAll<-HRMAll_Diag4[grepl("Achalasia",HRMAll_Diag4$dx),]
+HRMAll_Diag5AchalasiaType1<-HRMAll_Diag4[grepl("AchalasiaType1",HRMAll_Diag4$dx),]
+HRMAll_Diag5AchalasiaType2<-HRMAll_Diag4[grepl("AchalasiaType2",HRMAll_Diag4$dx),]
+HRMAll_Diag5AchalasiaType3<-HRMAll_Diag4[grepl("AchalasiaType3",HRMAll_Diag4$dx),]
+HRMAll_Diag5EGOO<-HRMAll_Diag4[grepl("EGOO",HRMAll_Diag4$dx),]
+HRMAll_Diag5PossibleAchalasia<-HRMAll_Diag4[grepl("PossibleAchalasia",HRMAll_Diag4$dx),]
 
 # Symptom subgrouping:
 # For HRM subgroup
