@@ -13,7 +13,8 @@
 #' @examples #dataHRM(channel)
 
 dataHRM<-function(channel){
-  data <- sqlQuery(channel , "SELECT  HRMImportMain.* FROM HRMImportMain")
+  data <- sqlQuery(channel , "SELECT PatientData.*, HRMImportMain.*
+    FROM PatientData INNER JOIN HRMImportMain ON PatientData.HospNum_Id = HRMImportMain.HospNum_Id")
   return(data)
 }
 
@@ -62,16 +63,24 @@ HRMAndDiag<-function(channel){
 
 HRMCleanUp1<-function(x){
 
+
+  try(x$Gender.1<-gsub("(Male|Female).*","\\1",x$Gender.1))
+  try(x$Gender<-gsub("(Male|Female).*","\\1",x$Gender))
+
+
+
+
   #Clean the demographics
   is.date <- function(x) inherits(x, 'Date')
   if(!is.date(x$VisitDate)){
     data$VisitDate<-as.character(data$VisitDate)
+    x$VisitDate<-gsub("(^\\d{2}_\\d{2}_)(\\d{2}$)","\\120\\2",x$VisitDate)
     data$VisitDate<-as.Date(data$VisitDate,"%d_%m_%Y")
   }
   data$DOBAge<-as.character(data$DOBAge)
-  data$DOBAge<-gsub("-","_",data$DOBAge)
-  data$DOBAge<-gsub("(\\d+)_(\\d+)_(\\d{2}$)","\\1_\\2_19\\3",data$DOBAge)
-  data$DOBAge<-as.Date(data$DOBAge,"%Y_%m_%d")
+  #data$DOBAge<-gsub("-","_",data$DOBAge)
+ # data$DOBAge<-gsub("(\\d+)_(\\d+)_(\\d{2}$)","\\1_\\2_19\\3",data$DOBAge)
+  data$DOBAge<-as.Date(data$DOBAge,"%Y-%m-%d")
   data$Age<-data$VisitDate-data$DOBAge
   data$Age<-difftime(data$VisitDate,data$DOBAge,units="days")/366.25
   data$Age<-as.numeric(data$Age)

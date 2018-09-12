@@ -1,31 +1,10 @@
-
-## Title and abstract
-
-**$\color{red}{\text{A.Indicate the study’s design with a commonly used term in the title or the abstract}}$.**
-
-**Example 1**
-
-Title: ‘An observational study with long-term follow-up of canine cognitive dysfunction: Clinical characteristics, survival
-and risk factors’ (Fast et al., 2013).
-
-Example 2
-Title: ‘Case-control study of risk factors associated with Brucella melitensis on goat farms in Peninsular Malaysia’ (Bamaiyi et al., 2014).
-
-**Explanation **
-Including the study design term in the title or abstract when
-a standard study design is used, or at least identifying that a study is observational, allows the reader to easily identify the
-design and helps to ensure that articles are correctly indexed in electronic databases (Benson and Hartz, 2000). In STROBE,
-item 1a only requests that a common study design term be used. However, in veterinary research, not all observational studies are
-easily categorized into cohort, case–control, or cross-sectional study designs. Therefore, we recommend including that the study
-was observational and, if possible, the study design or important design characteristics, for example longitudinal, in the title.
-
-
 ---
-title: "Template for STROBE presentation at conference abstracts"
-author: "Sebastian Zeki"
+title: "Patients with chronic cough are unlikely to have any motility abnormalities on HRM"
+author: "Zeki SS"
 date: "04/09/2018"
 output: html_document
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -34,36 +13,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Introduction
 
 
-**$\color{red}{\text{B.Introductory sentence 1: Define the disease condition}}$.**
+The investigation of chronic cough poses a significant investigation and healthcare burden in terms of both time and finances. It is estimated that the investigation of chronic cough takes five times longer than that of GERD. In addition, the approach to diagnosis is often based on a rule-out algorithm which is inherently more costly. Omitting low-yield investigations may be beneficial for the patient. The aim of the study is to assess which motility abnormalities are found in patients whose predominant symptom is chronic cough without evidence of dysphagia, regurgitation, heartburn or epigastric pain
 
-**eg** Aperistaltic oesophagus is a term that covers all conditions where achalasia is absent and there is no peristaltic activity
-
-**eg** Methicillin-resistant Staphylococcus pseudintermedius (MRSP) has emerged as a highly drug-resistant small animalveterinary pathogen.
-
-**$\color{red}{\text{C.Introductory sentence 2: The overview of the disease condition}}$.**
-
-**eg** Aperistaltic oesophagus remains a difficult condition to treat with no specific and effective treatments
-
-**$\color{red}{\text{D.Introductory sentence 3: The problem being addressed}}$.**
-
-**eg** The number of non-achalasia aperistaltic oesophagus patients is unknown.
-
-**eg** Although often isolated from outpatients in veterinary clinics, there is concern that MRSP follows a veterinary-hospital associated epidemiology
-
-
-```{r Introduction}
-
-```
-
-## Aim
-
-
-**eg** The aim of the study was to assess the number of patients with aperistaltic oesophagus without achalasia and ascertain their demographics
-
-**eg** his study’s objective was to identify risk factors for MRSP infections in dogs and cats.
-
-```{r Aim}
-```
 
 
 
@@ -71,31 +22,22 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 **$\color{red}{\text{E.Define the Dates}}$.**
-
 Get the dates from the minimum of the VisitDate column `r 1+1 `
-
 
 **$\color{red}{\text{F.Define the Location}}$.**
 Standard sentence here about GSTT
 The results of high resolution studies performed in patients with cough as part of the presenting complaint to the gastroenterology service at Guy's and St Thomas' NHS Trust were examined retrospectively between June 2008 and January 2018. 
 
 **$\color{red}{\text{F.Define the Eligibility}}$.**
-All patients selected were adults over the age of 18. Ethics was approved (IRAS number)and by the local ethics board.
+
 
 **$\color{red}{\text{F.Define the Exclusion}}$.**
-Patients with incomplete data sets were exluded from the study. Where x was not available fromt the report, the raw file was located and manually analysed
 
 **$\color{red}{\text{G.Define the Sampling}}$.**
+Define the inclusion set for the subgroup and the exclusion criteria.
 
-Patients were selected according to Chicago Classification v3.
-Patients symptoms were selected from self reporting at impedance if this was done at the same time as high resolution manometry
-If this was not the case then the symptoms were extracted either from the final report summarising the patient's condition and physiological diagnosis, or from the clinicians details when ordering the investigation.
-
-**$\color{red}{\text{H.Define the data cleaning methodology methods}}$.**
-
-This involves how the relevant columns were accordionised (eg categorising the patients/and how subgroups were formed).
-
-**$\color{red}{\text{I.Define the Statistical methods}}$.**
+**$\color{red}{\text{H.Define the Statistical methods}}$.**
+The difficult part...
 
 **eg** Clinical isolates of MRSP cases (n = 150) and methicillin-susceptible S. pseudintermedius (MSSP) controls (n = 133) and their corresponding host signalment and medical data covering the six months prior to staphylococcal isolation were analysed by multivariable logistic regression.
 
@@ -104,63 +46,21 @@ The identity of all MRSP isolates was confirmed through demonstration of S. inte
 ```{r Methods}
 ######################################### Data acquisiton######################################### 
 
-#library(RODBC)
-#channel <- odbcConnectAccess("S:\\Gastroenterology\\Seb\\JavaPortableLauncher\\PhysiPopDONOTTOUCH\\Physiology6.mdb")
-#dataHRM(channel)
-# OR
-# HRMAndSwallows(channel)
-# OR
-# HRMAndDiag(channel)
-# 
-# dataImp2(x)
-# OR
-# dataImp_Symp(channel)
-# 
-# dataBRAVOTotal(channel)
-# OR
-# dataBRAVO(channel)
-
-
+######################################### Data merging######################################### 
 
 ######################################### Data cleaning######################################### 
 #Date cleaning
-# HRMCleanUp1(x)
-# 
-# 
-# dataImpClean(Impedance2)
-# dataImpSympClean(ImpSymp)
-# 
-# dataBRAVOClean
-
-
-
-
 ######################################### Data accordionisation######################################### 
-# SymptomsExtraction(HRMdataset,IndicANDHx)
-# AND
-# HRMDiagnoses(HRMdataset)
-# 
-# AcidSubtypes(Impedance)
-# SupragastricBelching(Impedance)
-# HypersensitiveOesophagus(Impedance)
-# FunctionalHeartburn(Impedance)
-######################################### Data merging######################################### 
-#MyImpedanceDataWithHRM(ImpedanceDataSet,dataHRM)
 
 ######################################### Data forking (filtering and subsetting)######################################### 
-# Symptom subgrouping:
-# For HRM subgroup
-# For impedance subgroup
-  
-  
+
 
 ```
 
 ## Results
 
 **$\color{red}{\text{I.Describe demographics}}$.**
-The mean age was 57.3 ± 17 years, and 62.3% of the subjects were male. 
-The age-adjusted incidence rates were 13.8 (non-lobar) and 4.9 (lobar) per 100,000 person-years.
+
 **$\color{red}{\text{J.Then describe level one results}}$.**
 
 **$\color{red}{\text{K.Then describe subset results}}$.**

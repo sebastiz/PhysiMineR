@@ -12,7 +12,8 @@
 
 
 dataImp2<-function(channel){
-  dataImp2 <- sqlQuery( channel , "SELECT Impedance2.*FROM Impedance2")
+  dataImp2 <- sqlQuery( channel , "SELECT Impedance2.*, PatientData.*
+FROM PatientData INNER JOIN Impedance2 ON PatientData.HospNum_Id = Impedance2.HospNum_Id")
 }
 
 #' dataImp_Symp
@@ -23,7 +24,8 @@ dataImp2<-function(channel){
 #' @examples #dataImp_Symp(channel)
 
 dataImp_Symp<-function(channel){
-  dataImp_Symp <- sqlQuery( channel , "SELECT Imp_Symp.* FROM Imp_Symp")
+  dataImp_Symp <- sqlQuery( channel , "SELECT Impedance2.*, Imp_Symp.*, PatientData.*
+FROM PatientData INNER JOIN (Impedance2 INNER JOIN Imp_Symp ON Impedance2.Imp_Id = Imp_Symp.Imp_Id) ON PatientData.HospNum_Id = Impedance2.HospNum_Id")
 }
 
 #' dataBRAVOTotal
@@ -33,10 +35,10 @@ dataImp_Symp<-function(channel){
 #' @keywords BRAVO total Extraction
 #' @export
 #' #dataBRAVOTotal(channel)
-#'
-#'
+
+
 dataBRAVOTotal<-function(channel){
-dataImp2 <- sqlQuery( channel , "SELECT BRAVOTotal.*FROM BRAVOTotal.")
+dataBRAVOTotal <- sqlQuery( channel , "SELECT BravoDay1And2.*, PatientData.* FROM PatientData INNER JOIN BravoDay1And2 ON PatientData.HospNum_Id = BravoDay1And2.HospNum_Id")
 }
 
 #' dataBRAVO
@@ -49,7 +51,7 @@ dataImp2 <- sqlQuery( channel , "SELECT BRAVOTotal.*FROM BRAVOTotal.")
 #'
 #'
 dataBRAVO<-function(channel){
-  dataImp2 <- sqlQuery( channel , "SELECT BRAVODay1And2.*FROM BRAVODay1And2.")
+  dataBravoDay1And2 <- sqlQuery( channel , "SELECT BRAVODay1And2.*FROM BRAVODay1And2.")
 }
 
 #' dataImpClean
@@ -61,38 +63,51 @@ dataBRAVO<-function(channel){
 #' @examples #dataImpClean(Impedance2)
 
 dataImpClean<-function(x){
+
+  #Find and replace the common things
   x<-as.data.frame(lapply(x, FUN = function(t) gsub("%", "", t)))
- # y<-as.data.frame(lapply(y, FUN = function(t) as.numeric(gsub("%", "", t))))
-  #dataImpWhole<-merge(x,y,by=c("Imp_Id"),all=TRUE)
   x$HospNum_Id<-as.character(x$HospNum_Id)
-  x$VisitDate<-as.Date(x$VisitDate,format="%d_%m_%Y",origin="30/12/1899")
+
+  #Get the dates sorted
   x$MainPtDataPatientID<-as.character( x$MainPtDataPatientID)
-  x$MainProcProcedureStart<-ymd_hms(x$MainProcProcedureStart,tz=Sys.timezone())
+  x$MainProcProcedureStart<-lubridate::ymd_hms(x$MainProcProcedureStart,tz=Sys.timezone())
   x$MainPtDataDateofAdmission<-as.character(x$MainPtDataDateofAdmission)
-  x$MainPtDataDateofAdmission<-ymd(x$MainPtDataDateofAdmission,tz=Sys.timezone())
+  x$MainPtDataDateofAdmission<-lubridate::ymd(x$MainPtDataDateofAdmission,tz=Sys.timezone())
   x$MainProcProcedureStart<-as.Date(as.character(x$MainProcProcedureStart),format="%Y-%m-%d",origin="30/12/1899")
   x$MainPtDataDateofAdmission<-as.Date(x$MainPtDataDateofAdmission,format="%Y-%m-%d",origin="30/12/1899")
+
+  #Get visit date formatted correctly
+  x$VisitDate<-as.Date(x$VisitDate,format="%d_%m_%Y",origin="30/12/1899")
   x$VisitDate<-as.Date(ifelse(is.na(x$VisitDate),as.character(x$MainProcProcedureStart),as.character(x$VisitDate)),format="%Y-%m-%d",origin="30/12/1899")
   x$VisitDate<-as.Date(ifelse(is.na(x$VisitDate),as.character(x$MainPtDataDateofAdmission),as.character(x$VisitDate)),format="%Y-%m-%d",origin="30/12/1899")
 
+  #Get the file creation date properly formatted
+  x$FileCreationDate<-stringr::str_extract(x$FileCreationDate,"^\\d{4}-\\d{2}-\\d{2}")
+  x$FileCreationDate<-as.Date(as.character(x$FileCreationDate),format="%Y-%m-%d",origin="30/12/1899")
   x$MainPtDataPatientName<-as.character(x$MainPtDataPatientName)
   x$MainPtDataPatientID<-as.character(x$MainPtDataPatientID)
   x$MainPtDataPhysician<-as.character(x$MainPtDataPhysician)
   x$MainPtDataPatientSex<-as.character(x$MainPtDataPatientSex)
 
-  x$MainPtDataDateofBirth<-ymd(x$MainPtDataDateofBirth)
+  #Get the date of birth properly formatted
+  x$MainPtDataDateofBirth<-lubridate::ymd(x$MainPtDataDateofBirth)
   x$MainPtDataDateofBirth<-as.Date(as.character(x$MainPtDataDateofBirth),format="%Y-%m-%d",origin="30/12/1899")
 
   x<-as.data.frame(lapply(x, FUN = function(t) gsub("_", ":", t)),stringsAsFactors=FALSE)
+
+  #Make sure the numbers are extracted as numeric from the duration columns
   i1 <- grepl("Duration", names(x))
-  x[i1] <- lapply(x[i1], function(d) ifelse(grepl(":",d),(as.numeric(str_extract(d,"^\\d{2}"))*60)+(as.numeric(str_extract(d,"\\d{2}$"))),d))
+  x[i1] <- lapply(x[i1], function(d) ifelse(grepl(":",d),(as.numeric(stringr::str_extract(d,"^\\d{2}"))*60)+(as.numeric(stringr::str_extract(d,"\\d{2}$"))),d))
   x<-as.data.frame(lapply(x, FUN = function(t) gsub("%", "", t)),stringsAsFactors=FALSE)
   x<-as.data.frame(lapply(x, FUN = function(t) gsub("pcent", "", t)),stringsAsFactors=FALSE)
   x<-as.data.frame(lapply(x, FUN = function(t) gsub("min", "", t)),stringsAsFactors=FALSE)
   x<-as.data.frame(lapply(x, FUN = function(t) gsub("sec", "", t)),stringsAsFactors=FALSE)
+
+  #Make sure the numbers are extracted as numeric from the MainPt columns
   i2 <- !grepl("MainPt", names(x))
   x[i2] <- lapply(x[i1], as.numeric)
- # x[,c(1:28,37:137)]<-as.data.frame(lapply(x[,c(1:28,37:137)], FUN = function(t) as.numeric(as.character(t))))#
+
+  #Return as a dataframe instead of a tibble
   x<-data.frame(x)
   return(x)
 }
