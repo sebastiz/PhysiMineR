@@ -5,19 +5,19 @@
 \title{dataImpClean
 This extracts the symptoms}
 \usage{
-dataImpClean(x, y)
+dataImpClean(x)
 }
 \arguments{
 \item{x}{dataframe usually the standard impedance data}
 
-\item{y}{the dataframe usually the symptom data}
+\item{y}{the dataframe usually main Impedance table}
 }
 \description{
 dataImpClean
 This extracts the symptoms
 }
 \examples{
-#dataImpClean(dataImp2,dataImp_Symp)
+#dataImpClean(Impedance2)
 }
 \keyword{CleanUp}
 \keyword{HRM}

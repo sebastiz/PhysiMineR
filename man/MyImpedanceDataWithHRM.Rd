@@ -5,12 +5,12 @@
 \title{Merge HRM and Impedance
 This merges the overall impedance dataset with the HRM dataset}
 \usage{
-MyImpedanceDataWithHRM(dataImpWhole, dataHRM)
+MyImpedanceDataWithHRM(x, y)
 }
 \arguments{
-\item{dataImpWhole}{the whole impedance dataset}
+\item{x}{the whole impedance dataset}
 
-\item{dataHRM}{the whole HRM dataset}
+\item{y}{the whole HRM dataset}
 }
 \description{
 Merge HRM and Impedance

@@ -18,6 +18,7 @@
 
 #Achalasia
 # Question: Achalasia - HRM vs outcomes. HRM vs endoscopy findings.
+# Question: Achalasia - Radiology vs achalasia parameters- extract radiological terms to see how it correlates with HRM parameters if possible ?radiological subtyping of achalasia
 # Question: Proportion of normal IRP achalasia by looking at relaxation OR relaxation cut off for achalasia as a separate metric.
 # Question: Does myotomy worsen peristalsis- have a look at any patients with pre and post myotomy HRM.
 # Question: Is there any difference in parameters between normal IRP achalasia and classic achalasia?

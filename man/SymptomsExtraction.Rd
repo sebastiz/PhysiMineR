@@ -17,6 +17,6 @@ This extracts the symptoms from a pre-specified column into its own column per s
 associated diagnosis table as the HRM main table doesnt keep free text stuff
 }
 \examples{
-#SymptomsExtraction(data,IndicANDHx)
+#SymptomsExtraction(x,IndicANDHx)
 }
 \keyword{Symptom}
