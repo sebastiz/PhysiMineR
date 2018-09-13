@@ -145,6 +145,10 @@ SymptomsExtraction<-function(x,y){
   x$AllSymptoms<-gsub("NO","",x$AllSymptoms,ignore.case=T)
   x$AllSymptoms<-gsub("NO","",x$AllSymptoms,ignore.case=T)
 
+  x$AllSymptoms<-gsub(" ","",x$AllSymptoms,ignore.case=T)
+  x$AllSymptoms<-gsub(",{2,}",",",x$AllSymptoms,ignore.case=T)
+  x$AllSymptoms<-gsub("^,","",x$AllSymptoms,ignore.case=T)
+  x$AllSymptoms<-gsub(",$","",x$AllSymptoms,ignore.case=T)
   x$Dysphagia<-NULL
   x$Heartburn<-NULL
   x$Throat<-NULL

@@ -136,23 +136,47 @@ The identity of all MRSP isolates was confirmed through demonstration of S. inte
 
 
 ######################################### Data accordionisation######################################### 
-# SymptomsExtraction(HRMdataset,IndicANDHx)
+# SymptomsExtraction(HRMdataset,"IndicANDHx")
 # AND
 # HRMDiagnoses(HRMdataset)
-# 
+
+
+# ImpSymp<-dataImpSymptoms(ImpSymp) 
 # AcidSubtypes(Impedance)
 # SupragastricBelching(Impedance)
 # HypersensitiveOesophagus(Impedance)
 # FunctionalHeartburn(Impedance)
+
 ######################################### Data merging######################################### 
-#MyImpedanceDataWithHRM(ImpedanceDataSet,dataHRM)
+#Impedance3<-merge(Impedance2,ImpSymp,by="Imp_Id")
+#MyImpedanceDataWithHRM(Impedance3,dataHRM)
+
+
+
+########Variable selection ie what hypothesis are you actually testing here?
 
 ######################################### Data forking (filtering and subsetting)######################################### 
-# Symptom subgrouping:
-# For HRM subgroup
-# For impedance subgroup
-  
-  
+
+##By CONDITION
+
+# HRMAll_Diag5AchalasiaAll<-HRMAll_Diag4[grepl("Achalasia",HRMAll_Diag4$dx),]
+# HRMAll_Diag5AchalasiaType1<-HRMAll_Diag4[grepl("AchalasiaType1",HRMAll_Diag4$dx),]
+# HRMAll_Diag5AchalasiaType2<-HRMAll_Diag4[grepl("AchalasiaType2",HRMAll_Diag4$dx),]
+# HRMAll_Diag5AchalasiaType3<-HRMAll_Diag4[grepl("AchalasiaType3",HRMAll_Diag4$dx),]
+# HRMAll_Diag5EGOO<-HRMAll_Diag4[grepl("EGOO",HRMAll_Diag4$dx),]
+# HRMAll_Diag5PossibleAchalasia<-HRMAll_Diag4[grepl("PossibleAchalasia",HRMAll_Diag4$dx),]
+# HRMAll_Diag5AperistalsisAll<-HRMAll_Diag4[grepl("AbsentPeristalsis",HRMAll_Diag4$dx),]
+# HRMAll_Diag5DES<-HRMAll_Diag4[grepl("DES",HRMAll_Diag4$dx),]
+# HRMAll_Diag5EGOO<-HRMAll_Diag4[grepl("EGOO",HRMAll_Diag4$dx),]
+# HRMAll_Diag5FFP<-HRMAll_Diag4[grepl("FrequentFailedPeristalsis",HRMAll_Diag4$dx),]
+# HRMAll_Diag5AchalasiaAll<-HRMAll_Diag4[grepl("JackHammer",HRMAll_Diag4$dx),]
+# 
+# Impedance_Acid<-Impedance4[grepl("Acid",Impedance4$TypeOfAcid),]
+
+##By SYMPTOM:
+# Impedance_Heartburn<-Impedance3[grepl("Heartburn",Impedance3$AllImpSymptom),] #Heartburn,StomachPain,Chest,Regurgitation,Vomiting,Nausea,Cough,Belch,Throat
+# HRMAll_Heartburn<-HRMAll_Diag2[grepl("Heartburn",HRMAll_Diag2$AllSymptoms),] #Heartburn,StomachPain,Chest,Regurgitation,Vomiting,Nausea,Cough,Belch,Throat,Dysphagia
+
 
 ```
 
@@ -175,7 +199,7 @@ CI 0.03–0.34, P < 0.001).
 ```{r Results}
 ######################################### Data analysis######################################### 
 
-#Exploratory data analysis- use Data Explorer package
+#Exploratory data analysis- use Data Explorer package or GGally package
 ######Univariate analysis....
 #Show all the missing data in each column
 #plot_missing(dataset)
@@ -203,9 +227,16 @@ CI 0.03–0.34, P < 0.001).
 #numSummary(Impedance3)
 #or 
 #summary(Impedance3)
+#or
+#use rattle()
 
 #### Get some bivariate analyses in there (for numerical variables)
 #pairs(Impedance3[18:25])
+
+
+#or just use rattle and go through all the tabs
+
+#To get the the contribution of each variable in logistic regression you need to get the odds ratio
 
 ######################################### Code overview (with CodeDepends)######################################### 
 #library(codeDepends)

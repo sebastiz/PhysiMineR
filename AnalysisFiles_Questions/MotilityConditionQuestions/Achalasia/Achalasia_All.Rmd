@@ -156,6 +156,8 @@ HRMAll_Diag5AchalasiaType3<-HRMAll_Diag4[grepl("AchalasiaType3",HRMAll_Diag4$dx)
 HRMAll_Diag5EGOO<-HRMAll_Diag4[grepl("EGOO",HRMAll_Diag4$dx),]
 HRMAll_Diag5PossibleAchalasia<-HRMAll_Diag4[grepl("PossibleAchalasia",HRMAll_Diag4$dx),]
 
+########Variable selection ie what hypothesis are you actually testing here?
+
 # Symptom subgrouping:
 # For HRM subgroup
 # For impedance subgroup

@@ -182,9 +182,10 @@ dataImpSymptoms<-function(x){
   x$AllImpSymptom<-paste(x$Heartburn,x$Cough,x$StomachPain,
                               x$Nausea,x$Vomiting
                               ,x$Regurgitation,x$Throat,x$Belch,x$Chest,sep=",")
-  x$AllImpSymptom<-gsub("NO,","",x$AllImpSymptom)
-  x$AllImpSymptom<-gsub(",NO","",x$AllImpSymptom)
-  x$AllImpSymptom<-gsub("NO","",x$AllImpSymptom)
+  x$AllImpSymptom<-gsub("NO,","",x$AllImpSymptom,ignore.case=T)
+  x$AllImpSymptom<-gsub(",NO","",x$AllImpSymptom,ignore.case=T)
+  x$AllImpSymptom<-gsub("NO","",x$AllImpSymptom,ignore.case=T)
+  x$AllImpSymptom<-gsub("NO","",x$AllImpSymptom,ignore.case=T)
   x<-x[,colSums(is.na(x))<nrow(x)-5]
 #TODO: Need to change the symptom extraction so that all the symptoms for each episode are recorded in one box
   dataImpWholeSymptomsPlotter<-x[nchar(x$AllImpSymptom)>0,]
