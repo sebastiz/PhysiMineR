@@ -2,29 +2,20 @@
 % Please edit documentation in R/MotilityFunctions.R
 \name{HRMDiagnoses}
 \alias{HRMDiagnoses}
-\alias{HRMDiagnoses}
 \title{HRMDiagnoses
 This creates diagnoses from the HRM raw data based on the Chicago classification v4 (need to check)}
 \usage{
 HRMDiagnoses(x)
-
-HRMDiagnoses(x)
 }
 \arguments{
-\item{x}{dataframe}
-
 \item{x}{dataframe}
 }
 \description{
 HRMDiagnoses
 This creates diagnoses from the HRM raw data based on the Chicago classification v4 (need to check)
-
-HRMDiagnoses
-This creates diagnoses from the HRM raw data based on the Chicago classification v4 (need to check)
 }
 \examples{
 #HRMDiagnoses(x)
-#HRMDiagnoses(x)
 }
-\keyword{CleanUp}
 \keyword{HRM}
+\keyword{diagnoses}

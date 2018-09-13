@@ -16,6 +16,9 @@ dataBRAVOTotal
 Extracts from the BRAVOTotal table
 This acquires the first two BRAVO days data frmo the upper GI database
 }
+\examples{
+#dataBRAVOTotal(channel)
+}
 \keyword{BRAVO}
 \keyword{Extraction}
 \keyword{total}

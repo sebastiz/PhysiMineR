@@ -34,7 +34,7 @@ FROM PatientData INNER JOIN (Impedance2 INNER JOIN Imp_Symp ON Impedance2.Imp_Id
 #' @param channel odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)
 #' @keywords BRAVO total Extraction
 #' @export
-#' #dataBRAVOTotal(channel)
+#' @examples #dataBRAVOTotal(channel)
 
 
 dataBRAVOTotal<-function(channel){
@@ -47,7 +47,7 @@ dataBRAVOTotal <- sqlQuery( channel , "SELECT BravoDay1And2.*, PatientData.* FRO
 #' @param channel odbcConnectAccess connection defined at the start of this file from RODBC function (for windows)
 #' @keywords BRAVO Extraction
 #' @export
-#' #dataBRAVO(channel)
+#' @examples #dataBRAVO(channel)
 #'
 #'
 dataBRAVO<-function(channel){
@@ -215,31 +215,31 @@ dataImpSymptoms<-function(x){
 
 AcidSubtypes<-function(x){
   #Calculate the composite score here:
-  dataImpWhole$AcidRefluxScore<-dataImpWhole$MainAcidCompositeScorePatientScoreUprightTimeInReflux+
-    dataImpWhole$MainAcidCompositeScorePatientScoreRecumbentTimeInReflux+
-    dataImpWhole$MainAcidCompositeScorePatientScoreTotalTimeInReflux+
-    dataImpWhole$MainAcidCompositeScorePatientScoreEpisodesOver5min+
-    dataImpWhole$MainAcidCompositeScorePatientScoreLongestEpisode+
-    dataImpWhole$MainAcidCompositeScorePatientScoreTotalEpisodes
+  x$AcidRefluxScore<-x$MainAcidCompositeScorePatientScoreUprightTimeInReflux+
+    x$MainAcidCompositeScorePatientScoreRecumbentTimeInReflux+
+    x$MainAcidCompositeScorePatientScoreTotalTimeInReflux+
+    x$MainAcidCompositeScorePatientScoreEpisodesOver5min+
+    x$MainAcidCompositeScorePatientScoreLongestEpisode+
+    x$MainAcidCompositeScorePatientScoreTotalEpisodes
 
 
   #Need to classify whether the patient is predom acid vs non-acid reflux/recumbent vs upright reflux
   #Redo this one as it should be if any SAP >50% for Non-Acid reflux
 
-  dataImpWhole$TypeOfAcid<-ifelse(dataImpWhole$AcidRefluxScore>14.7& rowSums(dataImpWhole[grepl("RSAPNonacid",names(dataImpWhole))]>=50,na.rm=T)>0,"Mixed",
-                                  ifelse(dataImpWhole$AcidRefluxScore>14.7,"Acid",
-                                         ifelse(rowSums(dataImpWhole[grepl("RSAPNonacid",names(dataImpWhole))]>=50,na.rm=T)>0,"NonAcid","Normal")))
+  x$TypeOfAcid<-ifelse(x$AcidRefluxScore>14.7& rowSums(x[grepl("RSAPNonacid",names(x))]>=50,na.rm=T)>0,"Mixed",
+                                  ifelse(x$AcidRefluxScore>14.7,"Acid",
+                                         ifelse(rowSums(x[grepl("RSAPNonacid",names(x))]>=50,na.rm=T)>0,"NonAcid","Normal")))
 
 
   #Predom recumbent vs upright acid here
 
-  dataImpWhole$PositionOfAcid<-ifelse(dataImpWhole$MainAcidCompositeScorePatientScoreUprightTimeInReflux>8.4&dataImpWhole$MainAcidCompositeScorePatientScoreRecumbentTimeInReflux>3.5,"Upright&RecumbentAcid",
-                                      ifelse(dataImpWhole$MainAcidCompositeScorePatientScoreUprightTimeInReflux>8.4&dataImpWhole$MainAcidCompositeScorePatientScoreRecumbentTimeInReflux<3.5,"UprightAcid",
-                                             ifelse(dataImpWhole$MainAcidCompositeScorePatientScoreRecumbentTimeInReflux>3.5,"RecumbentAcid","NoPosition")))
+  x$PositionOfAcid<-ifelse(x$MainAcidCompositeScorePatientScoreUprightTimeInReflux>8.4&x$MainAcidCompositeScorePatientScoreRecumbentTimeInReflux>3.5,"Upright&RecumbentAcid",
+                                      ifelse(x$MainAcidCompositeScorePatientScoreUprightTimeInReflux>8.4&x$MainAcidCompositeScorePatientScoreRecumbentTimeInReflux<3.5,"UprightAcid",
+                                             ifelse(x$MainAcidCompositeScorePatientScoreRecumbentTimeInReflux>3.5,"RecumbentAcid","NoPosition")))
   #Predom recumbent vs upright NonAcid here
-  dataImpWhole$PositionOfNonAcid<-ifelse(dataImpWhole$MainRflxEpisodeUprightNonacid/dataImpWhole$MainRflxEpisodeUprightAllReflux>0.5&dataImpWhole$MainRflxEpisodeRecumbentNonacid/dataImpWhole$MainRflxEpisodeRecumbentAllReflux>0.5,"MixedNonAcid",
-                                         ifelse(dataImpWhole$MainRflxEpisodeUprightNonacid/dataImpWhole$MainRflxEpisodeUprightAllReflux>0.5,"UprightNonAcid",
-                                                ifelse(dataImpWhole$MainRflxEpisodeRecumbentNonacid/dataImpWhole$MainRflxEpisodeRecumbentAllReflux>0.5,"RecumbentNonAcid","Normal_NoNonAcid")))
+  x$PositionOfNonAcid<-ifelse(x$MainRflxEpisodeUprightNonacid/x$MainRflxEpisodeUprightAllReflux>0.5&x$MainRflxEpisodeRecumbentNonacid/x$MainRflxEpisodeRecumbentAllReflux>0.5,"MixedNonAcid",
+                                         ifelse(x$MainRflxEpisodeUprightNonacid/x$MainRflxEpisodeUprightAllReflux>0.5,"UprightNonAcid",
+                                                ifelse(x$MainRflxEpisodeRecumbentNonacid/x$MainRflxEpisodeRecumbentAllReflux>0.5,"RecumbentNonAcid","Normal_NoNonAcid")))
 
 
   #Postprandial reflux to be done

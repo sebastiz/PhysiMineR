@@ -150,7 +150,7 @@ Impedance4<-AcidSubtypes(Impedance3)
 # FunctionalHeartburn(Impedance)
 ######################################### Data merging######################################### 
 
-MyImpedanceDataMerged-merge(Impedance4,ImpSymp2,by=c("HospNum_Id"),all=TRUE)
+MyImpedanceDataMerged<-merge(Impedance3,ImpSymp2,by=c("HospNum_Id"),all=TRUE)
 #MyImpedanceDataWithHRM(ImpedanceDataSet,dataHRM)
 
 ######################################### Data forking (filtering and subsetting)######################################### 

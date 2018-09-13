@@ -140,9 +140,10 @@ SymptomsExtraction<-function(x,y){
   x$Belch<-ifelse(grepl(".*[Bb]elch.*",x[,y],perl=TRUE)|grepl(".*[Bb]urp.*",x[,y],perl=TRUE),"Belch","No")
 
   x$AllSymptoms<-paste(x$Dysphagia,",",x$Heartburn,",",x$Throat,",",x$Cough,",",x$ChestPain,",",x$AbdoPain,",",x$Hoarseness,",",x$Regurgitation,",",x$Vomiting,",",x$Belch,",")
-  x$AllSymptoms<-gsub("NO,","",x$AllSymptoms)
-  x$AllSymptoms<-gsub(",NO","",x$AllSymptoms)
-  x$AllSymptoms<-gsub("NO","",x$AllSymptoms)
+  x$AllSymptoms<-gsub("NO,","",x$AllSymptoms,ignore.case=T)
+  x$AllSymptoms<-gsub(",NO","",x$AllSymptoms,ignore.case=T)
+  x$AllSymptoms<-gsub("NO","",x$AllSymptoms,ignore.case=T)
+  x$AllSymptoms<-gsub("NO","",x$AllSymptoms,ignore.case=T)
 
   x$Dysphagia<-NULL
   x$Heartburn<-NULL
@@ -177,11 +178,11 @@ ifelse(x$ResidualmeanmmHg>=15&!is.na(x$ResidualmeanmmHg),"AchalasiaType2or3orEGO
 ifelse(x$ResidualmeanmmHg<=15&x$failedChicagoClassification==100&!is.na(x$ResidualmeanmmHg)&!is.na(x$failedChicagoClassification),"AbsentPeristalsis",
 ifelse(x$ResidualmeanmmHg<=15&(x$prematurecontraction>=20|x$Simultaneous>=20|x$Distallatency<4.5)&x$DCI>=450&!is.na(x$ResidualmeanmmHg)&(!is.na(x$prematurecontraction)&!is.na(x$Simultaneous))&!is.na(x$DCI),"DES",
 ifelse(x$ResidualmeanmmHg<=15&(x$DCI>=8000)|(x$DCI>=8000|x$DCI>=8000)&!is.na(x$ResidualmeanmmHg)&!is.na(x$DCI),"JackHammer",
-       ifelse(x$ResidualmeanmmHg<=15&xfailedChicagoClassification<100&xfailedChicagoClassification>50&!is.na(x$ResidualmeanmmHg)&!is.na(x$DCI),"IOM",
+       ifelse(x$ResidualmeanmmHg<=15&x$failedChicagoClassification<100&x$failedChicagoClassification>50&!is.na(x$ResidualmeanmmHg)&!is.na(x$DCI),"IOM",
 #ifelse(x$ResidualmeanmmHg<15&x$Contractilefrontvelocitycms>9&x$Distallatency>=4.5&!is.na(x$ResidualmeanmmHg)&!is.na(x$Contractilefrontvelocitycms)&!is.na(x$Distallatency),"RapidContraction",
 #ifelse(x$ResidualmeanmmHg<15&(x$DCI>=5000|x$DCI>=5000)&x$Distallatency>=4.5&!is.na(x$ResidualmeanmmHg)&!is.na(x$Distallatency)&!is.na(x$DCI),"HypertensivePeristalsis",
 #ifelse(x$ResidualmeanmmHg<=15&x$smallbreaks>=30&x$largebreaks>=20&!is.na(x$ResidualmeanmmHg)&!is.na(x$smallbreaks)&!is.na(x$largebreaks),"WeakPeristalsis",
-ifelse(x$ResidualmeanmmHg<15&largebreaks>=50&!is.na(x$ResidualmeanmmHg)&!is.na(x$failedChicagoClassification),"FrequentFailedPeristalsis","Normal")))))))))))
+ifelse(x$ResidualmeanmmHg<15&x$largebreaks>=50&!is.na(x$ResidualmeanmmHg)&!is.na(x$failedChicagoClassification),"FrequentFailedPeristalsis","Normal")))))))))))
   return(x)
 }
 
@@ -343,7 +344,7 @@ title(paste(PlotName," vs Normal"),outer=T, line=-35)
 
 #  library(PerformanceAnalytics)
 
-#chart.Correlation(Data.num, method="spearman",histogram=TRUE,pch=16)
+#chart.Correlation(HRMAll_Diag4[13:19], method="spearman",histogram=TRUE,pch=16)
 
 
 

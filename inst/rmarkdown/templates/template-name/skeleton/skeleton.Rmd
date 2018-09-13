@@ -175,6 +175,38 @@ CI 0.03–0.34, P < 0.001).
 ```{r Results}
 ######################################### Data analysis######################################### 
 
+#Exploratory data analysis- use Data Explorer package
+######Univariate analysis....
+#Show all the missing data in each column
+#plot_missing(dataset)
+#Plot the continuous variables to see how they are distributed as a bar plot
+#plot_histogram(dataset)
+#Plot the continuous variables to see how they are distributed as a density plot
+#plot_density(dataset)
+
+#Plot categorical variables to see how they are distributed
+#plot_bar(dataset)
+
+#This is even better 
+#library(PerformanceAnalytics)
+#chart.Correlation(HRMAll_Diag4[13:19], method="spearman",histogram=TRUE,pch=16)
+
+######Multivariate analyses
+#plot_correlation(dataset)
+
+
+######Get the whole thing:
+#create_report(dataset)
+
+####Get descriptive stats on all the columns:
+#library(xda)
+#numSummary(Impedance3)
+#or 
+#summary(Impedance3)
+
+#### Get some bivariate analyses in there (for numerical variables)
+#pairs(Impedance3[18:25])
+
 ######################################### Code overview (with CodeDepends)######################################### 
 #library(codeDepends)
 #sc = readScript("S:\\Gastroenterology\\Seb\\R\\Scripts\\Eosinophilics\\Eosinophilix.R")
