@@ -1,6 +1,36 @@
 
 ## Title and abstract
 
+**Study Design**
+
+Remember to use **PICO**
+
+**1.Patient population**
+
+**2.Intervention**
+
+**3.Comparison**
+
+**4.Outcome**
+
+in these areas:
+
+**Therapy** in patients with z condition, is x therapy better than y therapy at reducing mortlity 
+In adult intravenous drug users with endocarditis	Are oral antibiotics	As effective in treating infection and reducing complications or mortality	As intravenous antibiotics?
+
+**Prevention** in patients with z condition,does a parameter lower the risk of mortality compared with b parameter
+In hypertensive adult women who have type 2 diabetes without diabetic complications	Does a target diastolic blood pressure (DBP) of 80 mm hg	Lower risk of stroke, MI, or cardiovascular death	Compared with a target DBP of 90 mm hg?
+
+**Diagnosis** in patients with a condition does a test have a better sensitivity and specificity than b test
+In older patients with suspected cognitive impairment	Does a brief screening tool for dementia	Have sensitivity, specificity and predictive values	Similar to those of the standard screening tool, the MMSE?
+
+**Prognosis** in patients with a condition what is the risk of death at one year
+eg. In middle-aged patients who present with transient loss of consciousness	Within the year after presentation	What is the relative risk of morbidity (such as seizures or strokes) or death?	 
+
+**Etiology** or Harm Do patients with a condition have higher mortality than patients without a condition
+eg. Do adults	Who binge drink	Have higher mortality rates	Than those who do not binge drink?
+
+
 **$\color{red}{\text{A.Indicate the study’s design with a commonly used term in the title or the abstract}}$.**
 
 **Example 1**
@@ -74,7 +104,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Get the dates from the minimum of the VisitDate column `r 1+1 `
 
-
 **$\color{red}{\text{F.Define the Location}}$.**
 Standard sentence here about GSTT
 The results of high resolution studies performed in patients with cough as part of the presenting complaint to the gastroenterology service at Guy's and St Thomas' NHS Trust were examined retrospectively between June 2008 and January 2018. 
@@ -95,11 +124,7 @@ If this was not the case then the symptoms were extracted either from the final 
 
 This involves how the relevant columns were accordionised (eg categorising the patients/and how subgroups were formed).
 
-**$\color{red}{\text{I.Define the Statistical methods}}$.**
 
-**eg** Clinical isolates of MRSP cases (n = 150) and methicillin-susceptible S. pseudintermedius (MSSP) controls (n = 133) and their corresponding host signalment and medical data covering the six months prior to staphylococcal isolation were analysed by multivariable logistic regression.
-
-The identity of all MRSP isolates was confirmed through demonstration of S. intermedius-group specific nuc and mecA.
 
 ```{r Methods}
 ######################################### Data acquisiton######################################### 
@@ -182,6 +207,13 @@ The identity of all MRSP isolates was confirmed through demonstration of S. inte
 
 ## Results
 
+
+**$\color{red}{\text{I.Define the Statistical methods}}$.**
+
+**eg** Clinical isolates of MRSP cases (n = 150) and methicillin-susceptible S. pseudintermedius (MSSP) controls (n = 133) and their corresponding host signalment and medical data covering the six months prior to staphylococcal isolation were analysed by multivariable logistic regression.
+
+The identity of all MRSP isolates was confirmed through demonstration of S. intermedius-group specific nuc and mecA.
+
 **$\color{red}{\text{I.Describe demographics}}$.**
 The mean age was 57.3 ± 17 years, and 62.3% of the subjects were male. 
 The age-adjusted incidence rates were 13.8 (non-lobar) and 4.9 (lobar) per 100,000 person-years.
@@ -195,6 +227,10 @@ OR 7.3, 95% CI 1.0–52.6, P = 0.049) and those that had received topical ear me
 14.9, P = 0.003) or glucocorticoids (OR 22.5, 95% CI 7.0–72.6, P < 0.001) were at higher risk of MRSP infection,
 whereas S. pseudintermedius isolates from ears were more likely to belong to the MSSP group (OR 0.09, 95%
 CI 0.03–0.34, P < 0.001).
+
+**Choose your statistical analysis**
+
+# <img src="img/StatisticalChoices.png" align="right" />
 
 ```{r Results}
 ######################################### Data analysis######################################### 
@@ -347,8 +383,6 @@ the abstract, for example only statistically significant results or the outcome 
 
 
  http://dx.doi.org/10.1136/ard.2009.117762
-
-
 
 
  Most studies investigating the association between psoriasis and cardiovascular disease

@@ -128,6 +128,18 @@ $(document).ready(function () {
 
 <div id="title-and-abstract" class="section level2">
 <h2>Title and abstract</h2>
+<p><strong>Study Design</strong></p>
+<p>Remember to use <strong>PICO</strong></p>
+<p><strong>1.Patient population</strong></p>
+<p><strong>2.Intervention</strong></p>
+<p><strong>3.Comparison</strong></p>
+<p><strong>4.Outcome</strong></p>
+<p>in these areas:</p>
+<p><strong>Therapy</strong> in patients with z condition, is x therapy better than y therapy at reducing mortlity In adult intravenous drug users with endocarditis Are oral antibiotics As effective in treating infection and reducing complications or mortality As intravenous antibiotics?</p>
+<p><strong>Prevention</strong> in patients with z condition,does a parameter lower the risk of mortality compared with b parameter In hypertensive adult women who have type 2 diabetes without diabetic complications Does a target diastolic blood pressure (DBP) of 80 mm hg Lower risk of stroke, MI, or cardiovascular death Compared with a target DBP of 90 mm hg?</p>
+<p><strong>Diagnosis</strong> in patients with a condition does a test have a better sensitivity and specificity than b test In older patients with suspected cognitive impairment Does a brief screening tool for dementia Have sensitivity, specificity and predictive values Similar to those of the standard screening tool, the MMSE?</p>
+<p><strong>Prognosis</strong> in patients with a condition what is the risk of death at one year eg. In middle-aged patients who present with transient loss of consciousness Within the year after presentation What is the relative risk of morbidity (such as seizures or strokes) or death?</p>
+<p><strong>Etiology</strong> or Harm Do patients with a condition have higher mortality than patients without a condition eg. Do adults Who binge drink Have higher mortality rates Than those who do not binge drink?</p>
 <p><strong><span class="math inline">\(\color{red}{\text{A.Indicate the study’s design with a commonly used term in the title or the abstract}}\)</span>.</strong></p>
 <p><strong>Example 1</strong></p>
 <p>Title: ‘An observational study with long-term follow-up of canine cognitive dysfunction: Clinical characteristics, survival and risk factors’ (Fast et al., 2013).</p>
@@ -166,21 +178,124 @@ $(document).ready(function () {
 <p>The identity of all MRSP isolates was confirmed through demonstration of S. intermedius-group specific nuc and mecA.</p>
 <pre class="r"><code>######################################### Data acquisiton######################################### 
 
-######################################### Data merging######################################### 
+#library(RODBC)
+#channel &lt;- odbcConnectAccess(&quot;S:\\Gastroenterology\\Seb\\JavaPortableLauncher\\PhysiPopDONOTTOUCH\\Physiology6.mdb&quot;)
+#dataHRM(channel)
+# OR
+# HRMAndSwallows(channel)
+# OR
+# HRMAndDiag(channel)
+# 
+# dataImp2(x)
+# OR
+# dataImp_Symp(channel)
+# 
+# dataBRAVOTotal(channel)
+# OR
+# dataBRAVO(channel)
+
+
 
 ######################################### Data cleaning######################################### 
 #Date cleaning
-######################################### Data accordionisation######################################### 
+# HRMCleanUp1(x)
+# 
+# 
+# dataImpClean(Impedance2)
+# dataImpSympClean(ImpSymp)
+# 
+# dataBRAVOClean
 
-######################################### Data forking (filtering and subsetting)######################################### </code></pre>
+
+
+
+######################################### Data accordionisation######################################### 
+# SymptomsExtraction(HRMdataset,&quot;IndicANDHx&quot;)
+# AND
+# HRMDiagnoses(HRMdataset)
+
+
+# ImpSymp&lt;-dataImpSymptoms(ImpSymp) 
+# AcidSubtypes(Impedance)
+# SupragastricBelching(Impedance)
+# HypersensitiveOesophagus(Impedance)
+# FunctionalHeartburn(Impedance)
+
+######################################### Data merging######################################### 
+#Impedance3&lt;-merge(Impedance2,ImpSymp,by=&quot;Imp_Id&quot;)
+#MyImpedanceDataWithHRM(Impedance3,dataHRM)
+
+
+
+########Variable selection ie what hypothesis are you actually testing here?
+
+######################################### Data forking (filtering and subsetting)######################################### 
+
+##By CONDITION
+
+# HRMAll_Diag5AchalasiaAll&lt;-HRMAll_Diag4[grepl(&quot;Achalasia&quot;,HRMAll_Diag4$dx),]
+# HRMAll_Diag5AchalasiaType1&lt;-HRMAll_Diag4[grepl(&quot;AchalasiaType1&quot;,HRMAll_Diag4$dx),]
+# HRMAll_Diag5AchalasiaType2&lt;-HRMAll_Diag4[grepl(&quot;AchalasiaType2&quot;,HRMAll_Diag4$dx),]
+# HRMAll_Diag5AchalasiaType3&lt;-HRMAll_Diag4[grepl(&quot;AchalasiaType3&quot;,HRMAll_Diag4$dx),]
+# HRMAll_Diag5EGOO&lt;-HRMAll_Diag4[grepl(&quot;EGOO&quot;,HRMAll_Diag4$dx),]
+# HRMAll_Diag5PossibleAchalasia&lt;-HRMAll_Diag4[grepl(&quot;PossibleAchalasia&quot;,HRMAll_Diag4$dx),]
+# HRMAll_Diag5AperistalsisAll&lt;-HRMAll_Diag4[grepl(&quot;AbsentPeristalsis&quot;,HRMAll_Diag4$dx),]
+# HRMAll_Diag5DES&lt;-HRMAll_Diag4[grepl(&quot;DES&quot;,HRMAll_Diag4$dx),]
+# HRMAll_Diag5EGOO&lt;-HRMAll_Diag4[grepl(&quot;EGOO&quot;,HRMAll_Diag4$dx),]
+# HRMAll_Diag5FFP&lt;-HRMAll_Diag4[grepl(&quot;FrequentFailedPeristalsis&quot;,HRMAll_Diag4$dx),]
+# HRMAll_Diag5AchalasiaAll&lt;-HRMAll_Diag4[grepl(&quot;JackHammer&quot;,HRMAll_Diag4$dx),]
+# 
+# Impedance_Acid&lt;-Impedance4[grepl(&quot;Acid&quot;,Impedance4$TypeOfAcid),]
+
+##By SYMPTOM:
+# Impedance_Heartburn&lt;-Impedance3[grepl(&quot;Heartburn&quot;,Impedance3$AllImpSymptom),] #Heartburn,StomachPain,Chest,Regurgitation,Vomiting,Nausea,Cough,Belch,Throat
+# HRMAll_Heartburn&lt;-HRMAll_Diag2[grepl(&quot;Heartburn&quot;,HRMAll_Diag2$AllSymptoms),] #Heartburn,StomachPain,Chest,Regurgitation,Vomiting,Nausea,Cough,Belch,Throat,Dysphagia</code></pre>
 </div>
 <div id="results" class="section level2">
 <h2>Results</h2>
-<p><strong><span class="math inline">\(\color{red}{\text{I.Describe demographics}}\)</span>.</strong></p>
-<p><strong><span class="math inline">\(\color{red}{\text{J.Then describe level one results}}\)</span>.</strong></p>
+<p><strong><span class="math inline">\(\color{red}{\text{I.Describe demographics}}\)</span>.</strong> The mean age was 57.3 ± 17 years, and 62.3% of the subjects were male. The age-adjusted incidence rates were 13.8 (non-lobar) and 4.9 (lobar) per 100,000 person-years. <strong><span class="math inline">\(\color{red}{\text{J.Then describe level one results}}\)</span>.</strong></p>
 <p><strong><span class="math inline">\(\color{red}{\text{K.Then describe subset results}}\)</span>.</strong></p>
 <p><strong>eg</strong> In the final model, cats (compared to dogs, OR 18.5, 95% CI 1.8–188.0, P = 0.01), animals that had been hospitalised (OR 104.4, 95% CI 21.3–511.6, P &lt; 0.001), or visited veterinary clinics more frequently (&gt;10 visits OR 7.3, 95% CI 1.0–52.6, P = 0.049) and those that had received topical ear medication (OR 5.1, 95% CI 1.8– 14.9, P = 0.003) or glucocorticoids (OR 22.5, 95% CI 7.0–72.6, P &lt; 0.001) were at higher risk of MRSP infection, whereas S. pseudintermedius isolates from ears were more likely to belong to the MSSP group (OR 0.09, 95% CI 0.03–0.34, P &lt; 0.001).</p>
 <pre class="r"><code>######################################### Data analysis######################################### 
+
+#Exploratory data analysis- use Data Explorer package or GGally package
+######Univariate analysis....
+#Show all the missing data in each column
+#plot_missing(dataset)
+#Plot the continuous variables to see how they are distributed as a bar plot
+#plot_histogram(dataset)
+#Plot the continuous variables to see how they are distributed as a density plot
+#plot_density(dataset)
+
+#Plot categorical variables to see how they are distributed
+#plot_bar(dataset)
+
+#This is even better 
+#library(PerformanceAnalytics)
+#chart.Correlation(HRMAll_Diag4[13:19], method=&quot;spearman&quot;,histogram=TRUE,pch=16)
+
+######Multivariate analyses
+#plot_correlation(dataset)
+
+
+######Get the whole thing:
+#create_report(dataset)
+
+####Get descriptive stats on all the columns:
+#library(xda)
+#numSummary(Impedance3)
+#or 
+#summary(Impedance3)
+#or
+#use rattle()
+
+#### Get some bivariate analyses in there (for numerical variables)
+#pairs(Impedance3[18:25])
+
+
+#or just use rattle and go through all the tabs
+
+#To get the the contribution of each variable in logistic regression you need to get the odds ratio
 
 ######################################### Code overview (with CodeDepends)######################################### 
 #library(codeDepends)

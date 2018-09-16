@@ -182,7 +182,7 @@ ifelse(x$ResidualmeanmmHg>=15&!is.na(x$ResidualmeanmmHg),"AchalasiaType2or3orEGO
 ifelse(x$ResidualmeanmmHg<=15&x$failedChicagoClassification==100&!is.na(x$ResidualmeanmmHg)&!is.na(x$failedChicagoClassification),"AbsentPeristalsis",
 ifelse(x$ResidualmeanmmHg<=15&(x$prematurecontraction>=20|x$Simultaneous>=20|x$Distallatency<4.5)&x$DCI>=450&!is.na(x$ResidualmeanmmHg)&(!is.na(x$prematurecontraction)&!is.na(x$Simultaneous))&!is.na(x$DCI),"DES",
 ifelse(x$ResidualmeanmmHg<=15&(x$DCI>=8000)|(x$DCI>=8000|x$DCI>=8000)&!is.na(x$ResidualmeanmmHg)&!is.na(x$DCI),"JackHammer",
-       ifelse(x$ResidualmeanmmHg<=15&x$failedChicagoClassification<100&x$failedChicagoClassification>50&!is.na(x$ResidualmeanmmHg)&!is.na(x$DCI),"IOM",
+       ifelse(x$ResidualmeanmmHg<=15& ((x$failedChicagoClassification<100&x$failedChicagoClassification>50)|grepl("IOM|neffective oesoph",x$WholReport))&!is.na(x$ResidualmeanmmHg)&!is.na(x$DCI),"IOM",
 #ifelse(x$ResidualmeanmmHg<15&x$Contractilefrontvelocitycms>9&x$Distallatency>=4.5&!is.na(x$ResidualmeanmmHg)&!is.na(x$Contractilefrontvelocitycms)&!is.na(x$Distallatency),"RapidContraction",
 #ifelse(x$ResidualmeanmmHg<15&(x$DCI>=5000|x$DCI>=5000)&x$Distallatency>=4.5&!is.na(x$ResidualmeanmmHg)&!is.na(x$Distallatency)&!is.na(x$DCI),"HypertensivePeristalsis",
 #ifelse(x$ResidualmeanmmHg<=15&x$smallbreaks>=30&x$largebreaks>=20&!is.na(x$ResidualmeanmmHg)&!is.na(x$smallbreaks)&!is.na(x$largebreaks),"WeakPeristalsis",
