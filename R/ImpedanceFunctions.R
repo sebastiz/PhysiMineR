@@ -48,8 +48,8 @@ dataBRAVOTotal <- sqlQuery( channel , "SELECT BravoDay1And2.*, PatientData.* FRO
 #' @keywords BRAVO Extraction
 #' @export
 #' @examples #dataBRAVO(channel)
-#'
-#'
+
+
 dataBRAVO<-function(channel){
   dataBravoDay1And2 <- sqlQuery( channel , "SELECT BRAVODay1And2.*FROM BRAVODay1And2.")
 }
@@ -105,7 +105,9 @@ dataImpClean<-function(x){
   x<-as.data.frame(lapply(x, FUN = function(t) gsub("sec", "", t)),stringsAsFactors=FALSE)
 
   #Make sure the numbers are extracted as numeric from the MainPt columns
-  i2 <- !grepl("MainPt", names(x))
+  i2 <- !grepl("MainPt|HospNum_Id|FName|SName|DOB|Ethnicity|Gender", names(x))
+
+  #Also exclude the first columns with hospital number etc.
   x[i2] <- lapply(x[i2], as.numeric)
 
   #Return as a dataframe instead of a tibble
@@ -153,7 +155,56 @@ dataBRAVOClean<-function(x){
   return(x)
 }
 
+#' dataBRAVODayLabeller
+#' This organises the BRAVO data by day. Currently the files are extracted so that you get two days (usually)
+#' per BRAVO file. This function will associate BRAVOs for one patient separated by max 4 days. The later file will have column names
+#' changed to day3 and day4 and a flat dataframe produced with all the values for one BRAVO 'session' produced
+#' to make downstream analyses easier.
+#' @param x dataframe usually the standard impedance data
+#' @keywords BRAVO CleanUp
+#' @import tidyverse
+#' @importFrom EndoMineR SurveilTimeByRow
+#' @importFrom rlang sym
+#' @export
+#' @examples #dataBRAVODayLabeller(x)
 
+dataBRAVODayLabeller<-function(x,HospNum_Id,VisitDate){
+
+  # 1. Firstly order the dataset by patientID and then by date.
+  x<-x[order(x["HospNum_Id"],x["VisitDate"]),]
+  x<-EndoMineR::SurveilTimeByRow(x,"HospNum_Id","VisitDate")
+
+  # create an id to flag consecutive rows within each HospNum
+
+  HospNum_Ida <- sym(HospNum_Id)
+  VisitDatea <- sym(VisitDate)
+
+  x %>%
+    group_by(!!HospNum_Ida) %>%
+    mutate(id = ceiling(row_number() / 2)) %>%
+    ungroup() -> df2
+
+
+  # split to even and odd rows within each HospNum
+  df_odd = df2 %>% group_by(!!HospNum_Ida) %>% filter(row_number() %in% seq(1, nrow(df2), 2)) %>% ungroup()
+  df_even = df2 %>% group_by(!!HospNum_Ida) %>% filter(row_number() %in% seq(2, nrow(df2), 2)) %>% ungroup()
+
+  # join on both ids and remove rows
+  x<-inner_join(df_odd, df_even, by=c("id","HospNum_Id")) %>%
+    filter(between(diffDate.x, -4, 4))
+
+
+  #Now you need to select the columns that have the regular expression Day1\\.y and convert to Day1 to Day 3 and Day2 to Day4
+    #Select the columns with names Day1\\.y
+
+    x<- x %>% rename_all(~gsub('(.*)Day1(.*)\\.y', '\\1Day3\\2', .x))
+
+    x<- x %>% rename_all(~gsub('(.*)Day2(.*)\\.y', '\\1Day4\\2', .x))
+  #if name contains .y and Day 1 then rename Day 2 to Day 4
+  x<-data.frame(x)
+
+  return(x)
+}
 
 ###################################### Impedance Symptom Subset Prepare ###################################################
 
@@ -206,10 +257,98 @@ dataImpSymptoms<-function(x){
 
 
 
-###### Categorise the Impedance diagnoses ######
+###### Categorise the BRAVO diagnoses ######
+
+#' Diagnosis of GORD for BRAVO studies
+#' This extracts whether the patient had a formal GORD diagnosis
+#' This is based on the Acid exposure table but the rules are different for BRAVO results based on the day
+#'
+#' The rules are that if a patient has a long acid exposure percentage (>4.2% total)
+#' Or if there are a large number of reflux events (>73) - field called
+#' Or if the the final report says pathological reflux or nocturnal (as the total may be normal) then the patient has a GORD diagnosis
+#' @param x the impedance dataset for extraction
+#' @keywords BRAVO acid GORD
+#' @export
+#' @importFrom dplyr select
+#' @examples #GORD_AcidBRAVO(x)
+
+GORD_AcidBRAVO<-function(dd){
+
+  dd %>% select(ReflDay1FractionTimepHLessThan4Supine,
+                ReflDay1NumberofRefluxesSupine,
+                ReflDay1FractionTimepHLessThan4Upright,
+                ReflDay1NumberofRefluxesUpright,
+                ReflDay1FractionTimepHLessThan4Total,
+                ReflDay2NumberofRefluxesTotal,
+                ReflDay2FractionTimepHLessThan4Supine,
+                ReflDay2NumberofRefluxesSupine,
+                ReflDay2FractionTimepHLessThan4Upright,
+                ReflDay2NumberofRefluxesUpright,
+                ReflDay2FractionTimepHLessThan4Total,
+                ReflDay2NumberofRefluxesTotal,
+                ReflDay3FractionTimepHLessThan4Supine,
+                ReflDay3NumberofRefluxesSupine,
+                ReflDay3FractionTimepHLessThan4Upright,
+                ReflDay3NumberofRefluxesUpright,
+                ReflDay3FractionTimepHLessThan4Total,
+                ReflDay4NumberofRefluxesTotal,
+                ReflDay4FractionTimepHLessThan4Supine,
+                ReflDay4NumberofRefluxesSupine,
+                ReflDay4FractionTimepHLessThan4Upright,
+                ReflDay4NumberofRefluxesUpright,
+                ReflDay4FractionTimepHLessThan4Total,
+                ReflDay4NumberofRefluxesTotal,
+                ReflDayTotalFractionTimepHLessThan4Supine,
+                ReflDayTotalNumberofRefluxesSupine,
+                ReflDayTotalFractionTimepHLessThan4Upright,
+                ReflDayTotalNumberofRefluxesUpright,
+                ReflDayTotalFractionTimepHLessThan4Total,
+                ReflDayTotalNumberofRefluxesTotal) %>%
+    mutate(
+      AcidReflux = case_when(
+        ReflDay1FractionTimepHLessThan4Supine  > 4.2        ~ "SupineAcid",
+        ReflDay1NumberofRefluxesSupine  > 73 ~ "SupineAcid",
+        ReflDay1FractionTimepHLessThan4Upright> 4.2        ~ "UprightAcid",
+        ReflDay1NumberofRefluxesUpright > 73 ~ "UprightAcid",
+        ReflDay1FractionTimepHLessThan4Total > 4.2        ~ "TotalAcid",
+        ReflDay1NumberofRefluxesTotal > 73 ~ "UprightAcid",
+        ReflDay2FractionTimepHLessThan4Total > 4.2        ~ "TotalAcid",
+        ReflDay2NumberofRefluxesTotal > 73 ~ "TotalAcid",
+        ReflDay2FractionTimepHLessThan4Supine > 4.2        ~ "SupineAcid",
+        ReflDay2NumberofRefluxesSupine > 73 ~ "SupineAcid",
+        ReflDay2FractionTimepHLessThan4Upright > 4.2        ~ "UprightAcid",
+        ReflDay2NumberofRefluxesUpright > 73 ~ "UprightAcid",
+        ReflDay2FractionTimepHLessThan4Total > 4.2        ~ "TotalAcid",
+        ReflDay2NumberofRefluxesTotal > 73 ~ "TotalAcid",
+        ReflDay3FractionTimepHLessThan4Supine > 4.2        ~ "SupineAcid",
+        ReflDay3NumberofRefluxesSupine > 73 ~ "SupineAcid",
+        ReflDay3FractionTimepHLessThan4Upright > 4.2        ~ "UprightAcid",
+        ReflDay3NumberofRefluxesUpright > 73 ~ "UprightAcid",
+        ReflDay3FractionTimepHLessThan4Total > 4.2        ~ "TotalAcid",
+        ReflDay4NumberofRefluxesTotal > 73 ~ "TotalAcid",
+        ReflDay4FractionTimepHLessThan4Supine > 4.2        ~ "SupineAcid",
+        ReflDay4NumberofRefluxesSupine > 73 ~ "SupineAcid",
+        ReflDay4FractionTimepHLessThan4Upright > 4.2        ~ "UprightAcid",
+        ReflDay4NumberofRefluxesUpright > 73 ~ "UprightAcid",
+        ReflDay4FractionTimepHLessThan4Total > 4.2        ~ "TotalAcid",
+        ReflDay4NumberofRefluxesTotal > 73 ~ "TotalAcid",
+        ReflDayTotalFractionTimepHLessThan4Supine > 4.2        ~ "SupineAcid",
+        ReflDayTotalNumberofRefluxesSupine > 73 ~ "SupineAcid",
+        ReflDayTotalFractionTimepHLessThan4Upright > 4.2        ~ "UprightAcid",
+        ReflDayTotalNumberofRefluxesUpright > 73 ~ "UprightAcid",
+        ReflDayTotalFractionTimepHLessThan4Total > 4.2        ~ "TotalAcid",
+        ReflDayTotalNumberofRefluxesTotal > 73 ~ "TotalAcid",
+        #TRUE ~ as.character(x)
+      )
+    )
+
+  return(x)
+
+
+}
 
 ###### Categorise the Impedance diagnoses ######
-#' Diagnosis of GORD
+#' Diagnosis of GORD for Impedance studies
 #' This extracts whether the patient had a formal GORD diagnosis
 #' This is based on the Acid exposure table. The rules are that if a patient has a long acid exposure percentage (>4.2% total)
 #' Or if there are a large number of reflux events (>73) - field called
@@ -218,9 +357,9 @@ dataImpSymptoms<-function(x){
 #' @keywords Impedance acid GORD
 #' @export
 #' @importFrom dplyr select
-#' @examples #GORD_Acid(x)
+#' @examples #GORD_AcidImp(x)
 
-GORD_Acid<-function(dd){
+GORD_AcidImp<-function(dd){
 
   dd %>% select(MainAcidExpTotalClearanceChannelNumberofAcidEpisodes,
                MainAcidExpTotalClearanceChannelPercentTime,
@@ -244,8 +383,6 @@ return(x)
 
 
 }
-
-
 
 
 #' Acid subtype extractor
@@ -285,7 +422,6 @@ AcidSubtypes<-function(x){
 
 
   #Postprandial reflux to be done
-
 
   return(x)
 }
@@ -327,3 +463,5 @@ HypersensitiveOesophagus<-function(x){
 
 FunctionalHeartburn<-function(x){
 }
+
+
