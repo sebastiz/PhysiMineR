@@ -106,7 +106,7 @@ dataImpClean<-function(x){
 
   #Make sure the numbers are extracted as numeric from the MainPt columns
   i2 <- !grepl("MainPt", names(x))
-  x[i2] <- lapply(x[i1], as.numeric)
+  x[i2] <- lapply(x[i2], as.numeric)
 
   #Return as a dataframe instead of a tibble
   x<-data.frame(x)
@@ -207,6 +207,47 @@ dataImpSymptoms<-function(x){
 
 
 ###### Categorise the Impedance diagnoses ######
+
+###### Categorise the Impedance diagnoses ######
+#' Diagnosis of GORD
+#' This extracts whether the patient had a formal GORD diagnosis
+#' This is based on the Acid exposure table. The rules are that if a patient has a long acid exposure percentage (>4.2% total)
+#' Or if there are a large number of reflux events (>73) - field called
+#' Or if the the final report says pathological reflux or nocturnal (as the total may be normal) then the patient has a GORD diagnosis
+#' @param x the impedance dataset for extraction
+#' @keywords Impedance acid GORD
+#' @export
+#' @importFrom dplyr select
+#' @examples #GORD_Acid(x)
+
+GORD_Acid<-function(dd){
+
+  dd %>% select(MainAcidExpTotalClearanceChannelNumberofAcidEpisodes,
+               MainAcidExpTotalClearanceChannelPercentTime,
+               MainAcidExpRecumbentClearanceChannelNumberofAcidEpisodes,
+               MainAcidExpRecumbentClearanceChannelPercentTime,
+               MainAcidExpUprightClearanceChannelNumberofAcidEpisodes,
+               MainAcidExpUprightClearanceChannelPercentTime) %>%
+    mutate(
+      AcidReflux = case_when(
+        MainAcidExpTotalClearanceChannelNumberofAcidEpisodes > 73 ~ "TotalAcid",
+        MainAcidExpTotalClearanceChannelPercentTime > 4.2        ~ "TotalAcid",
+        MainAcidExpRecumbentClearanceChannelNumberofAcidEpisodes > 73 ~ "RecumbentAcid",
+        MainAcidExpRecumbentClearanceChannelPercentTime > 1.2        ~ "RecumbentAcid",
+        MainAcidExpUprightClearanceChannelNumberofAcidEpisodes > 73 ~ "UprightAcid",
+        MainAcidExpUprightClearanceChannelPercentTime > 6.3        ~ "UprightAcid"
+        #TRUE ~ as.character(x)
+      )
+    )
+
+return(x)
+
+
+}
+
+
+
+
 #' Acid subtype extractor
 #' This creates the composite score and then subcategorises the reflux ie if acid reflux then it is recumbent vs upright vs postprandial etc. (postprandial to be done)
 #' @param x the impedance dataset for extraction
