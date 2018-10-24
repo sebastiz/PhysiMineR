@@ -362,7 +362,7 @@ GORD_AcidBRAVO<-function(dd){
 #' @importFrom dplyr select
 #' @examples #GORD_AcidImp(x)
 
-GORD_AcidImp<-function(dd){
+GORD_AcidImp<-function(x){
 
   dd %>% select(
                MainAcidExpTotalClearanceChannelPercentTime,
