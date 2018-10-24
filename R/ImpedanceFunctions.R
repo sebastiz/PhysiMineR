@@ -351,7 +351,9 @@ GORD_AcidBRAVO<-function(dd){
 }
 
 ###### Categorise the Impedance diagnoses ######
+
 #' Diagnosis of GORD for Impedance studies
+#'
 #' This extracts whether the patient had a formal GORD diagnosis
 #' This is based on the Acid exposure table. The rules are that if a patient has a long acid exposure percentage (>4.2% total)
 #' Or if there are a large number of reflux events (>73) - field called
