@@ -18,8 +18,6 @@ This acquires the first two BRAVO days data frmo the upper GI database
 }
 \examples{
 #dataBRAVO(channel)
-
-
 }
 \keyword{BRAVO}
 \keyword{Extraction}

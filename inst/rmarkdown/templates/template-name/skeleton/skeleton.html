@@ -134,6 +134,7 @@ $(document).ready(function () {
 <p><strong>2.Intervention</strong></p>
 <p><strong>3.Comparison</strong></p>
 <p><strong>4.Outcome</strong></p>
+<p><strong>5. Further </strong></p>
 <p>in these areas:</p>
 <p><strong>Therapy</strong> in patients with z condition, is x therapy better than y therapy at reducing mortlity In adult intravenous drug users with endocarditis Are oral antibiotics As effective in treating infection and reducing complications or mortality As intravenous antibiotics?</p>
 <p><strong>Prevention</strong> in patients with z condition,does a parameter lower the risk of mortality compared with b parameter In hypertensive adult women who have type 2 diabetes without diabetic complications Does a target diastolic blood pressure (DBP) of 80 mm hg Lower risk of stroke, MI, or cardiovascular death Compared with a target DBP of 90 mm hg?</p>
@@ -224,9 +225,8 @@ $(document).ready(function () {
 
 
 
-########Variable selection ie what hypothesis are you actually testing here?
 
-######################################### Data forking (filtering and subsetting)######################################### 
+######################################### Data forking (filtering and subsetting)#######################
 
 ##By CONDITION
 
@@ -296,6 +296,24 @@ $(document).ready(function () {
 #### Get some bivariate analyses in there (for numerical variables)
 #pairs(Impedance3[18:25])
 
+
+
+################ Multivariate analyses ################
+
+# 1.    Recode data new dichotomous variables (i.e., URBAN, RURAL, &amp; GENDER)
+# 2.    Conduct preliminary analyses
+# a.    Examine descriptive statistics of the continuous variables 
+# b.    Check the normality assumption by examining histograms of the continuous variables
+# c.    Check the linearity assumption by examining correlations between continuous variables and scatter diagrams of the dependent variable versus independent variables. 
+# 3.    Conduct multiple linear regression analysis
+# a.    Run model with dependent and independent variables
+# b.    Model Check
+# i.    Examine collinearity diagnostics to check for  multicollinearity
+# ii.   Examine residual plots to check error variance assumptions (i.e., normality and homogeneity of variance)
+# iii.  Examine influence diagnostics (residuals, dfbetas) to check for outliers
+# iv.   Examine significance of coefficient estimates to trim the model 
+# c.    Revise the model and rerun the analyses based on the results of steps i-iv.
+# d.    Write the final regression equation and interpret the coefficient estimates.
 
 #or just use rattle and go through all the tabs
 

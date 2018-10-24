@@ -56,7 +56,7 @@ was observational and, if possible, the study design or important design charact
 title: "Template for STROBE presentation at conference abstracts"
 author: "Sebastian Zeki"
 date: "04/09/2018"
-output: html_document
+output: powerpoint_presentation
 ---
 
 ```{r setup, include=FALSE}

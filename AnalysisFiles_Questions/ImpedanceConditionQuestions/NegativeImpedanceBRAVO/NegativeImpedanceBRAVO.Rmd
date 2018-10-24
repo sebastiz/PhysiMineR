@@ -107,16 +107,14 @@ Standard sentence here about GSTT
 The results of high resolution studies performed in patients with cough as part of the presenting complaint to the gastroenterology service at Guy's and St Thomas' NHS Trust were examined retrospectively between June 2008 and January 2018. 
 
 **$\color{red}{\text{F.Define the Eligibility}}$.**
-All patients selected were adults over the age of 18. Ethics was approved (IRAS number)and by the local ethics board.
+All patients selected were adults over the age of 18. Ethics was approved (IRAS number) and by the local ethics board.
 
 **$\color{red}{\text{F.Define the Exclusion}}$.**
 Patients with incomplete data sets were exluded from the study. Where x was not available fromt the report, the raw file was located and manually analysed
 
 **$\color{red}{\text{G.Define the Sampling}}$.**
 
-Patients were selected according to Chicago Classification v3.
-Patients symptoms were selected from self reporting at impedance if this was done at the same time as high resolution manometry
-If this was not the case then the symptoms were extracted either from the final report summarising the patient's condition and physiological diagnosis, or from the clinicians details when ordering the investigation.
+Patients were selected according to Chicago Classification v3. Patients symptoms were selected from self reporting at impedance if this was done at the same time as high resolution manometry. If this was not the case then the symptoms were extracted either from the final report summarising the patient's condition and physiological diagnosis, or from the clinicians details when ordering the investigation.
 
 **$\color{red}{\text{H.Define the data cleaning methodology methods}}$.**
 
@@ -125,6 +123,7 @@ This involves how the relevant columns were accordionised (eg categorising the p
 
 
 ```{r Methods}
+library(PhysiMineR)
 ######################################### Data acquisiton######################################### 
 
 #library(RODBC)
@@ -143,21 +142,27 @@ This involves how the relevant columns were accordionised (eg categorising the p
 # OR
 # dataBRAVO(channel)
 
+#Get this from the data folder for PhysiMineR-  just click on the RData to load into
+#the global environment
 
 
-######################################### Data cleaning######################################### 
+
+
+######################################### Data cleaning & Data merging######################################### 
 #Date cleaning
 # HRMCleanUp1(x)
 # 
 # Get the whole impedance dataset
 #You will need to re-clean the merged dataImpSympImpedance as cleaning function needed to be fixed
-dataImpSypmAndImpedanceMain<-dataImpClean(dataImpSypmAndImpedanceMain)
-dataImpSypmAndImpedanceMain<-dataImpSympClean(dataImpSypmAndImpedanceMain)
+Impedance2_Clean<-dataImpClean(Impedance2)
+ImpSymp_Clean<-dataImpSympClean(ImpSymp)
+ImpAll<-merge(Impedance2_Clean,ImpSymp_Clean,by="Imp_Id")
+
 
 #Get the whole BRAVO dataset:
 # Need to get the BRAVO data merged from the two tables
 AllBravo<-merge(BRAVODay1And2,BRAVOTotal,by="BravoID")
-AllBravo<-dataBRAVOClean(AllBravo) 
+AllBravo<-dataBRAVOClean(AllBravo)
 
 
 
@@ -165,14 +170,14 @@ AllBravo<-dataBRAVOClean(AllBravo)
 ######################################### Data accordionisation######################################### 
 
 #Extract all the symptoms
-dataImpSypmAndImpedanceMain<-dataImpSymptoms(dataImpSypmAndImpedanceMain) 
+ImpAll<-dataImpSymptoms(ImpAll) 
 
 
 #Extract who has reflux based on Demeester or on the Number of refluxes from both Impedance and BRAVO
-dataImpSypmAndImpedanceMain<-GORDAcidImp(dataImpSypmAndImpedanceMain) 
+dataImpSypmAndImpedanceMain<-GORD_AcidImp(ImpAll) 
 AllBravo<-GORD_AcidBRAVO(AllBravo) 
 
-######################################### Data merging######################################### 
+
 
 ######################################### Data forking (filtering and subsetting)#########################
 
@@ -183,29 +188,9 @@ intersect(BRAVODay1And2$HospNum_Id, Impedance2$HospNum_Id)
 
 
 #Need to select the patients with negative impedance first 
+#ie figure out what a negative for GORD actually means
 #Then need to select those patients who had a positive BRAVO at any part of the study.
 
-
-
-##By CONDITION
-
-# HRMAll_Diag5AchalasiaAll<-HRMAll_Diag4[grepl("Achalasia",HRMAll_Diag4$dx),]
-# HRMAll_Diag5AchalasiaType1<-HRMAll_Diag4[grepl("AchalasiaType1",HRMAll_Diag4$dx),]
-# HRMAll_Diag5AchalasiaType2<-HRMAll_Diag4[grepl("AchalasiaType2",HRMAll_Diag4$dx),]
-# HRMAll_Diag5AchalasiaType3<-HRMAll_Diag4[grepl("AchalasiaType3",HRMAll_Diag4$dx),]
-# HRMAll_Diag5EGOO<-HRMAll_Diag4[grepl("EGOO",HRMAll_Diag4$dx),]
-# HRMAll_Diag5PossibleAchalasia<-HRMAll_Diag4[grepl("PossibleAchalasia",HRMAll_Diag4$dx),]
-# HRMAll_Diag5AperistalsisAll<-HRMAll_Diag4[grepl("AbsentPeristalsis",HRMAll_Diag4$dx),]
-# HRMAll_Diag5DES<-HRMAll_Diag4[grepl("DES",HRMAll_Diag4$dx),]
-# HRMAll_Diag5EGOO<-HRMAll_Diag4[grepl("EGOO",HRMAll_Diag4$dx),]
-# HRMAll_Diag5FFP<-HRMAll_Diag4[grepl("FrequentFailedPeristalsis",HRMAll_Diag4$dx),]
-# HRMAll_Diag5AchalasiaAll<-HRMAll_Diag4[grepl("JackHammer",HRMAll_Diag4$dx),]
-# 
-# Impedance_Acid<-Impedance4[grepl("Acid",Impedance4$TypeOfAcid),]
-
-##By SYMPTOM:
-# Impedance_Heartburn<-Impedance3[grepl("Heartburn",Impedance3$AllImpSymptom),] #Heartburn,StomachPain,Chest,Regurgitation,Vomiting,Nausea,Cough,Belch,Throat
-# HRMAll_Heartburn<-HRMAll_Diag2[grepl("Heartburn",HRMAll_Diag2$AllSymptoms),] #Heartburn,StomachPain,Chest,Regurgitation,Vomiting,Nausea,Cough,Belch,Throat,Dysphagia
 
 
 ```

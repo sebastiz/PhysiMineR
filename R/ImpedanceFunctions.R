@@ -260,16 +260,17 @@ dataImpSymptoms<-function(x){
 ###### Categorise the BRAVO diagnoses ######
 
 #' Diagnosis of GORD for BRAVO studies
+#'
 #' This extracts whether the patient had a formal GORD diagnosis
 #' This is based on the Acid exposure table but the rules are different for BRAVO results based on the day
 #'
 #' The rules are that if a patient has a long acid exposure percentage (>4.2% total)
-#' Or if there are a large number of reflux events (>73) - field called
+#' Or if there are a large number of reflux events (>73) - (not that the reflux episodes are acid only
 #' Or if the the final report says pathological reflux or nocturnal (as the total may be normal) then the patient has a GORD diagnosis
 #' @param x the impedance dataset for extraction
 #' @keywords BRAVO acid GORD
 #' @export
-#' @importFrom dplyr select
+#' @import dplyr
 #' @examples #GORD_AcidBRAVO(x)
 
 GORD_AcidBRAVO<-function(dd){
@@ -304,6 +305,8 @@ GORD_AcidBRAVO<-function(dd){
                 ReflDayTotalNumberofRefluxesUpright,
                 ReflDayTotalFractionTimepHLessThan4Total,
                 ReflDayTotalNumberofRefluxesTotal) %>%
+    #Check that Fraction is % Time Spent in Reflux
+
     mutate(
       AcidReflux = case_when(
         ReflDay1FractionTimepHLessThan4Supine  > 4.2        ~ "SupineAcid",
@@ -361,27 +364,19 @@ GORD_AcidBRAVO<-function(dd){
 
 GORD_AcidImp<-function(dd){
 
-  dd %>% select(MainAcidExpTotalClearanceChannelNumberofAcidEpisodes,
+  dd %>% select(
                MainAcidExpTotalClearanceChannelPercentTime,
-               MainAcidExpRecumbentClearanceChannelNumberofAcidEpisodes,
                MainAcidExpRecumbentClearanceChannelPercentTime,
-               MainAcidExpUprightClearanceChannelNumberofAcidEpisodes,
                MainAcidExpUprightClearanceChannelPercentTime) %>%
     mutate(
       AcidReflux = case_when(
-        MainAcidExpTotalClearanceChannelNumberofAcidEpisodes > 73 ~ "TotalAcid",
         MainAcidExpTotalClearanceChannelPercentTime > 4.2        ~ "TotalAcid",
-        MainAcidExpRecumbentClearanceChannelNumberofAcidEpisodes > 73 ~ "RecumbentAcid",
         MainAcidExpRecumbentClearanceChannelPercentTime > 1.2        ~ "RecumbentAcid",
-        MainAcidExpUprightClearanceChannelNumberofAcidEpisodes > 73 ~ "UprightAcid",
         MainAcidExpUprightClearanceChannelPercentTime > 6.3        ~ "UprightAcid"
         #TRUE ~ as.character(x)
       )
     )
-
 return(x)
-
-
 }
 
 
