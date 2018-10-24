@@ -175,6 +175,8 @@ ImpAll<-dataImpSymptoms(ImpAll)
 
 #Extract who has reflux based on Demeester or on the Number of refluxes from both Impedance and BRAVO
 dataImpSypmAndImpedanceMain<-GORD_AcidImp(ImpAll) 
+
+#Need to get those extra fields in for the database before you can do this step.
 AllBravo<-GORD_AcidBRAVO(AllBravo) 
 
 
@@ -182,8 +184,20 @@ AllBravo<-GORD_AcidBRAVO(AllBravo)
 ######################################### Data forking (filtering and subsetting)#########################
 
 
-#Get the patients who have had both the BRAVO and impedance study
-intersect(BRAVODay1And2$HospNum_Id, Impedance2$HospNum_Id)
+#Get the patients who have had both the BRAVO and impedance study- need to cross match 
+#This gives the matching hospital numbers
+mydataset<-data.frame(intersect(AllBravo$HospNum_Id, ImpAll$HospNum_Id))
+names(mydataset)<-"HospNum_Id"
+
+#Now need to extract all the BRAVO which have an impedance ie all the BRAVO for hospital numbers with impedance
+MyBravoFromImpedance<-data.frame(AllBravo[which(AllBravo$HospNum_Id %in% mydataset$HospNum_Id),])
+
+
+mydatasetBRAVO<-which(AllBravo$HospNum_Id,arr.ind  = TRUE)
+
+
+#Then try to ascertain positive and negative BRAVOs
+
 #Will need to only select those studies that were done a year apart (?Bariums study I did this for HRM vs barium)
 
 
