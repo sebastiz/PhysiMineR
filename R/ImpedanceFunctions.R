@@ -364,7 +364,7 @@ GORD_AcidBRAVO<-function(dd){
 
 GORD_AcidImp<-function(x){
 
-  dd %>% select(
+  xx %>% select(
                MainAcidExpTotalClearanceChannelPercentTime,
                MainAcidExpRecumbentClearanceChannelPercentTime,
                MainAcidExpUprightClearanceChannelPercentTime) %>%
