@@ -366,18 +366,15 @@ GORD_AcidBRAVO<-function(dd){
 
 GORD_AcidImp<-function(x){
 
-  x %>% select(
-               MainAcidExpTotalClearanceChannelPercentTime,
-               MainAcidExpRecumbentClearanceChannelPercentTime,
-               MainAcidExpUprightClearanceChannelPercentTime) %>%
+  x<-x %>%
     mutate(
       AcidReflux = case_when(
         MainAcidExpTotalClearanceChannelPercentTime > 4.2        ~ "TotalAcid",
         MainAcidExpRecumbentClearanceChannelPercentTime > 1.2        ~ "RecumbentAcid",
         MainAcidExpUprightClearanceChannelPercentTime > 6.3        ~ "UprightAcid"
-        #TRUE ~ as.character(x)
       )
     )
+
 return(x)
 }
 
