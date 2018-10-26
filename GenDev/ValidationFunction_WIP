@@ -1,0 +1,117 @@
+library(readxl)
+library(EndoMineR)
+library(stringr)
+
+myHistol<-data.frame(read_xlsx("/Users/sebastianzeki/Documents/GI_workHistol.xlsx"),stringsAsFactors = FALSE)
+#Simplify
+myHistol<-myHistol[1:200,]
+#The function to use:
+All<-HistolHistol(myHistol,'Histology.Report')
+
+
+#The aim is to prepare a dataframe for analysis
+ValidationPrep<-function(dataframe,OriginalColumn,ResultColumn){
+
+  #Just the comparison columns
+  dataframe<-data.frame(dataframe[OriginalColumn],dataframe[ResultColumn],stringsAsFactors = FALSE)
+  #Rename them
+  names(dataframe)<-c("Original","Result")
+
+  #Double space the lines for readability
+  dataframe$Original<-gsub("\n","\n\n",dataframe$Original)
+
+  #Convert in to a list so it can be ordered
+  dataframe$Original<-lapply(dataframe$Original,function(x) strsplit(x,"\n\n"))
+  #Order the list:
+  dataframe$Original<-lapply(dataframe$Original,function(x) sort(x[[1]]))
+  #Convert back to text
+  dataframe$Original<-lapply(dataframe$Original,function(x) paste(x,collapse="\n\n"))
+
+  #Double space the lines for readability
+  dataframe$Result<-gsub("\n","\n\n",dataframe$Result)
+  #Convert in to a list so it can be ordered
+  dataframe$Result<-lapply(dataframe$Result,function(x) strsplit(x,"\n\n"))
+  #Order the list:
+  dataframe$Result<-lapply(dataframe$Result,function(x) sort(x[[1]]))
+  #Convert back to text
+  dataframe$Result<-lapply(dataframe$Result,function(x) paste(x,collapse="\n\n"))
+
+  #remove all the punctuation apart from ; from the text so raw and the raw-removed can be compared. So have to convert ; to letters and then remove punc then re-convert
+  dataframe$Original<-gsub('[[:punct:] ]+',' ',dataframe$Original)
+  dataframe$Result<-gsub('[[:punct:] ]+',' ',dataframe$Result)
+
+  return(dataframe)
+}
+
+
+All<-ValidationPrep(All,"Histology.Report","Histol_Simplified")
+
+
+#Make the original column nice and readable
+myHistol$Histology.Report <- str_replace(myHistol$Histology.Report, "\n|\r", " ")
+myHistol$Histology.Report <- ColumnCleanUp(myHistol, "Histology.Report")
+myHistol$Histology.Report <- gsub("- ", "\n", myHistol$Histology.Report, fixed = TRUE)
+myHistol$Histology.Report <- gsub("-[A-Z]", "\n", myHistol$Histology.Report, fixed = TRUE)
+myHistol$Histology.Report <- str_replace(myHistol$Histology.Report, ":", "")
+myHistol$Histology.Report<-strsplit(myHistol$Histology.Report,"\n")
+
+myHistol$Histology.Report<-lapply(myHistol$Histology.Report,function(x) gsub('\n\\s+','\n\n',x))
+myHistol$Histology.Report<-lapply(myHistol$Histology.Report,function(x) gsub('^ +','',x))
+myHistol$Histology.Report<-lapply(myHistol$Histology.Report,trimws)
+myHistol$Histology.Report <-lapply(myHistol$Histology.Report,function(x) gsub("\"", "", x))
+myHistol$Histology.Report<-lapply(myHistol$Histology.Report,sort)
+myHistol$Histology.Report<-lapply(myHistol$Histology.Report,function(x) paste(x,collapse="\n\n"))
+myHistol$Histology.Report<-unlist(myHistol$Histology.Report)
+
+
+
+
+#Function to compare two columns of lists
+compare_strings <- function(x){
+  names(myHistol)<-c("Original","Result")
+  x<-data.frame(x$Original,x$Result,stringsAsFactors = FALSE)
+  l <- sapply(x, strsplit, "\n")
+  list(PositiveFindingsOnly=intersect(l[[1]], l[[2]]),
+       #different_Incol1ButNot2
+       RemovedFromOriginal=paste(setdiff(l[[1]], l[[2]])),
+       #different_Incol2ButNot1
+       NotSureWhatThisColumnIs=paste(setdiff(l[[2]], l[[1]]))
+
+  )
+}
+
+mm<-data.frame(do.call("rbind", lapply(seq_len(nrow(myHistol)), function(i) compare_strings(All[i, ]))))
+All<-mm
+
+#Clean up the sentence start so sorting makes sense:
+All$PositiveFindingsOnly<-lapply(All$PositiveFindingsOnly,function(x) gsub('\n\\s+','\n\n',x))
+
+All$PositiveFindingsOnly<-lapply(All$PositiveFindingsOnly,trimws)
+myHistol$Histology.Report <-lapply(myHistol$Histology.Report,function(x) gsub("\"", "", x))
+All$PositiveFindingsOnly<-lapply(All$PositiveFindingsOnly,sort)
+All$PositiveFindingsOnly<-lapply(All$PositiveFindingsOnly,function(x) paste(x,collapse="\n\n"))
+All$PositiveFindingsOnly<-lapply(All$PositiveFindingsOnly,function(x) gsub('^\n\n','',x))
+All$PositiveFindingsOnly<-unlist(All$PositiveFindingsOnly)
+
+All$RemovedFromOriginal<-lapply(All$RemovedFromOriginal,function(x) gsub('\n\\s+','\n\n',x))
+All$RemovedFromOriginal<-lapply(All$RemovedFromOriginal,function(x) gsub('^ +','',x))
+All$RemovedFromOriginal<-lapply(All$RemovedFromOriginal,trimws)
+All$RemovedFromOriginal<-lapply(All$RemovedFromOriginal,sort)
+All$RemovedFromOriginal<-lapply(All$RemovedFromOriginal,function(x) paste(x,collapse="\n\n"))
+All$RemovedFromOriginal<-unlist(All$RemovedFromOriginal)
+
+All$NotSureWhatThisColumnIs<-lapply(All$NotSureWhatThisColumnIs,function(x) gsub('\n\\s+','\n\n',x))
+All$NotSureWhatThisColumnIs<-lapply(All$NotSureWhatThisColumnIs,function(x) gsub('^ +','',x))
+All$NotSureWhatThisColumnIs<-lapply(All$NotSureWhatThisColumnIs,trimws)
+All$NotSureWhatThisColumnIs<-lapply(All$NotSureWhatThisColumnIs,sort)
+All$NotSureWhatThisColumnIs<-lapply(All$NotSureWhatThisColumnIs,function(x) paste(x,collapse="\n\n"))
+All$NotSureWhatThisColumnIs<-unlist(All$NotSureWhatThisColumnIs)
+
+#This needs to be called the text extraction validation and needs a second function to run which picks up the columns for FN,FP,TP,TN so that
+All$TP<-""
+All$TN<-""
+All$FP<-""
+All$FN<-""
+myHistol<-cbind(myHistol,All)
+library(xlsx)
+write.xlsx(myHistol, "/Users/sebastianzeki/Desktop/TBB.xlsx", sheetName = "Sheet1", col.names = TRUE, row.names = TRUE, append = FALSE)
