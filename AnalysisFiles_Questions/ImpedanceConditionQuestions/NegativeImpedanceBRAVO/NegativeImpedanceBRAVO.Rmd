@@ -154,9 +154,9 @@ library(PhysiMineR)
 # 
 # Get the whole impedance dataset
 #You will need to re-clean the merged dataImpSympImpedance as cleaning function needed to be fixed
-Impedance2_Clean<-dataImpClean(Impedance2)
-ImpSymp_Clean<-dataImpSympClean(ImpSymp)
-ImpAll<-merge(Impedance2_Clean,ImpSymp_Clean,by="Imp_Id")
+Impedance2_Clean<-dataImpClean(AllImpedance)
+#ImpSymp_Clean<-dataImpSympClean(ImpSymp)
+#ImpAll<-merge(Impedance2_Clean,ImpSymp_Clean,by="Imp_Id")
 
 
 #Get the whole BRAVO dataset:
@@ -174,7 +174,26 @@ ImpAll<-dataImpSymptoms(ImpAll)
 
 
 #Extract who has reflux based on Demeester or on the Number of refluxes from both Impedance and BRAVO
-dataImpSypmAndImpedanceMain<-GORD_AcidImp(ImpAll) 
+dataImpSypmAndImpedanceMain<-GORD_AcidImp(Impedance2_Clean) 
+
+
+
+#Mock data to be cleaned up:
+AllBravo$ReflDay1NumberofRefluxesSupine<-sample(100, size = nrow(AllBravo), replace = TRUE)
+AllBravo$ReflDay1NumberofRefluxesTotal<-sample(100, size = nrow(AllBravo), replace = TRUE)
+AllBravo$ReflDay3NumberofRefluxesUpright<-sample(40, size = nrow(AllBravo), replace = TRUE)
+AllBravo$ReflDay3NumberofRefluxesSupine<-sample(40, size = nrow(AllBravo), replace = TRUE)
+AllBravo$ReflDay3FractionTimepHLessThan4Supine<-sample(100, size = nrow(AllBravo), replace = TRUE)
+AllBravo$ReflDay3FractionTimepHLessThan4Upright<-sample(40, size = nrow(AllBravo), replace = TRUE)
+AllBravo$ReflDay3FractionTimepHLessThan4Total<-sample(40, size = nrow(AllBravo), replace = TRUE)
+
+AllBravo$ReflDay4NumberofRefluxesUpright<-sample(40, size = nrow(AllBravo), replace = TRUE)
+AllBravo$ReflDay4NumberofRefluxesTotal<-sample(40, size = nrow(AllBravo), replace = TRUE)
+AllBravo$ReflDay4NumberofRefluxesSupine<-sample(40, size = nrow(AllBravo), replace = TRUE)
+
+AllBravo$ReflDay4FractionTimepHLessThan4Supine<-sample(100, size = nrow(AllBravo), replace = TRUE)
+AllBravo$ReflDay4FractionTimepHLessThan4Upright<-sample(40, size = nrow(AllBravo), replace = TRUE)
+AllBravo$ReflDay4FractionTimepHLessThan4Total<-sample(40, size = nrow(AllBravo), replace = TRUE)
 
 #Need to get those extra fields in for the database before you can do this step.
 AllBravo<-GORD_AcidBRAVO(AllBravo) 
@@ -185,15 +204,14 @@ AllBravo<-GORD_AcidBRAVO(AllBravo)
 
 
 #Get the patients who have had both the BRAVO and impedance study- need to cross match 
-#This gives the matching hospital numbers
-mydataset<-data.frame(intersect(AllBravo$HospNum_Id, ImpAll$HospNum_Id))
-names(mydataset)<-"HospNum_Id"
+#Get all the negative Impedance results
+NegativeImpedance<-dataImpSypmAndImpedanceMain[is.na(dataImpSypmAndImpedanceMain$AcidReflux),]
+
 
 #Now need to extract all the BRAVO which have an impedance ie all the BRAVO for hospital numbers with impedance
-MyBravoFromImpedance<-data.frame(AllBravo[which(AllBravo$HospNum_Id %in% mydataset$HospNum_Id),])
+MyBravoFromImpedance<-data.frame(AllBravo[which(AllBravo$HospNum_Id %in% NegativeImpedance$HospNum_Id),])
 
 
-mydatasetBRAVO<-which(AllBravo$HospNum_Id,arr.ind  = TRUE)
 
 
 #Then try to ascertain positive and negative BRAVOs

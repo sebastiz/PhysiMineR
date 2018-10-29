@@ -274,39 +274,8 @@ dataImpSymptoms<-function(x){
 #' @examples #GORD_AcidBRAVO(x)
 
 GORD_AcidBRAVO<-function(dd){
-
-  dd %>% select(ReflDay1FractionTimepHLessThan4Supine,
-                ReflDay1NumberofRefluxesSupine,
-                ReflDay1FractionTimepHLessThan4Upright,
-                ReflDay1NumberofRefluxesUpright,
-                ReflDay1FractionTimepHLessThan4Total,
-                ReflDay2NumberofRefluxesTotal,
-                ReflDay2FractionTimepHLessThan4Supine,
-                ReflDay2NumberofRefluxesSupine,
-                ReflDay2FractionTimepHLessThan4Upright,
-                ReflDay2NumberofRefluxesUpright,
-                ReflDay2FractionTimepHLessThan4Total,
-                ReflDay2NumberofRefluxesTotal,
-                ReflDay3FractionTimepHLessThan4Supine,
-                ReflDay3NumberofRefluxesSupine,
-                ReflDay3FractionTimepHLessThan4Upright,
-                ReflDay3NumberofRefluxesUpright,
-                ReflDay3FractionTimepHLessThan4Total,
-                ReflDay4NumberofRefluxesTotal,
-                ReflDay4FractionTimepHLessThan4Supine,
-                ReflDay4NumberofRefluxesSupine,
-                ReflDay4FractionTimepHLessThan4Upright,
-                ReflDay4NumberofRefluxesUpright,
-                ReflDay4FractionTimepHLessThan4Total,
-                ReflDay4NumberofRefluxesTotal,
-                ReflDayTotalFractionTimepHLessThan4Supine,
-                ReflDayTotalNumberofRefluxesSupine,
-                ReflDayTotalFractionTimepHLessThan4Upright,
-                ReflDayTotalNumberofRefluxesUpright,
-                ReflDayTotalFractionTimepHLessThan4Total,
-                ReflDayTotalNumberofRefluxesTotal) %>%
+ de<- dd %>%
     #Check that Fraction is % Time Spent in Reflux
-
     mutate(
       AcidReflux = case_when(
         ReflDay1FractionTimepHLessThan4Supine  > 4.2        ~ "SupineAcid",
@@ -340,14 +309,11 @@ GORD_AcidBRAVO<-function(dd){
         ReflDayTotalFractionTimepHLessThan4Upright > 4.2        ~ "UprightAcid",
         ReflDayTotalNumberofRefluxesUpright > 73 ~ "UprightAcid",
         ReflDayTotalFractionTimepHLessThan4Total > 4.2        ~ "TotalAcid",
-        ReflDayTotalNumberofRefluxesTotal > 73 ~ "TotalAcid",
+        ReflDayTotalNumberofRefluxesTotal > 73 ~ "TotalAcid"
         #TRUE ~ as.character(x)
       )
     )
-
-  return(x)
-
-
+  return(de)
 }
 
 ###### Categorise the Impedance diagnoses ######
