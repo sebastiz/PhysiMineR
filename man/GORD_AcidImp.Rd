@@ -2,19 +2,14 @@
 % Please edit documentation in R/ImpedanceFunctions.R
 \name{GORD_AcidImp}
 \alias{GORD_AcidImp}
-\title{Diagnosis of GORD for Impedance studies
-This extracts whether the patient had a formal GORD diagnosis
-This is based on the Acid exposure table. The rules are that if a patient has a long acid exposure percentage (>4.2% total)
-Or if there are a large number of reflux events (>73) - field called
-Or if the the final report says pathological reflux or nocturnal (as the total may be normal) then the patient has a GORD diagnosis}
+\title{Diagnosis of GORD for Impedance studies}
 \usage{
-GORD_AcidImp(dd)
+GORD_AcidImp(x)
 }
 \arguments{
 \item{x}{the impedance dataset for extraction}
 }
 \description{
-Diagnosis of GORD for Impedance studies
 This extracts whether the patient had a formal GORD diagnosis
 This is based on the Acid exposure table. The rules are that if a patient has a long acid exposure percentage (>4.2% total)
 Or if there are a large number of reflux events (>73) - field called

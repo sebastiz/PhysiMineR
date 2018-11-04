@@ -41,12 +41,7 @@ Example 2
 Title: ‘Case-control study of risk factors associated with Brucella melitensis on goat farms in Peninsular Malaysia’ (Bamaiyi et al., 2014).
 
 **Explanation **
-Including the study design term in the title or abstract when
-a standard study design is used, or at least identifying that a study is observational, allows the reader to easily identify the
-design and helps to ensure that articles are correctly indexed in electronic databases (Benson and Hartz, 2000). In STROBE,
-item 1a only requests that a common study design term be used. However, in veterinary research, not all observational studies are
-easily categorized into cohort, case–control, or cross-sectional study designs. Therefore, we recommend including that the study
-was observational and, if possible, the study design or important design characteristics, for example longitudinal, in the title.
+Including the study design term in the title or abstract when a standard study design is used, or at least identifying that a study is observational, allows the reader to easily identify the design and helps to ensure that articles are correctly indexed in electronic databases (Benson and Hartz, 2000). In STROBE, item 1a only requests that a common study design term be used. However, in veterinary research, not all observational studies are easily categorized into cohort, case–control, or cross-sectional study designs. Therefore, we recommend including that the study was observational and, if possible, the study design or important design characteristics, for example longitudinal, in the title.
 
 
 ---
@@ -66,7 +61,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 **eg** Aperistaltic oesophagus is a term that covers all conditions where achalasia is absent and there is no peristaltic activity
 
-**eg** Methicillin-resistant Staphylococcus pseudintermedius (MRSP) has emerged as a highly drug-resistant small animal veterinary pathogen.
 
 **$\color{red}{\text{C.Introductory sentence 2: The overview of the disease condition}}$.**
 
@@ -88,7 +82,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 **eg** The aim of the study was to assess the number of patients with aperistaltic oesophagus without achalasia and ascertain their demographics
 
-**eg** his study’s objective was to identify risk factors for MRSP infections in dogs and cats.
 
 ```{r Aim}
 ```
@@ -124,6 +117,10 @@ This involves how the relevant columns were accordionised (eg categorising the p
 
 ```{r Methods}
 library(PhysiMineR)
+library(DiagrammeR)
+library(CodeDepends)
+library(tidyverse)
+
 ######################################### Data acquisiton######################################### 
 
 #library(RODBC)
@@ -146,12 +143,65 @@ library(PhysiMineR)
 #the global environment
 
 
-
-
 ######################################### Data cleaning & Data merging######################################### 
+AllImpedance<-merge(Impedance2,Imp_Symp,by="Imp_Id", all = TRUE)
+
 #Date cleaning
-# HRMCleanUp1(x)
-# 
+#Clean up the HRM swallows:
+HRMImportSwallows<-HRMImportSwallows[!is.na(HRMImportSwallows$panesophagealpressurizationMapSwallowsNum8),]
+
+#Merge the HRM results together (swallows and Main)
+AllHRM<-merge(HRMImportMain,HRMImportSwallows,by="HRM_Id",all=TRUE)
+
+
+#Clean up the HRM HRMImportMain (to get rid of duplicates mainly)
+#This looks for all the duplicates by hospital number and DistalLESfromnarescm (the latter so that duplicates means same test rather than same patient on two different days)
+
+HRMImportMain2<-HRMImportMain %>% 
+  group_by(HospNum_Id,DistalLESfromnarescm) %>% 
+  summarise_all(.funs = function(x) paste(unique(c(dplyr::lag(x, default = NULL), x)), collapse = ":"))
+
+
+
+
+
+#Also need to get rid of the duplicates from the Diag table:
+#Recognise duplicates by the same Hospital Number and HRM_Id (this will be the same even after HRM merging)).
+
+
+Diag$FileCreationDate<-as.Date(gsub("(\\d{4}-\\d{2}-\\d{2}).*","\\1",Diag$FileCreationDate))
+#Convert VisitDate into a Date format and extract the year (the month and day are unreliable here as sometimes American and sometimes British dates are used)
+
+#Convert the dates to date format
+Diag$VisitDate2<-as.Date(Diag$VisitDate,format="%d_%m_%Y")
+#For NA dates make sure it is not because the dates are the wrong way around
+Diag$VisitDate3<-as.Date(Diag$VisitDate,format="%m_%d_%Y")
+
+#Merge the dates
+Diag$VisitDate4<-as.Date(ifelse(is.na(Diag$VisitDate2),Diag$VisitDate3,Diag$VisitDate2),origin = "1970-01-01")
+#If still NA then use the file creation date as the visit date
+Diag$VisitDate4<-as.Date(ifelse(is.na(Diag$VisitDate4),Diag$FileCreationDate,Diag$VisitDate4),origin = "1970-01-01")
+
+
+#Merge the diag reports on the basis of being the same Hospital Number and date range here:
+Diag2<-Diag %>% 
+  arrange(VisitDate4,HospNum_Id) %>% 
+  group_by(HospNum_Id) %>%
+  mutate(Range = cumsum(c(0L, diff(VisitDate4) > 10))) %>%
+  summarise_all(.funs = function(x) paste(unique(c(dplyr::lag(x, default = NULL), x)), collapse = ":"))
+
+
+####### Data linkage #####
+
+#This is between HRM and Impedance and Diag so we assume all are from the same patient episode:
+
+
+#Merge the Diag (by Hospital number- a lot of the reports are extracted with NHS Number but these are duplicated- the report with the hospital number should also be in the dataframe so OK to megre on this)
+
+HRMImportMain3<-merge(HRMImportMain2,Diag,by="HospNum_Id",all=TRUE)
+
+
+
 # Get the whole impedance dataset
 #You will need to re-clean the merged dataImpSympImpedance as cleaning function needed to be fixed
 Impedance2_Clean<-dataImpClean(AllImpedance)
@@ -161,44 +211,21 @@ Impedance2_Clean<-dataImpClean(AllImpedance)
 
 #Get the whole BRAVO dataset:
 # Need to get the BRAVO data merged from the two tables
-AllBravo<-merge(BRAVODay1And2,BRAVOTotal,by="BravoID")
+AllBravo<-merge(BRAVODay1And2,BravoDay3And4,by="BravoID",all=TRUE)
+AllBravo<-merge(AllBravo,BRAVOTotal,by="BravoID",all=TRUE)
 AllBravo<-dataBRAVOClean(AllBravo)
-
-
-
 
 ######################################### Data accordionisation######################################### 
 
 #Extract all the symptoms
-ImpAll<-dataImpSymptoms(ImpAll) 
+ImpAll<-dataImpSymptoms(Impedance2_Clean) 
 
 
 #Extract who has reflux based on Demeester or on the Number of refluxes from both Impedance and BRAVO
-dataImpSypmAndImpedanceMain<-GORD_AcidImp(Impedance2_Clean) 
+dataImpSypmAndImpedanceMain<-GORD_AcidImp(ImpAll) 
 
-
-
-#Mock data to be cleaned up:
-AllBravo$ReflDay1NumberofRefluxesSupine<-sample(100, size = nrow(AllBravo), replace = TRUE)
-AllBravo$ReflDay1NumberofRefluxesTotal<-sample(100, size = nrow(AllBravo), replace = TRUE)
-AllBravo$ReflDay3NumberofRefluxesUpright<-sample(40, size = nrow(AllBravo), replace = TRUE)
-AllBravo$ReflDay3NumberofRefluxesSupine<-sample(40, size = nrow(AllBravo), replace = TRUE)
-AllBravo$ReflDay3FractionTimepHLessThan4Supine<-sample(100, size = nrow(AllBravo), replace = TRUE)
-AllBravo$ReflDay3FractionTimepHLessThan4Upright<-sample(40, size = nrow(AllBravo), replace = TRUE)
-AllBravo$ReflDay3FractionTimepHLessThan4Total<-sample(40, size = nrow(AllBravo), replace = TRUE)
-
-AllBravo$ReflDay4NumberofRefluxesUpright<-sample(40, size = nrow(AllBravo), replace = TRUE)
-AllBravo$ReflDay4NumberofRefluxesTotal<-sample(40, size = nrow(AllBravo), replace = TRUE)
-AllBravo$ReflDay4NumberofRefluxesSupine<-sample(40, size = nrow(AllBravo), replace = TRUE)
-
-AllBravo$ReflDay4FractionTimepHLessThan4Supine<-sample(100, size = nrow(AllBravo), replace = TRUE)
-AllBravo$ReflDay4FractionTimepHLessThan4Upright<-sample(40, size = nrow(AllBravo), replace = TRUE)
-AllBravo$ReflDay4FractionTimepHLessThan4Total<-sample(40, size = nrow(AllBravo), replace = TRUE)
-
-#Need to get those extra fields in for the database before you can do this step.
+#Need to change this so that is part of the PhysiMineR codebase (when I can get AWS to stop crashing of course)
 AllBravo<-GORD_AcidBRAVO(AllBravo) 
-
-
 
 ######################################### Data forking (filtering and subsetting)#########################
 
@@ -207,21 +234,82 @@ AllBravo<-GORD_AcidBRAVO(AllBravo)
 #Get all the negative Impedance results
 NegativeImpedance<-dataImpSypmAndImpedanceMain[is.na(dataImpSypmAndImpedanceMain$AcidReflux),]
 
-
-#Now need to extract all the BRAVO which have an impedance ie all the BRAVO for hospital numbers with impedance
-MyBravoFromImpedance<-data.frame(AllBravo[which(AllBravo$HospNum_Id %in% NegativeImpedance$HospNum_Id),])
-
-
-
+#Now need to extract all the BRAVO which have an impedance ie all the BRAVO for hospital numbers with negative impedance
+MyBravoFromNegativeImpedance<-data.frame(AllBravo[which(AllBravo$HospNum_Id %in% NegativeImpedance$HospNum_Id),])
 
 #Then try to ascertain positive and negative BRAVOs
+MyBravoFromNegativeImpedancePOSITIVE_BRAVO<-MyBravoFromNegativeImpedance[grepl("Acid",MyBravoFromNegativeImpedance$AcidReflux),]
+MyBravoFromNegativeImpedanceNEGATTIVE_BRAVO<-MyBravoFromNegativeImpedance[is.na(MyBravoFromNegativeImpedance$AcidReflux),]
 
+#Merge all impedance for each Hospital Number in POSITIVE and also NEGATIVE BRAVO group:
+MyBravoFromNegativeImpedancePOSITIVE_BRAVO_WithImpedance<-merge(Impedance2_Clean,MyBravoFromNegativeImpedancePOSITIVE_BRAVO,by="HospNum_Id")
+MyBravoFromNegativeImpedanceNEGATIVE_BRAVO_WithImpedance<-merge(Impedance2_Clean,MyBravoFromNegativeImpedanceNEGATTIVE_BRAVO,by="HospNum_Id")
+
+#Merge all HRM for each Hospital Number in POSITIVE and also NEGATIVE BRAVO group- need to get the HRM for the closest to the impedance dates:
+MyBravoFromNegativeImpedancePOSITIVE_BRAVO_WithImpedance<-merge(Impedance2_Clean,MyBravoFromNegativeImpedancePOSITIVE_BRAVO,by="HospNum_Id")
+MyBravoFromNegativeImpedancePOSITIVE_BRAVO_WithImpedance<-merge(Impedance2_Clean,MyBravoFromNegativeImpedancePOSITIVE_BRAVO,by="HospNum_Id")
+
+#Merge all Diag for each Hospital Number in POSITIVE and also NEGATIVE BRAVO group:
+MyBravoFromNegativeImpedancePOSITIVE_BRAVO_WithImpedance<-merge(Impedance2_Clean,MyBravoFromNegativeImpedancePOSITIVE_BRAVO,by="HospNum_Id")
+MyBravoFromNegativeImpedancePOSITIVE_BRAVO_WithImpedance<-merge(Impedance2_Clean,MyBravoFromNegativeImpedancePOSITIVE_BRAVO,by="HospNum_Id")
+
+
+
+#Now need to determine predictive variables for positive BRAVO if negative impedance.
+#Add HRM if available for each Impedance test
 #Will need to only select those studies that were done a year apart (?Bariums study I did this for HRM vs barium)
+
 
 
 #Need to select the patients with negative impedance first 
 #ie figure out what a negative for GORD actually means
 #Then need to select those patients who had a positive BRAVO at any part of the study.
+
+
+
+
+#### Documenting the sets 
+
+
+library(DiagrammeR)
+library(stringr)
+
+nodes <- create_node_df(n=6, 
+                        nodes=c("ImpAll", "AllBravo", "NegativeImpedance","MyBravoFromNegativeImpedance","MyBravoFromNegativeImpedancePOSITIVE_BRAVO","MyBravoFromNegativeImpedanceNEGATTIVE_BRAVO"),
+                        label=c(paste0("ImpAll: ",nrow(ImpAll)), paste0("All BRAVO: ",nrow(AllBravo)), paste0("Negative Impedance: ",nrow(NegativeImpedance)),
+                                stringr::str_wrap(paste0("MyBravo (Negative Impedance):",nrow(MyBravoFromNegativeImpedance)),10),
+                                stringr::str_wrap(paste0("Positive BRAVO:",nrow(MyBravoFromNegativeImpedancePOSITIVE_BRAVO)),10),
+                                stringr::str_wrap(paste0("Negative BRAVO: ",nrow(MyBravoFromNegativeImpedanceNEGATTIVE_BRAVO)),10)),
+                        shape = "rectangle")
+
+
+edges <-
+  create_edge_df(
+    from = c(1,2,3,4,4),
+    to = c(3,4,4,5,6))
+
+
+g <- create_graph(nodes_df=nodes, 
+                  edges_df=edges)%>%
+   set_global_graph_attrs(
+      attr = c("layout", "rankdir", "splines"),
+      value = c("dot", "TB", "false"),
+      attr_type = c("graph", "graph", "graph"))
+render_graph(g)
+
+
+
+####Documenting the code: 
+
+library(CodeDepends)
+sc = readScript("/home/rstudio/PhysiMineR/AnalysisFiles_Questions/ImpedanceConditionQuestions/NegativeImpedanceBRAVO/NegativeImpedanceBRAVO.Rmd")
+g = makeVariableGraph( info =getInputs(sc))
+if(require(Rgraphviz))
+zz = layoutGraph(g)
+graph.par(list(nodes = list(fontsize = 136)))
+renderGraph(zz)
+
+
 
 
 
