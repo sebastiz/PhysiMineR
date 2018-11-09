@@ -115,7 +115,7 @@ This involves how the relevant columns were accordionised (eg categorising the p
 
 
 
-```{r Methods}
+```{r Acquisition}
 library(PhysiMineR)
 library(DiagrammeR)
 library(CodeDepends)
@@ -125,7 +125,6 @@ library(readxl)
 
 ######################################### Data acquisiton######################################### 
 source("/home/rstudio/PhysiMineR/R/sourcing_Data/PhysiData_Acq.R")
-
 
 ######################################### Data cleaning & Data merging######################################### 
 source("/home/rstudio/PhysiMineR/R/sourcing_Data/PhysiData_Clean.R")
@@ -149,123 +148,27 @@ MyBravoFromNegativeImpedanceNEGATTIVE_BRAVO<-MyBravoFromNegativeImpedance[is.na(
 #Merge all impedance for each Hospital Number in POSITIVE and also NEGATIVE BRAVO group:
 MyBravoFromNegativeImpedancePOSITIVE_BRAVO_WithImpedance<-merge(ImpAll,MyBravoFromNegativeImpedancePOSITIVE_BRAVO,by="HospNum_Id")
 MyBravoFromNegativeImpedanceNEGATIVE_BRAVO_WithImpedance<-merge(ImpAll,MyBravoFromNegativeImpedanceNEGATTIVE_BRAVO,by="HospNum_Id")
+```
 
 
+```{r DataLink}
 
 ####### Data linkage ##### ##### ##### ##### ##### ##### ##### ##### #####
 
 #This is between HRM and Impedance and Diag so we assume all are from the same patient episode:
 #1. Merge Impedance and HRM- do by similar dates and hospital number
-
-#Merge the Diag (by Hospital number- a lot of the reports are extracted with NHS Number but these are duplicated- the report with the hospital number should also be in the dataframe so OK to merge on this)
-
-
-
 #Merge all HRM for each Hospital Number in POSITIVE and also NEGATIVE BRAVO group- need to get the HRM for the closest to the impedance dates:
 NegImpPOS_BRAVO_WithImpAndHRM<-merge(MyBravoFromNegativeImpedancePOSITIVE_BRAVO_WithImpedance,HRMImportMain2,by="HospNum_Id")
 NegImpNEG_BRAVO_WithImpAndHRM<-merge(MyBravoFromNegativeImpedanceNEGATIVE_BRAVO_WithImpedance,HRMImportMain2,by="HospNum_Id")
 
 
-#For linking with the Diag to get the clinical details
-#HRMImportMain3<-merge(HRMImportMain2,Diag,by="HospNum_Id",all=TRUE)
-
-
-
-
-#Now need to determine predictive variables for positive BRAVO if negative impedance.
-#Add HRM if available for each Impedance test
-#Will need to only select those studies that were done a year apart (?Bariums study I did this for HRM vs barium)
-
-
-
-#Need to select the patients with negative impedance first 
-#ie figure out what a negative for GORD actually means
-#Then need to select those patients who had a positive BRAVO at any part of the study.
-
-
-
-
-#### Documenting the sets 
-
-
-library(DiagrammeR)
-library(stringr)
-
-nodes <- create_node_df(n=6, 
-                        nodes=c("ImpAll", "AllBravo", "NegativeImpedance","MyBravoFromNegativeImpedance","MyBravoFromNegativeImpedancePOSITIVE_BRAVO","MyBravoFromNegativeImpedanceNEGATTIVE_BRAVO"),
-                        label=c(paste0("ImpAll: ",nrow(ImpAll)), stringr::str_wrap(paste0("All BRAVO: ",nrow(AllBravo)),10), stringr::str_wrap(paste0("Negative Impedance: ",nrow(NegativeImpedance)),10),
-                                stringr::str_wrap(paste0("MyBravo (Negative Impedance):",nrow(MyBravoFromNegativeImpedance)),10),
-                                stringr::str_wrap(paste0("Positive BRAVO:",nrow(MyBravoFromNegativeImpedancePOSITIVE_BRAVO)),10),
-                                stringr::str_wrap(paste0("Negative BRAVO: ",nrow(MyBravoFromNegativeImpedanceNEGATTIVE_BRAVO)),10)),
-                        shape = "rectangle",
-                        fontsize=5)
-
-edges <-
-  create_edge_df(
-    from = c(1,2,3,4,4),
-    to = c(3,4,4,5,6))
-
-
-g <- create_graph(nodes_df=nodes, 
-                  edges_df=edges)%>%
-   add_global_graph_attrs(
-      attr = c("layout", "rankdir", "splines"),
-      value = c("dot", "TB", "false"),
-      attr_type = c("graph", "graph", "graph"))
-render_graph(g)
-
 ```
 
 
-```{r CodeGraph}
-####Documenting the code: 
+```{r PrelimAnalysis}
 
-library(CodeDepends)
-sc = readScript("/home/rstudio/PhysiMineR/Questions/ImpedanceQues/NegImpBRAVO/NegativeImpedanceBRAVO.Rmd")
-g = makeVariableGraph( info =getInputs(sc))
-if(require(Rgraphviz))
-  edgemode(g) <- "directed"
-x <- layoutGraph(g, layoutType="neato")
-zz = layoutGraph(g)
-graph.par(list(nodes = list(fontsize = 100)))
-renderGraph(zz)
-
-
-
-
-
-```
-
-## Results
-
-
-**$\color{red}{\text{I.Define the Statistical methods}}$.**
-
-**eg** Clinical isolates of MRSP cases (n = 150) and methicillin-susceptible S. pseudintermedius (MSSP) controls (n = 133) and their corresponding host signalment and medical data covering the six months prior to staphylococcal isolation were analysed by multivariable logistic regression.
-
-The identity of all MRSP isolates was confirmed through demonstration of S. intermedius-group specific nuc and mecA.
-
-**$\color{red}{\text{I.Describe demographics}}$.**
-The mean age was 57.3 ± 17 years, and 62.3% of the subjects were male. 
-The age-adjusted incidence rates were 13.8 (non-lobar) and 4.9 (lobar) per 100,000 person-years.
-**$\color{red}{\text{J.Then describe level one results}}$.**
-
-**$\color{red}{\text{K.Then describe subset results}}$.**
-
-**eg** In the final model, cats (compared to dogs, OR 18.5, 95% CI 1.8–188.0, P = 0.01), animals that had been
-hospitalised (OR 104.4, 95% CI 21.3–511.6, P < 0.001), or visited veterinary clinics more frequently (>10 visits
-OR 7.3, 95% CI 1.0–52.6, P = 0.049) and those that had received topical ear medication (OR 5.1, 95% CI 1.8–
-14.9, P = 0.003) or glucocorticoids (OR 22.5, 95% CI 7.0–72.6, P < 0.001) were at higher risk of MRSP infection,
-whereas S. pseudintermedius isolates from ears were more likely to belong to the MSSP group (OR 0.09, 95%
-CI 0.03–0.34, P < 0.001).
-
-**Choose your statistical analysis**
-
-# <img src="StatisticalChoices.png" align="right" />
-
-```{r Results}
-######################################### Data analysis######################################### 
-
+####### Preliminary Analysis ##### ##### ##### ##### ##### ##### ##### ##### #####
+#Really exploratory data analysis
 #Exploratory data analysis- use Data Explorer package or GGally package
 ######Univariate analysis....
 #Show all the missing data in each column
@@ -323,14 +226,86 @@ CI 0.03–0.34, P < 0.001).
 
 #To get the the contribution of each variable in logistic regression you need to get the odds ratio
 
-######################################### Code overview (with CodeDepends)######################################### 
-#library(codeDepends)
-#sc = readScript("S:\\Gastroenterology\\Seb\\R\\Scripts\\Eosinophilics\\Eosinophilix.R")
-#g = makeVariabl**eg**raph( info =getInputs(sc))
+```
+
+```{r VarDiagram}
+#### Documenting the sets 
+
+nodes <- create_node_df(n=6, 
+                        nodes=c("ImpAll", "AllBravo", "NegativeImpedance","MyBravoFromNegativeImpedance","MyBravoFromNegativeImpedancePOSITIVE_BRAVO","MyBravoFromNegativeImpedanceNEGATTIVE_BRAVO"),
+                        label=c(paste0("ImpAll: ",nrow(ImpAll)), stringr::str_wrap(paste0("All BRAVO: ",nrow(AllBravo)),10), stringr::str_wrap(paste0("Negative Impedance: ",nrow(NegativeImpedance)),10),
+                                stringr::str_wrap(paste0("MyBravo (Negative Impedance):",nrow(MyBravoFromNegativeImpedance)),10),
+                                stringr::str_wrap(paste0("Positive BRAVO:",nrow(MyBravoFromNegativeImpedancePOSITIVE_BRAVO)),10),
+                                stringr::str_wrap(paste0("Negative BRAVO: ",nrow(MyBravoFromNegativeImpedanceNEGATTIVE_BRAVO)),10)),
+                        shape = "rectangle",
+                        fontsize=5)
+
+edges <-
+  create_edge_df(
+    from = c(1,2,3,4,4),
+    to = c(3,4,4,5,6))
 
 
-#if(require(Rgraphviz))
-#  plot(g)
+g <- create_graph(nodes_df=nodes, 
+                  edges_df=edges)%>%
+   add_global_graph_attrs(
+      attr = c("layout", "rankdir", "splines"),
+      value = c("dot", "TB", "false"),
+      attr_type = c("graph", "graph", "graph"))
+render_graph(g)
+
+```
+
+
+```{r CodeGraph}
+####Documenting the code: 
+
+# library(CodeDepends)
+# sc = readScript("/home/rstudio/PhysiMineR/Questions/ImpedanceQues/NegImpBRAVO/NegativeImpedanceBRAVO.Rmd")
+# g = makeVariableGraph( info =getInputs(sc))
+# if(require(Rgraphviz))
+#   edgemode(g) <- "directed"
+# x <- layoutGraph(g, layoutType="neato")
+# zz = layoutGraph(g)
+# graph.par(list(nodes = list(fontsize = 100)))
+# renderGraph(zz)
+
+
+```
+
+## Results
+
+
+**$\color{red}{\text{I.Define the Statistical methods}}$.**
+
+**eg** Clinical isolates of MRSP cases (n = 150) and methicillin-susceptible S. pseudintermedius (MSSP) controls (n = 133) and their corresponding host signalment and medical data covering the six months prior to staphylococcal isolation were analysed by multivariable logistic regression.
+
+The identity of all MRSP isolates was confirmed through demonstration of S. intermedius-group specific nuc and mecA.
+
+**$\color{red}{\text{I.Describe demographics}}$.**
+The mean age was 57.3 ± 17 years, and 62.3% of the subjects were male. 
+The age-adjusted incidence rates were 13.8 (non-lobar) and 4.9 (lobar) per 100,000 person-years.
+**$\color{red}{\text{J.Then describe level one results}}$.**
+
+**$\color{red}{\text{K.Then describe subset results}}$.**
+
+**eg** In the final model, cats (compared to dogs, OR 18.5, 95% CI 1.8–188.0, P = 0.01), animals that had been
+hospitalised (OR 104.4, 95% CI 21.3–511.6, P < 0.001), or visited veterinary clinics more frequently (>10 visits
+OR 7.3, 95% CI 1.0–52.6, P = 0.049) and those that had received topical ear medication (OR 5.1, 95% CI 1.8–
+14.9, P = 0.003) or glucocorticoids (OR 22.5, 95% CI 7.0–72.6, P < 0.001) were at higher risk of MRSP infection,
+whereas S. pseudintermedius isolates from ears were more likely to belong to the MSSP group (OR 0.09, 95%
+CI 0.03–0.34, P < 0.001).
+
+**Choose your statistical analysis**
+
+# <img src="StatisticalChoices.png" align="right" />
+
+```{r Results}
+######################################### Data analysis######################################### 
+
+
+
+
 ```
 
 ## Discussion
