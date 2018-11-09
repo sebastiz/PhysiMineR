@@ -150,19 +150,22 @@ AllImpedance<-merge(Impedance2,Imp_Symp,by="Imp_Id", all = TRUE)
 #Clean up the HRM swallows:
 HRMImportSwallows<-HRMImportSwallows[!is.na(HRMImportSwallows$panesophagealpressurizationMapSwallowsNum8),]
 
+
 #Merge the HRM results together (swallows and Main)
 AllHRM<-merge(HRMImportMain,HRMImportSwallows,by="HRM_Id",all=TRUE)
-
 
 #Clean up the HRM HRMImportMain (to get rid of duplicates mainly)
 #This looks for all the duplicates by hospital number and DistalLESfromnarescm (the latter so that duplicates means same test rather than same patient on two different days)
 
-HRMImportMain2<-HRMImportMain %>% 
+HRMImportMain2<-AllHRM %>% 
   group_by(HospNum_Id,DistalLESfromnarescm) %>% 
   summarise_all(.funs = function(x) paste(unique(c(dplyr::lag(x, default = NULL), x)), collapse = ":"))
 
 
 
+#Avoid cluttering things up
+rm(HRMImportMain)
+rm(AllHRM)
 
 
 #Also need to get rid of the duplicates from the Diag table:
