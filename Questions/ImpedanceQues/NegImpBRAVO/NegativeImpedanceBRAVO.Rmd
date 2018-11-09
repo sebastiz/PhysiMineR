@@ -180,17 +180,27 @@ Diag$VisitDate2<-as.Date(Diag$VisitDate,format="%d_%m_%Y")
 #For NA dates make sure it is not because the dates are the wrong way around
 Diag$VisitDate3<-as.Date(Diag$VisitDate,format="%m_%d_%Y")
 
-#Merge the dates
+#Merge the dates if there are separate HRM and Diag results which are reporting the same thing
 Diag$VisitDate4<-as.Date(ifelse(is.na(Diag$VisitDate2),Diag$VisitDate3,Diag$VisitDate2),origin = "1970-01-01")
 #If still NA then use the file creation date as the visit date
 Diag$VisitDate4<-as.Date(ifelse(is.na(Diag$VisitDate4),Diag$FileCreationDate,Diag$VisitDate4),origin = "1970-01-01")
 
+Diag$ProxLESnares<-gsub(".*Proximal LES from nares.*?(\\d+).*","\\1",Diag$WholeReport)
+Diag$DistalLESnares<-gsub(".*Distal LES from nares.*?(\\d+).*","\\1",Diag$WholeReport)
+
+Diag$DistalLESnares<-gsub(".*[A-Za-z].*","\\1",Diag$DistalLESnares)
+Diag$ProxLESnares<-gsub(".*[A-Za-z].*","\\1",Diag$ProxLESnares)
 
 #Merge the diag reports on the basis of being the same Hospital Number and date range here:
 Diag2<-Diag %>% 
   arrange(VisitDate4,HospNum_Id) %>% 
   group_by(HospNum_Id) %>%
   mutate(Range = cumsum(c(0L, diff(VisitDate4) > 10))) %>%
+  summarise_all(.funs = function(x) paste(unique(c(dplyr::lag(x, default = NULL), x)), collapse = ":"))
+
+Diag2<-Diag %>% 
+  arrange(DistalLESnares,HospNum_Id) %>% 
+  group_by(DistalLESnares,HospNum_Id) %>%
   summarise_all(.funs = function(x) paste(unique(c(dplyr::lag(x, default = NULL), x)), collapse = ":"))
 
 
