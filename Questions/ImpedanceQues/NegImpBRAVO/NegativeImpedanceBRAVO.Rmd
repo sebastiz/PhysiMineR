@@ -120,124 +120,20 @@ library(PhysiMineR)
 library(DiagrammeR)
 library(CodeDepends)
 library(tidyverse)
+library(readxl)
+
 
 ######################################### Data acquisiton######################################### 
-
-#library(RODBC)
-#channel <- odbcConnectAccess("S:\\Gastroenterology\\Seb\\JavaPortableLauncher\\PhysiPopDONOTTOUCH\\Physiology6.mdb")
-#dataHRM(channel)
-# OR
-# HRMAndSwallows(channel)
-# OR
-# HRMAndDiag(channel)
-# 
-# dataImp2(x)
-# OR
-# dataImp_Symp(channel)
-# 
-# dataBRAVOTotal(channel)
-# OR
-# dataBRAVO(channel)
-
-#Get this from the data folder for PhysiMineR-  just click on the RData to load into
-#the global environment
+source("/home/rstudio/PhysiMineR/R/sourcing_Data/PhysiData_Acq.R")
 
 
 ######################################### Data cleaning & Data merging######################################### 
-AllImpedance<-merge(Impedance2,Imp_Symp,by="Imp_Id", all = TRUE)
-
-#Date cleaning
-#Clean up the HRM swallows:
-HRMImportSwallows<-HRMImportSwallows[!is.na(HRMImportSwallows$panesophagealpressurizationMapSwallowsNum8),]
-
-
-#Merge the HRM results together (swallows and Main)
-AllHRM<-merge(HRMImportMain,HRMImportSwallows,by="HRM_Id",all=TRUE)
-
-#Clean up the HRM HRMImportMain (to get rid of duplicates mainly)
-#This looks for all the duplicates by hospital number and DistalLESfromnarescm (the latter so that duplicates means same test rather than same patient on two different days)
-
-HRMImportMain2<-AllHRM %>% 
-  group_by(HospNum_Id,DistalLESfromnarescm) %>% 
-  summarise_all(.funs = function(x) paste(unique(c(dplyr::lag(x, default = NULL), x)), collapse = ":"))
-
-
-
-#Avoid cluttering things up
-rm(HRMImportMain)
-rm(AllHRM)
-
-
-#Also need to get rid of the duplicates from the Diag table:
-#Recognise duplicates by the same Hospital Number and HRM_Id (this will be the same even after HRM merging)).
-
-Diag$HospNum_Id<-toupper(Diag$HospNum_Id)
-Diag$FileCreationDate<-as.Date(gsub("(\\d{4}-\\d{2}-\\d{2}).*","\\1",Diag$FileCreationDate))
-#Convert VisitDate into a Date format and extract the year (the month and day are unreliable here as sometimes American and sometimes British dates are used)
-
-#Convert the dates to date format
-Diag$VisitDate2<-as.Date(Diag$VisitDate,format="%d_%m_%Y")
-#For NA dates make sure it is not because the dates are the wrong way around
-Diag$VisitDate3<-as.Date(Diag$VisitDate,format="%m_%d_%Y")
-
-#Merge the dates if there are separate HRM and Diag results which are reporting the same thing
-Diag$VisitDate4<-as.Date(ifelse(is.na(Diag$VisitDate2),Diag$VisitDate3,Diag$VisitDate2),origin = "1970-01-01")
-#If still NA then use the file creation date as the visit date
-Diag$VisitDate4<-as.Date(ifelse(is.na(Diag$VisitDate4),Diag$FileCreationDate,Diag$VisitDate4),origin = "1970-01-01")
-
-#Extract the Distal LES as is likely to be in both the final and the HRM report so can be merged on this
-Diag$DistalLESnares<-gsub(".*Distal LES from nares.*?(\\d+).*","\\1",Diag$WholeReport)
-#Get rid of whole reports that are copied over for some reason
-Diag$DistalLESnares<-gsub(".*[A-Za-z].*","\\1",Diag$DistalLESnares)
-
-#Merge the diag reports on the basis of being the same Hospital Number and date range here:
-Diag2<-Diag %>% 
-  arrange(DistalLESnares,HospNum_Id) %>% 
-  group_by(DistalLESnares,HospNum_Id,lubridate::year(VisitDate4)) %>%
-  summarise_all(.funs = function(x) paste(unique(c(dplyr::lag(x, default = NULL), x)), collapse = ":"))
-
-
-
-####### Data linkage ##### ##### ##### ##### ##### ##### ##### ##### #####
-
-#This is between HRM and Impedance and Diag so we assume all are from the same patient episode:
-#1. Merge Impedance and HRM
-#2. Merge Diag with Impedance and HRM
-#3. Merge HRM and Diag
-
-#Merge the Diag (by Hospital number- a lot of the reports are extracted with NHS Number but these are duplicated- the report with the hospital number should also be in the dataframe so OK to megre on this)
-
-HRMImportMain3<-merge(HRMImportMain2,Diag,by="HospNum_Id",all=TRUE)
-
-
-
-# Get the whole impedance dataset
-#You will need to re-clean the merged dataImpSympImpedance as cleaning function needed to be fixed
-Impedance2_Clean<-dataImpClean(AllImpedance)
-#ImpSymp_Clean<-dataImpSympClean(ImpSymp)
-#ImpAll<-merge(Impedance2_Clean,ImpSymp_Clean,by="Imp_Id")
-
-
-#Get the whole BRAVO dataset:
-# Need to get the BRAVO data merged from the two tables
-AllBravo<-merge(BRAVODay1And2,BravoDay3And4,by="BravoID",all=TRUE)
-AllBravo<-merge(AllBravo,BRAVOTotal,by="BravoID",all=TRUE)
-AllBravo<-dataBRAVOClean(AllBravo)
+source("/home/rstudio/PhysiMineR/R/sourcing_Data/PhysiData_Clean.R")
 
 ######################################### Data accordionisation######################################### 
-
-#Extract all the symptoms
-ImpAll<-dataImpSymptoms(Impedance2_Clean) 
-
-
-#Extract who has reflux based on Demeester or on the Number of refluxes from both Impedance and BRAVO
-dataImpSypmAndImpedanceMain<-GORD_AcidImp(ImpAll) 
-
-#Need to change this so that is part of the PhysiMineR codebase (when I can get AWS to stop crashing of course)
-AllBravo<-GORD_AcidBRAVO(AllBravo) 
+source("/home/rstudio/PhysiMineR/R/sourcing_Data/PhysiData_Accordion.R")
 
 ######################################### Data forking (filtering and subsetting)#########################
-
 
 #Get the patients who have had both the BRAVO and impedance study- need to cross match 
 #Get all the negative Impedance results
@@ -251,16 +147,28 @@ MyBravoFromNegativeImpedancePOSITIVE_BRAVO<-MyBravoFromNegativeImpedance[grepl("
 MyBravoFromNegativeImpedanceNEGATTIVE_BRAVO<-MyBravoFromNegativeImpedance[is.na(MyBravoFromNegativeImpedance$AcidReflux),]
 
 #Merge all impedance for each Hospital Number in POSITIVE and also NEGATIVE BRAVO group:
-MyBravoFromNegativeImpedancePOSITIVE_BRAVO_WithImpedance<-merge(Impedance2_Clean,MyBravoFromNegativeImpedancePOSITIVE_BRAVO,by="HospNum_Id")
-MyBravoFromNegativeImpedanceNEGATIVE_BRAVO_WithImpedance<-merge(Impedance2_Clean,MyBravoFromNegativeImpedanceNEGATTIVE_BRAVO,by="HospNum_Id")
+MyBravoFromNegativeImpedancePOSITIVE_BRAVO_WithImpedance<-merge(ImpAll,MyBravoFromNegativeImpedancePOSITIVE_BRAVO,by="HospNum_Id")
+MyBravoFromNegativeImpedanceNEGATIVE_BRAVO_WithImpedance<-merge(ImpAll,MyBravoFromNegativeImpedanceNEGATTIVE_BRAVO,by="HospNum_Id")
+
+
+
+####### Data linkage ##### ##### ##### ##### ##### ##### ##### ##### #####
+
+#This is between HRM and Impedance and Diag so we assume all are from the same patient episode:
+#1. Merge Impedance and HRM- do by similar dates and hospital number
+
+#Merge the Diag (by Hospital number- a lot of the reports are extracted with NHS Number but these are duplicated- the report with the hospital number should also be in the dataframe so OK to merge on this)
+
+
 
 #Merge all HRM for each Hospital Number in POSITIVE and also NEGATIVE BRAVO group- need to get the HRM for the closest to the impedance dates:
-MyBravoFromNegativeImpedancePOSITIVE_BRAVO_WithImpedance<-merge(Impedance2_Clean,MyBravoFromNegativeImpedancePOSITIVE_BRAVO,by="HospNum_Id")
-MyBravoFromNegativeImpedancePOSITIVE_BRAVO_WithImpedance<-merge(Impedance2_Clean,MyBravoFromNegativeImpedancePOSITIVE_BRAVO,by="HospNum_Id")
+NegImpPOS_BRAVO_WithImpAndHRM<-merge(MyBravoFromNegativeImpedancePOSITIVE_BRAVO_WithImpedance,HRMImportMain2,by="HospNum_Id")
+NegImpNEG_BRAVO_WithImpAndHRM<-merge(MyBravoFromNegativeImpedanceNEGATIVE_BRAVO_WithImpedance,HRMImportMain2,by="HospNum_Id")
 
-#Merge all Diag for each Hospital Number in POSITIVE and also NEGATIVE BRAVO group:
-MyBravoFromNegativeImpedancePOSITIVE_BRAVO_WithImpedance<-merge(Impedance2_Clean,MyBravoFromNegativeImpedancePOSITIVE_BRAVO,by="HospNum_Id")
-MyBravoFromNegativeImpedancePOSITIVE_BRAVO_WithImpedance<-merge(Impedance2_Clean,MyBravoFromNegativeImpedancePOSITIVE_BRAVO,by="HospNum_Id")
+
+#For linking with the Diag to get the clinical details
+#HRMImportMain3<-merge(HRMImportMain2,Diag,by="HospNum_Id",all=TRUE)
+
 
 
 
@@ -285,12 +193,12 @@ library(stringr)
 
 nodes <- create_node_df(n=6, 
                         nodes=c("ImpAll", "AllBravo", "NegativeImpedance","MyBravoFromNegativeImpedance","MyBravoFromNegativeImpedancePOSITIVE_BRAVO","MyBravoFromNegativeImpedanceNEGATTIVE_BRAVO"),
-                        label=c(paste0("ImpAll: ",nrow(ImpAll)), paste0("All BRAVO: ",nrow(AllBravo)), paste0("Negative Impedance: ",nrow(NegativeImpedance)),
+                        label=c(paste0("ImpAll: ",nrow(ImpAll)), stringr::str_wrap(paste0("All BRAVO: ",nrow(AllBravo)),10), stringr::str_wrap(paste0("Negative Impedance: ",nrow(NegativeImpedance)),10),
                                 stringr::str_wrap(paste0("MyBravo (Negative Impedance):",nrow(MyBravoFromNegativeImpedance)),10),
                                 stringr::str_wrap(paste0("Positive BRAVO:",nrow(MyBravoFromNegativeImpedancePOSITIVE_BRAVO)),10),
                                 stringr::str_wrap(paste0("Negative BRAVO: ",nrow(MyBravoFromNegativeImpedanceNEGATTIVE_BRAVO)),10)),
-                        shape = "rectangle")
-
+                        shape = "rectangle",
+                        fontsize=5)
 
 edges <-
   create_edge_df(
@@ -300,22 +208,26 @@ edges <-
 
 g <- create_graph(nodes_df=nodes, 
                   edges_df=edges)%>%
-   set_global_graph_attrs(
+   add_global_graph_attrs(
       attr = c("layout", "rankdir", "splines"),
       value = c("dot", "TB", "false"),
       attr_type = c("graph", "graph", "graph"))
 render_graph(g)
 
+```
 
 
+```{r CodeGraph}
 ####Documenting the code: 
 
 library(CodeDepends)
-sc = readScript("/home/rstudio/PhysiMineR/AnalysisFiles_Questions/ImpedanceConditionQuestions/NegativeImpedanceBRAVO/NegativeImpedanceBRAVO.Rmd")
+sc = readScript("/home/rstudio/PhysiMineR/Questions/ImpedanceQues/NegImpBRAVO/NegativeImpedanceBRAVO.Rmd")
 g = makeVariableGraph( info =getInputs(sc))
 if(require(Rgraphviz))
+  edgemode(g) <- "directed"
+x <- layoutGraph(g, layoutType="neato")
 zz = layoutGraph(g)
-graph.par(list(nodes = list(fontsize = 136)))
+graph.par(list(nodes = list(fontsize = 100)))
 renderGraph(zz)
 
 
