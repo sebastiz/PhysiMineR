@@ -171,7 +171,7 @@ rm(AllHRM)
 #Also need to get rid of the duplicates from the Diag table:
 #Recognise duplicates by the same Hospital Number and HRM_Id (this will be the same even after HRM merging)).
 
-
+Diag$HospNum_Id<-toupper(Diag$HospNum_Id)
 Diag$FileCreationDate<-as.Date(gsub("(\\d{4}-\\d{2}-\\d{2}).*","\\1",Diag$FileCreationDate))
 #Convert VisitDate into a Date format and extract the year (the month and day are unreliable here as sometimes American and sometimes British dates are used)
 
@@ -185,29 +185,25 @@ Diag$VisitDate4<-as.Date(ifelse(is.na(Diag$VisitDate2),Diag$VisitDate3,Diag$Visi
 #If still NA then use the file creation date as the visit date
 Diag$VisitDate4<-as.Date(ifelse(is.na(Diag$VisitDate4),Diag$FileCreationDate,Diag$VisitDate4),origin = "1970-01-01")
 
-Diag$ProxLESnares<-gsub(".*Proximal LES from nares.*?(\\d+).*","\\1",Diag$WholeReport)
+#Extract the Distal LES as is likely to be in both the final and the HRM report so can be merged on this
 Diag$DistalLESnares<-gsub(".*Distal LES from nares.*?(\\d+).*","\\1",Diag$WholeReport)
-
+#Get rid of whole reports that are copied over for some reason
 Diag$DistalLESnares<-gsub(".*[A-Za-z].*","\\1",Diag$DistalLESnares)
-Diag$ProxLESnares<-gsub(".*[A-Za-z].*","\\1",Diag$ProxLESnares)
 
 #Merge the diag reports on the basis of being the same Hospital Number and date range here:
 Diag2<-Diag %>% 
-  arrange(VisitDate4,HospNum_Id) %>% 
-  group_by(HospNum_Id) %>%
-  mutate(Range = cumsum(c(0L, diff(VisitDate4) > 10))) %>%
-  summarise_all(.funs = function(x) paste(unique(c(dplyr::lag(x, default = NULL), x)), collapse = ":"))
-
-Diag2<-Diag %>% 
   arrange(DistalLESnares,HospNum_Id) %>% 
-  group_by(DistalLESnares,HospNum_Id) %>%
+  group_by(DistalLESnares,HospNum_Id,lubridate::year(VisitDate4)) %>%
   summarise_all(.funs = function(x) paste(unique(c(dplyr::lag(x, default = NULL), x)), collapse = ":"))
 
 
-####### Data linkage #####
+
+####### Data linkage ##### ##### ##### ##### ##### ##### ##### ##### #####
 
 #This is between HRM and Impedance and Diag so we assume all are from the same patient episode:
-
+#1. Merge Impedance and HRM
+#2. Merge Diag with Impedance and HRM
+#3. Merge HRM and Diag
 
 #Merge the Diag (by Hospital number- a lot of the reports are extracted with NHS Number but these are duplicated- the report with the hospital number should also be in the dataframe so OK to megre on this)
 
