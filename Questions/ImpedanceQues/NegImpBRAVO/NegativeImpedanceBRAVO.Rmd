@@ -121,6 +121,7 @@ library(DiagrammeR)
 library(CodeDepends)
 library(tidyverse)
 library(readxl)
+library(EndoMineR)
 
 
 ######################################### Data acquisiton######################################### 
@@ -132,7 +133,7 @@ source("/home/rstudio/PhysiMineR/R/sourcing_Data/PhysiData_Clean.R")
 ######################################### Data accordionisation######################################### 
 source("/home/rstudio/PhysiMineR/R/sourcing_Data/PhysiData_Accordion.R")
 
-######################################### Data forking (filtering and subsetting)#########################
+######################################### Data forking (filtering and subsetting) #########################
 
 #Get the patients who have had both the BRAVO and impedance study- need to cross match 
 #Get all the negative Impedance results
@@ -173,38 +174,75 @@ NegImpNEG_BRAVO_WithImpAndHRM<-merge(MyBravoFromNegativeImpedanceNEGATIVE_BRAVO_
 ######Univariate analysis....
 #Show all the missing data in each column
 library(DataExplorer)
+
+#Steps:
+#1. Get rid of bad columns with missing data
 plot_missing(NegImpPOS_BRAVO_WithImpAndHRM)
+
+
+#Tells you which columns have the most missing data so they can be excluded
 missing<-profile_missing(NegImpPOS_BRAVO_WithImpAndHRM)
 
+#Only <10% for each row missing data is accepted 
+NegImpPOS_BRAVO_WithImpAndHRMNoMissing<-missing[!grepl("Bad|Remove",missing$group),]
+
+#Pick the columns with good data in them from this set
+NegImpPOS_BRAVO_WithImpAndHRMNoMissing<-NegImpPOS_BRAVO_WithImpAndHRM[,match(as.character(NegImpPOS_BRAVO_WithImpAndHRMNoMissing$feature),names(NegImpPOS_BRAVO_WithImpAndHRM))]
+                                                                               
+                                                                               
+#2. Get some basic descriptive stats:
+####Get descriptive stats on all the columns:
+
+#Need to get
+# Min, Max, Range
+# Mean, Standard Deviation, Variance – these provide the different “moments” of the distribution. SD and Variance can help explain the spread of the distribution.
+# Skew, Kurtosis – these tell the shape of the distribution, should be 0 and 3 for normality
+# P10, 50, 90 – percentiles give you more detailed information on the value spread of the distribution
+# P90/P10 Ratio – provides the relative “length” of the meat of the distribution. If this is too high, then your data is very spread out
+library(psych)
+#Only select the numerical variables
+NegImpPOS_BRAVO_WithImpAndHRMNoMissingNums<-dplyr::select_if(NegImpPOS_BRAVO_WithImpAndHRMNoMissing, is.numeric)
+rr<-describe(NegImpPOS_BRAVO_WithImpAndHRMNoMissing)
+
+
+
+#Get the correlations
+library(Hmisc)
+correlations <- rcorr(as.matrix(NegImpPOS_BRAVO_WithImpAndHRMNoMissingNums))
+#Look at the correlations:
+
+#corrgram(NegImpPOS_BRAVO_WithImpAndHRMNoMissingNums)
+
+
+#Only pick the very correlated functions:
+A <- correlations$r    # matrix A here contains the correlation coefficients
+B <- correlations$P   # matrix B here contains the corresponding p-values
+sig_element = ifelse((A > 0.3) , B, NA)
+library(corrgram)
+corrgram(sig_element)
+
 #Plot the continuous variables to see how they are distributed as a bar plot
-plot_histogram(PerformanceAnalytics)
+#plot_histogram(NegImpPOS_BRAVO_WithImpAndHRMNoMissing)
 #Plot the continuous variables to see how they are distributed as a density plot
-plot_density(dataset)
+#plot_density(dataset)
 
 #Plot categorical variables to see how they are distributed
 #plot_bar(dataset)
 
-#This is even better 
-library(PerformanceAnalytics)
-chart.Correlation(NegImpPOS_BRAVO_WithImpAndHRM[13:19], method="spearman",histogram=TRUE,pch=16)
-######Multivariate analyses
+#######Multivariate analyses
 #plot_correlation(dataset)
 
-
-######Get the whole thing:
-create_report(NegImpPOS_BRAVO_WithImpAndHRM)
-
-####Get descriptive stats on all the columns:
-#library(xda)
-#numSummary(Impedance3)
-#or 
-#summary(Impedance3)
-#or
-#use rattle()
 
 #### Get some bivariate analyses in there (for numerical variables)
 #pairs(Impedance3[18:25])
 
+#3. Check normality
+
+
+#4. Get rid of bad outliers
+
+
+#5. Transform variables
 
 
 ################ Multivariate analyses ################
