@@ -18,6 +18,9 @@ HRMImportMain2<-AllHRM %>%
   group_by(HospNum_Id,DistalLESfromnarescm) %>%
   summarise_all(.funs = function(x) paste(unique(c(dplyr::lag(x, default = NULL), x)), collapse = ":"))
 
+#Clean Up the main HRM
+HRMImportMain<-HRMCleanUp1(HRMImportMain2)
+
 
 
 #Avoid cluttering things up
@@ -46,7 +49,9 @@ Diag$DistalLESnares<-gsub(".*Distal LES from nares.*?(\\d+).*","\\1",Diag$WholeR
 #Get rid of whole reports that are copied over for some reason
 Diag$DistalLESnares<-gsub(".*[A-Za-z].*","\\1",Diag$DistalLESnares)
 
-
+#Extract some diagnoses from the report (using the histopath extractor from EndoMineR)
+Diag$Dx<-str_extract_all(Diag$WholeReport, paste0("upragas|neffecti|ackham|utcrack|[Aa]peris|[Ff]requent [Ff]ail" , simplify = FALSE))
+Diag$Dx <- sapply(Diag$Dx, toString)
 
 #Merge the diag reports on the basis of being the same Hospital Number and date range here:
 Diag2<-Diag %>%
@@ -74,3 +79,4 @@ AllBravo<-merge(AllBravo,BRAVOTotal,by="BravoID",all=TRUE)
 AllBravo<-dataBRAVOClean(AllBravo)
 rm(BravoDay1And2)
 rm(BravoDay3And4)
+

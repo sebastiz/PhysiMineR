@@ -172,25 +172,27 @@ NegImpNEG_BRAVO_WithImpAndHRM<-merge(MyBravoFromNegativeImpedanceNEGATIVE_BRAVO_
 #Exploratory data analysis- use Data Explorer package or GGally package
 ######Univariate analysis....
 #Show all the missing data in each column
-#plot_missing(dataset)
+library(DataExplorer)
+plot_missing(NegImpPOS_BRAVO_WithImpAndHRM)
+missing<-profile_missing(NegImpPOS_BRAVO_WithImpAndHRM)
+
 #Plot the continuous variables to see how they are distributed as a bar plot
-#plot_histogram(dataset)
+plot_histogram(PerformanceAnalytics)
 #Plot the continuous variables to see how they are distributed as a density plot
-#plot_density(dataset)
+plot_density(dataset)
 
 #Plot categorical variables to see how they are distributed
 #plot_bar(dataset)
 
 #This is even better 
-#library(PerformanceAnalytics)
-#chart.Correlation(HRMAll_Diag4[13:19], method="spearman",histogram=TRUE,pch=16)
-
+library(PerformanceAnalytics)
+chart.Correlation(NegImpPOS_BRAVO_WithImpAndHRM[13:19], method="spearman",histogram=TRUE,pch=16)
 ######Multivariate analyses
 #plot_correlation(dataset)
 
 
 ######Get the whole thing:
-#create_report(dataset)
+create_report(NegImpPOS_BRAVO_WithImpAndHRM)
 
 ####Get descriptive stats on all the columns:
 #library(xda)

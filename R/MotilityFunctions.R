@@ -62,13 +62,7 @@ HRMAndDiag<-function(channel){
 
 
 HRMCleanUp1<-function(x){
-
-
-  try(x$Gender.1<-gsub("(Male|Female).*","\\1",x$Gender.1))
   try(x$Gender<-gsub("(Male|Female).*","\\1",x$Gender))
-
-
-
 
   #Clean the demographics
   is.date <- function(x) inherits(x, 'Date')
@@ -107,6 +101,7 @@ HRMCleanUp1<-function(x){
   x$LowerOesoph<-ifelse(x$BasalrespiratoryminmmHg<4.7&x$Hiatalhernia=="Yes","HypotensiveLOSWithHH",
                            ifelse(x$BasalrespiratoryminmmHg<4.7,"HypotensiveLOS",
                                   ifelse(x$Hiatalhernia=="Yes","HHOnly","Normal")))
+
 
   x<-data.frame(x)
   return(x)
@@ -252,91 +247,6 @@ myplot<-ggplot(xTimePlot) +
 }
 
 
-
-#' BasicBoxplots
-#' This boxplots HRM measurements. Very likely redundant
-#' @param x dataframe
-#' @keywords HRM CleanUp
-#' @examples #BasicBoxplots(x)
-
-
-BasicBoxplots <- function(x) {
-par(mar =rep(2,4))
-par(mfrow=c(6,3))
-
-#if the number of rows with na = the number of rows then ignore
-if(sum(is.na(x$LESmidpointfromnarescm))!=nrow(x)){
-  boxplot(x$LESmidpointfromnarescm,main="LESmid",xlim=c(0,3))
-boxplot(Normal$LESmidpointfromnarescm,add=T)
-}
-
-if(sum(is.na(x$ProximalLESfromnarescm))!=nrow(x)){
-  boxplot(x$ProximalLESfromnarescm,main="ProximalLES",xlim=c(0,3))
-boxplot(Normal$ProximalLESfromnarescm,add=T)
-}
-if(sum(is.na(x$IntraabdominalLESlengthcm))!=nrow(x)){
-  boxplot(x$IntraabdominalLESlengthcm,main="IntraabdoLESlength",xlim=c(0,3))
-boxplot(Normal$IntraabdominalLESlengthcm,add=T)
-}
-if(sum(is.na(x$BasalrespiratoryminmmHg))!=nrow(x)){
-  boxplot(x$BasalrespiratoryminmmHg,main="Basalresmin",xlim=c(0,3))
-boxplot(Normal$BasalrespiratoryminmmHg,add=T)
-}
-if(sum(is.na(x$BasalrespiratorymeanmmHg))!=nrow(x)){
-  boxplot(x$BasalrespiratorymeanmmHg,main="Basalrespmean",xlim=c(0,3))
-boxplot(Normal$BasalrespiratorymeanmmHg,add=T)
-}
-if(sum(is.na(x$ResidualmeanmmHg))!=nrow(x)){
-  boxplot(x$ResidualmeanmmHg,main="Residmean",xlim=c(0,3))
-boxplot(Normal$ResidualmeanmmHg,add=T)
-}
-if(sum(is.na(x$DistalcontractileintegralhighestmmHgcms))!=nrow(x)){
-boxplot(x$DistalcontractileintegralhighestmmHgcms,main="DCIhighest",xlim=c(0,3))
-boxplot(Normal$DistalcontractileintegralhighestmmHgcms,add=T)
-}
-if(sum(is.na(x$DistalcontractileintegralmeanmmHgcms))!=nrow(x)){
-  boxplot(x$DistalcontractileintegralmeanmmHgcms,main="DCImean",xlim=c(0,3))
-boxplot(Normal$DistalcontractileintegralmeanmmHgcms,add=T)
-}
-if(sum(is.na(x$Contractilefrontvelocitycms))!=nrow(x)){
-  boxplot(x$Contractilefrontvelocitycms,main="CFV",xlim=c(0,3))
-boxplot(Normal$Contractilefrontvelocitycms,add=T)
-}
-if(sum(is.na(x$IntraboluspressureATLESRmmHg))!=nrow(x)){
-  boxplot(x$IntraboluspressureATLESRmmHg,main="IBP_@LES",xlim=c(0,3))
-boxplot(Normal$IntraboluspressureATLESRmmHg,add=T)
-}
-if(sum(is.na(x$Distallatency))!=nrow(x)){
-  boxplot(x$Distallatency,main="DL",xlim=c(0,3))
-boxplot(Normal$Distallatency,add=T)
-}
-if(sum(is.na(x$failedChicagoClassification))!=nrow(x)){
-boxplot(x$failedChicagoClassification,main="failed",xlim=c(0,3))
-boxplot(Normal$failedChicagoClassification,add=T)
-}
-if(sum(is.na(x$panesophagealpressurization))!=nrow(x)){
-  boxplot(x$panesophagealpressurization,main="%panesoph",xlim=c(0,3))
-boxplot(Normal$panesophagealpressurization,add=T)
-}
-if(sum(is.na(x$largebreaks))!=nrow(x)){
-  boxplot(x$largebreaks,main="%Lbreaks",xlim=c(0,3))
-boxplot(Normal$largebreaks,add=T)
-}
-if(sum(is.na(x$prematurecontraction))!=nrow(x)){
-  boxplot(x$prematurecontraction,main="%Prem",xlim=c(0,3))
-boxplot(Normal$prematurecontraction,add=T)
-}
-if(sum(is.na(x$rapidcontraction))!=nrow(x)){
-  boxplot(x$rapidcontraction,main="%Rapid",xlim=c(0,3),na.rm=T)
-boxplot(Normal$rapidcontraction,add=T)
-}
-if(sum(is.na(x$smallbreaks))!=nrow(x)){
-  boxplot(x$smallbreaks,main="%Sbreaks",xlim=c(0,3))
-boxplot(Normal$smallbreaks,add=T)
-}
-PlotName<-deparse(substitute(x))
-title(paste(PlotName," vs Normal"),outer=T, line=-35)
-}
 
 
 
