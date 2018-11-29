@@ -178,8 +178,9 @@ This involves how the relevant columns were accordionised (eg categorising the p
 #Impedance3<-merge(Impedance2,ImpSymp,by="Imp_Id")
 #MyImpedanceDataWithHRM(Impedance3,dataHRM)
 
-
-
+######################################### Data Meta-cleaning (outliers and imputation of missing data) #########################################
+#library(outliers)
+#outlier(dataframe, opposite = FALSE, logical = FALSE)
 
 ######################################### Data forking (filtering and subsetting)#######################
 

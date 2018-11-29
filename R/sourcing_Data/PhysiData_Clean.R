@@ -21,8 +21,6 @@ HRMImportMain2<-AllHRM %>%
 #Clean Up the main HRM
 HRMImportMain<-HRMCleanUp1(HRMImportMain2)
 
-
-
 #Avoid cluttering things up
 rm(AllHRM)
 
@@ -58,11 +56,11 @@ Diag2<-Diag %>%
   arrange(DistalLESnares,HospNum_Id) %>%
   group_by(DistalLESnares,HospNum_Id,lubridate::year(VisitDate4)) %>%
   summarise_all(.funs = function(x) paste(unique(c(dplyr::lag(x, default = NULL), x)), collapse = ":"))
-
-
-
-
 rm(Diag)
+
+
+
+
 
 # Get the whole impedance dataset
 #You will need to re-clean the merged dataImpSympImpedance as cleaning function needed to be fixed
@@ -77,6 +75,8 @@ rm(AllImpedance)
 AllBravo<-merge(BravoDay1And2,BravoDay3And4,by="BravoID",all=TRUE)
 AllBravo<-merge(AllBravo,BRAVOTotal,by="BravoID",all=TRUE)
 AllBravo<-dataBRAVOClean(AllBravo)
+AllBravo<-dataBRAVODayLabeller(AllBravo,"HospNum_Id","VisitDate")
+
 rm(BravoDay1And2)
 rm(BravoDay3And4)
 

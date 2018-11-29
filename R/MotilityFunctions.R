@@ -63,6 +63,48 @@ HRMAndDiag<-function(channel){
 
 HRMCleanUp1<-function(x){
   try(x$Gender<-gsub("(Male|Female).*","\\1",x$Gender))
+  try(x$Gender<-gsub("null:","",x$Gender))
+
+
+
+
+  #Format the columns so they are correct
+
+ #First need to convert the tibble to a dataframe
+ x<-data.frame(x,stringsAsFactors = FALSE)
+
+ #x<-lapply(x, function(y) { if(is.character(y)) gsub("NA:", "", x) else x })
+ #x<-lapply(x, function(y) { if(is.character(y)) gsub(":NA", "", x) else x })
+ #x<-lapply(x, function(y) { if(is.character(y)) gsub("N_A", "", x) else x })
+ #x<-lapply(x, function(y) { if(is.character(y)) gsub("NA", "", x) else x })
+  #Get rid of funny values from merged rows by gsub
+  x<-lapply(x,function(y) gsub("NA:","",y))
+  x<-lapply(x,function(y) gsub("N_A","",y))
+  x<-lapply(x,function(y) gsub(":NA","",y))
+  x<-lapply(x,function(y) gsub("NA",NA,y))
+
+  i1 <- grepl("Num\\d+", names(x))
+  x[i1] <- lapply(x[i1], as.numeric)
+
+  #Need to get rid of NA: in merged rows and convert numeric and digit to numbers
+  i1 <- grepl("cm|mmHg", names(x))
+  x[i1] <- lapply(x[i1], as.numeric)
+
+  #Do the same for digital numbers
+  i1 <- grepl("\\d+\\.\\d+", names(x))
+  x[i1] <- lapply(x[i1], as.numeric)
+
+  i1 <- grepl("^\\d*$", x)
+  x[i1] <- lapply(x[i1], as.numeric)
+
+
+  #Do the same for numbers only to avoid hospital numbers
+  i1 <- grepl("^\\d{1,2}$", names(x))
+  x[i1] <- lapply(x[i1], as.numeric)
+
+  #Just convert to the most appropriate
+  x<-lapply(x, type.convert, as.is = TRUE)
+
 
   #Clean the demographics
   is.date <- function(x) inherits(x, 'Date')
@@ -71,39 +113,36 @@ HRMCleanUp1<-function(x){
     x$VisitDate<-gsub("(^\\d{2}_\\d{2}_)(\\d{2}$)","\\120\\2",x$VisitDate)
     x$VisitDate<-as.Date(x$VisitDate,"%d_%m_%Y")
   }
+
   x$DOBAge<-as.character(x$DOBAge)
   x$DOBAge<-as.Date(x$DOBAge,"%Y-%m-%d")
   x$Age<-x$VisitDate-x$DOBAge
   x$Age<-difftime(x$VisitDate,x$DOBAge,units="days")/366.25
   x$Age<-as.numeric(x$Age)
+x$Hiatalhernia<-gsub("^.*:","",x$Hiatalhernia)
+  #This lot doesnt seem to want to be converted so do it manually:
 
-  #Format the columns so they are correct
-  #if contains mmHg or cm make sure they are as.numeric(as.character()).
-  i1 <- grepl("cm|mmHg", names(x))
-  x[i1] <- lapply(x[i1], as.numeric)
+  x$Distallatency<-as.numeric(x$Distallatency)
+  x$failedChicagoClassification<-as.numeric(x$failedChicagoClassification)
+  x$panesophagealpressurization<-as.numeric(x$panesophagealpressurization)
+  x$largebreaks<- as.numeric(x$largebreaks)
+  x$Simultaneous<-as.numeric(x$Simultaneous)
+  x$prematurecontraction<-as.numeric(x$prematurecontraction)
+  x$rapidcontraction<-as.numeric(x$rapidcontraction)
+  x$smallbreaks<- as.numeric(x$smallbreaks)
 
-
-  #x[i1] <- lapply(x[grepl("cm|mmHg", names(x))], function(x) as.numeric(as.character(x)))
   x$Hiatalhernia<-as.character((x$Hiatalhernia))
 
   #Convert other columns to numeric
   x$Distallatency<-as.numeric(as.character((x$Distallatency)))
-  x$DCI<-ifelse(!rowSums(is.na(x[c("DistalcontractileintegralhighestmmHgcms", "DistalcontractileintegralmeanmmHgcms")])), x$DistalcontractileintegralhighestmmHgcms, rowSums(x[c("DistalcontractileintegralhighestmmHgcms", "DistalcontractileintegralmeanmmHgcms")], na.rm=TRUE) )
 
-
-  #Sort out the DCI, simultaneous contractions and LOS relaxation
-  x$DistalcontractileintegralhighestmmHgcms[is.na(x$DistalcontractileintegralhighestmmHgcms)]=0
-  x$DistalcontractileintegralmeanmmHgcms[is.na(x$DistalcontractileintegralmeanmmHgcms)]=0
-  x$DistalcontractileintegralhighestmmHgcms<-NULL
-  x$DistalcontractileintegralmeanmmHgcms<-NULL
-  x$Simultaneous[is.na(x$Simultaneous)]=0
   x$LOS_relax<-ifelse(((x$ResidualmeanmmHg-x$BasalrespiratoryminmmHg/x$BasalrespiratorymeanmmHg)*100)<90,"NonRelaxLOS","NormalRelaxLOS")
   x$LowerOesoph<-ifelse(x$BasalrespiratoryminmmHg<4.7&x$Hiatalhernia=="Yes","HypotensiveLOSWithHH",
                            ifelse(x$BasalrespiratoryminmmHg<4.7,"HypotensiveLOS",
                                   ifelse(x$Hiatalhernia=="Yes","HHOnly","Normal")))
 
 
-  x<-data.frame(x)
+  x<-data.frame(x,stringsAsFactors = FALSE)
   return(x)
 }
 

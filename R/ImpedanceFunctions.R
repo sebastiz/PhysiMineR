@@ -65,7 +65,7 @@ dataBRAVO<-function(channel){
 dataImpClean<-function(x){
 
   #Find and replace the common things
-  x<-as.data.frame(lapply(x, FUN = function(t) gsub("%", "", t)))
+  x<-data.frame(lapply(x, FUN = function(t) as.character(gsub("%", "", t))), stringsAsFactors = FALSE)
   x$HospNum_Id<-as.character(x$HospNum_Id)
 
   #Get the dates sorted
@@ -94,18 +94,26 @@ dataImpClean<-function(x){
   x$MainPtDataDateofBirth<-lubridate::ymd(x$MainPtDataDateofBirth)
   x$MainPtDataDateofBirth<-as.Date(as.character(x$MainPtDataDateofBirth),format="%Y-%m-%d",origin="30/12/1899")
 
-  x<-as.data.frame(lapply(x, FUN = function(t) gsub("_", ":", t)),stringsAsFactors=FALSE)
+  i1 <- grepl("_", x)
+  x[i1]<-lapply(x[i1], FUN = function(t) gsub("_", ":", t))
 
   #Make sure the numbers are extracted as numeric from the duration columns
   i1 <- grepl("Duration", names(x))
   x[i1] <- lapply(x[i1], function(d) ifelse(grepl(":",d),(as.numeric(stringr::str_extract(d,"^\\d{2}"))*60)+(as.numeric(stringr::str_extract(d,"\\d{2}$"))),d))
-  x<-as.data.frame(lapply(x, FUN = function(t) gsub("%", "", t)),stringsAsFactors=FALSE)
-  x<-as.data.frame(lapply(x, FUN = function(t) gsub("pcent", "", t)),stringsAsFactors=FALSE)
-  x<-as.data.frame(lapply(x, FUN = function(t) gsub("min", "", t)),stringsAsFactors=FALSE)
-  x<-as.data.frame(lapply(x, FUN = function(t) gsub("sec", "", t)),stringsAsFactors=FALSE)
+  i1 <- grepl("%", x)
+  x[i1]<-lapply(x[i1], FUN = function(t) gsub("%", ":", t))
+  i1 <- grepl("pcent", x)
+  x[i1]<-lapply(x[i1], FUN = function(t) gsub("pcent", "", t))
+  i1 <- grepl("min", x)
+  x[i1]<-lapply(x[i1], FUN = function(t) gsub("min", "", t))
+  i1 <- grepl("sec", x)
+  x[i1]<-lapply(x[i1], FUN = function(t) gsub("sec", "", t))
+
+
+  x<-data.frame(x,stringsAsFactors = FALSE)
 
   #Make sure the numbers are extracted as numeric from the MainPt columns
-  i2 <- !grepl("MainPt|HospNum_Id|FName|SName|DOB|Ethnicity|Gender", names(x))
+  i2 <- !grepl("MainPt|HospNum_Id|FName|SName|DOB|Ethnicity|Gender|VisitDate", names(x))
 
   #Also exclude the first columns with hospital number etc.
   x[i2] <- lapply(x[i2], as.numeric)
@@ -184,22 +192,23 @@ dataBRAVODayLabeller<-function(x,HospNum_Id,VisitDate){
     mutate(id = ceiling(row_number() / 2)) %>%
     ungroup() -> df2
 
-
   # split to even and odd rows within each HospNum
   df_odd = df2 %>% group_by(!!HospNum_Ida) %>% filter(row_number() %in% seq(1, nrow(df2), 2)) %>% ungroup()
   df_even = df2 %>% group_by(!!HospNum_Ida) %>% filter(row_number() %in% seq(2, nrow(df2), 2)) %>% ungroup()
 
   # join on both ids and remove rows
-  x<-inner_join(df_odd, df_even, by=c("id","HospNum_Id")) %>%
-    filter(between(diffDate.x, -4, 4))
+  x<-full_join(df_odd, df_even, by=c("id","HospNum_Id"))
+   # filter(between(diffDate.x, -4, 4))
 
-
-  #Now you need to select the columns that have the regular expression Day1\\.y and convert to Day1 to Day 3 and Day2 to Day4
+  #Now you need to select the columns that have the regular expression Day1\\.y and convert to Day 3 and Day2 to Day4
     #Select the columns with names Day1\\.y
 
-    x<- x %>% rename_all(~gsub('(.*)Day1(.*)\\.y', '\\1Day3\\2', .x))
-
-    x<- x %>% rename_all(~gsub('(.*)Day2(.*)\\.y', '\\1Day4\\2', .x))
+    x<- x %>% rename_all(~gsub('(.*)Day1(.*)\\.y', '\\1Day1_2\\2', .x))
+    x<- x %>% rename_all(~gsub('(.*)Day2(.*)\\.y', '\\1Day2_2\\2', .x))
+    x<- x %>% rename_all(~gsub('(.*)Day3(.*)\\.y', '\\1Day3_2\\2', .x))
+    x<- x %>% rename_all(~gsub('(.*)Day4(.*)\\.y', '\\1Day4_2\\2', .x))
+    x<- x %>% rename_all(~gsub('(.*)DayTotal(.*)\\.y', '\\1DayTotal_2\\2', .x))
+    x<- x %>% rename_all(~gsub('(.*)\\.x', '\\1', .x))
   #if name contains .y and Day 1 then rename Day 2 to Day 4
   x<-data.frame(x)
 
@@ -237,7 +246,10 @@ dataImpSymptoms<-function(x){
   x$AllImpSymptom<-gsub(",NO","",x$AllImpSymptom,ignore.case=T)
   x$AllImpSymptom<-gsub("NO","",x$AllImpSymptom,ignore.case=T)
   x$AllImpSymptom<-gsub("NO","",x$AllImpSymptom,ignore.case=T)
-  x<-x[,colSums(is.na(x))<nrow(x)-5]
+
+  #Not sure what this is for:
+  #x<-x[,colSums(is.na(x))<nrow(x)-5]
+
 #TODO: Need to change the symptom extraction so that all the symptoms for each episode are recorded in one box
   dataImpWholeSymptomsPlotter<-x[nchar(x$AllImpSymptom)>0,]
 
@@ -277,40 +289,32 @@ GORD_AcidBRAVO<-function(dd){
  de<- dd %>%
     #Check that Fraction is % Time Spent in Reflux
     mutate(
-      AcidReflux = case_when(
-        ReflDay1FractionTimepHLessThan4Supine  > 4.2        ~ "SupineAcid",
-        ReflDay1NumberofRefluxesSupine  > 73 ~ "SupineAcid",
-        ReflDay1FractionTimepHLessThan4Upright> 4.2        ~ "UprightAcid",
-        ReflDay1NumberofRefluxesUpright > 73 ~ "UprightAcid",
-        ReflDay1FractionTimepHLessThan4Total > 4.2        ~ "TotalAcid",
-        ReflDay1NumberofRefluxesTotal > 73 ~ "UprightAcid",
-        ReflDay2FractionTimepHLessThan4Total > 4.2        ~ "TotalAcid",
-        ReflDay2NumberofRefluxesTotal > 73 ~ "TotalAcid",
-        ReflDay2FractionTimepHLessThan4Supine > 4.2        ~ "SupineAcid",
-        ReflDay2NumberofRefluxesSupine > 73 ~ "SupineAcid",
-        ReflDay2FractionTimepHLessThan4Upright > 4.2        ~ "UprightAcid",
-        ReflDay2NumberofRefluxesUpright > 73 ~ "UprightAcid",
-        ReflDay2FractionTimepHLessThan4Total > 4.2        ~ "TotalAcid",
-        ReflDay2NumberofRefluxesTotal > 73 ~ "TotalAcid",
-        ReflDay3FractionTimepHLessThan4Supine > 4.2        ~ "SupineAcid",
-        ReflDay3NumberofRefluxesSupine > 73 ~ "SupineAcid",
-        ReflDay3FractionTimepHLessThan4Upright > 4.2        ~ "UprightAcid",
-        ReflDay3NumberofRefluxesUpright > 73 ~ "UprightAcid",
-        ReflDay3FractionTimepHLessThan4Total > 4.2        ~ "TotalAcid",
-        ReflDay4NumberofRefluxesTotal > 73 ~ "TotalAcid",
-        ReflDay4FractionTimepHLessThan4Supine > 4.2        ~ "SupineAcid",
-        ReflDay4NumberofRefluxesSupine > 73 ~ "SupineAcid",
+      AcidRefluxBRAVO = case_when(
+        ReflDay1FractionTimepHLessThan4Supine  > 4.9        ~ "SupineAcid",
+        ReflDay1FractionTimepHLessThan4Upright> 5.2        ~ "UprightAcid",
+        ReflDay1FractionTimepHLessThan4Total > 3.3        ~ "TotalAcid",
+        ReflDay1NumberofRefluxesTotal > 36 ~ "TotalAcid",
+
+        ReflDay2FractionTimepHLessThan4Supine > 6.8        ~ "SupineAcid",
+        ReflDay2FractionTimepHLessThan4Upright > 8.8        ~ "UprightAcid",
+        ReflDay2FractionTimepHLessThan4Total > 6.0        ~ "TotalAcid",
+        ReflDay2NumberofRefluxesTotal > 62 ~ "TotalAcid",
+
+        ReflDay3FractionTimepHLessThan4Supine > 6.8        ~ "SupineAcid",
+        ReflDay3FractionTimepHLessThan4Upright > 8.8        ~ "UprightAcid",
+        ReflDay1FractionTimepHLessThan4Total > 6.0 ~ "TotalAcid",
+        ReflDay2NumberofRefluxesTotal > 62        ~ "TotalAcid",
+
+        ReflDay4FractionTimepHLessThan4Supine > 6.8        ~ "SupineAcid",
         ReflDay4FractionTimepHLessThan4Upright > 4.2        ~ "UprightAcid",
-        ReflDay4NumberofRefluxesUpright > 73 ~ "UprightAcid",
-        ReflDay4FractionTimepHLessThan4Total > 4.2        ~ "TotalAcid",
-        ReflDay4NumberofRefluxesTotal > 73 ~ "TotalAcid",
-        ReflDayTotalFractionTimepHLessThan4Supine > 4.2        ~ "SupineAcid",
-        ReflDayTotalNumberofRefluxesSupine > 73 ~ "SupineAcid",
+        ReflDay4FractionTimepHLessThan4Total > 6.0        ~ "TotalAcid",
+        ReflDay4NumberofRefluxesTotal > 62 ~ "TotalAcid",
+
+        ReflDayTotalFractionTimepHLessThan4Supine > 6.8        ~ "SupineAcid",
         ReflDayTotalFractionTimepHLessThan4Upright > 4.2        ~ "UprightAcid",
-        ReflDayTotalNumberofRefluxesUpright > 73 ~ "UprightAcid",
         ReflDayTotalFractionTimepHLessThan4Total > 4.2        ~ "TotalAcid",
-        ReflDayTotalNumberofRefluxesTotal > 73 ~ "TotalAcid"
-        #TRUE ~ as.character(x)
+        ReflDayTotalNumberofRefluxesTotal > 62 ~ "TotalAcid",
+        TRUE ~ "NoAcid"
       )
     )
   return(de)
@@ -328,7 +332,7 @@ GORD_AcidBRAVO<-function(dd){
 #' @keywords Impedance acid GORD
 #' @export
 #' @importFrom dplyr select
-#' @examples #GORD_AcidImp(x)
+#' @examples #GORD_AcidImpImp(x)
 
 GORD_AcidImp<-function(x){
 
@@ -337,8 +341,13 @@ GORD_AcidImp<-function(x){
       AcidReflux = case_when(
         MainAcidExpTotalClearanceChannelPercentTime > 4.2        ~ "TotalAcid",
         MainAcidExpRecumbentClearanceChannelPercentTime > 1.2        ~ "RecumbentAcid",
-        MainAcidExpUprightClearanceChannelPercentTime > 6.3        ~ "UprightAcid"
-      )
+        MainAcidExpUprightClearanceChannelPercentTime > 6.3        ~ "UprightAcid",
+
+        MainAcidCompositeScorePatientValueTotalTimeInReflux > 4.2        ~ "TotalAcid",
+        MainAcidCompositeScorePatientValueRecumbentTimeInReflux > 1.2        ~ "RecumbentAcid",
+        MainAcidCompositeScorePatientValueUprightTimeInReflux > 6.3        ~ "UprightAcid",
+        TRUE ~ "NoAcid"
+        )
     )
 
 return(x)

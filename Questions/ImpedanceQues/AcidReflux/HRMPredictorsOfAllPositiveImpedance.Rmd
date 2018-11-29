@@ -1,0 +1,397 @@
+---
+title: "HRMPredictorsOfAllPositiveImpedance"
+author: "Sebastian Zeki"
+date: "21/11/2018"
+output: html_document
+---
+
+
+## High resolution manometry can predict patients likely to have gastro-oesophageal reflux disease
+
+
+```{r setup, echo=FALSE, message=FALSE,warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+**$\color{red}{\text{B.Introductory sentence 1: Define the disease condition}}$.**
+
+Patients with suspected gastrooesophageal reflux disease (GORD) often undergo pH impedance and manometry if there is diagnostic doubt or as a work-up for anti-reflux procedures. pH impedance is usually performed as a 24 hour test and therefore may be negative in patients with intermittent acid reflux. In cases of clinical suspicion the patient may undergo a longer period of acid reflux monitoring which can be performed with an endoscopically inserted wireless capsule (BRAVO TM). It is unclear which patients with negative pH impedance should be selected for further testing and it may be that high resolution (HRM) parameters can give us insight as to who is at an increased risk having GORD even if undetected by pH impedance.The aim of the current study was to determine variables from either pH impedance or high resolution manometry, in cases where the pH impedance was negative, that may predict a pH impedance study that is positive for GORD.
+
+
+
+```{r Acquisition, echo=FALSE, message=FALSE,warning=FALSE}
+library(PhysiMineR)
+library(DiagrammeR)
+library(CodeDepends)
+library(tidyverse)
+library(readxl)
+library(EndoMineR)
+library(dplyr)
+library(xtable)
+library(pander)
+
+
+
+######################################### Data acquisiton######################################### 
+source("/home/rstudio/PhysiMineR/R/sourcing_Data/PhysiData_Acq.R")
+
+######################################### Data cleaning & Data merging######################################### 
+source("/home/rstudio/PhysiMineR/R/sourcing_Data/PhysiData_Clean.R")
+
+######################################### Data accordionisation######################################### 
+source("/home/rstudio/PhysiMineR/R/sourcing_Data/PhysiData_Accordion.R")
+```
+
+```{r Forking,echo=FALSE, message=FALSE,warning=FALSE}
+######################################### Data forking (filtering and subsetting) #########################
+
+#No need to subset the data here
+
+```
+
+```{r DataLinkage,echo=FALSE, message=FALSE,warning=FALSE}
+
+#Here I merge the impedance dataset and then the HRM dataset. The tests need to be merged based on the nearest date to prevent duplication etc.
+
+#Now you need to get all the BRAVOs that are closest to the impedance
+
+HRMImportMain$LOS_relax<-as.factor(HRMImportMain$LOS_relax)
+HRMImportMain$LowerOesoph<-as.factor(HRMImportMain$LowerOesoph)
+
+
+#Merge all hrm with AllBravo to get the full dataset
+#This merges the tests so that the nearest hrm to the BRAVO is chosen to avoid replication
+#Note that a lot of Bravo's do not have HRM as may not have been requested by outside referrers
+ImpAndHRM <- dataImpSypmAndImpedanceMain %>%
+  inner_join(HRMImportMain, by ="HospNum_Id") %>%
+  mutate(Date_ABS_Diff = abs(VisitDate.x - VisitDate.y)) %>%
+  arrange(HospNum_Id, Date_ABS_Diff) %>%
+  group_by(HospNum_Id) %>%
+  slice(1)
+```
+
+```{r DataPreparation,echo=FALSE, message=FALSE,warning=FALSE}
+
+#Really exploratory data analysis
+#Exploratory data analysis- use Data Explorer package or GGally package
+######Univariate analysis....
+#Show all the missing data in each column
+#Overall things to report in multivariate analysis from https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5457877/
+
+#(1) Selection of independent variables; 
+#(2) Fitting procedure; 
+#(3) Coding of variables; 
+#(4) Interactions; 
+#(5) Collinearity; 
+#(6) Statistical significance (OR, 95% confidence interval [CI], P value); 
+#(7) Goodness-of-fit; 
+#(8) Checking for outliers; 
+#(9) Complete identification of the statistical software application that was used; 
+#(10) Sufficient events (>10) per variable; 
+#(11) Participation of statisticians and epidemiologists; and 
+#(12) Conformity with linear gradient.
+
+
+library(DataExplorer)
+
+#Steps:
+#1. Get rid of bad columns with missing data
+
+#Tells you which columns have the most missing data so they can be excluded
+missing<-profile_missing(ImpAndHRM)
+
+#Only <10% for each row missing data is accepted 
+ImpAndHRMNoMissing<-missing[!grepl("Bad|Remove",missing$group),]
+
+#Pick the columns with good data in them from this set
+ImpAndHRMNoMissing<-ImpAndHRM[,match(as.character(ImpAndHRMNoMissing$feature),names(ImpAndHRM))]
+                                                                               
+                                                                               
+library(psych)
+#Only select the numerical variables
+
+#2.Recoding
+ImpAndHRMNoMissing$AcidReflux<-gsub("NoAcid",0,ImpAndHRMNoMissing$AcidReflux)
+ImpAndHRMNoMissing$AcidReflux<-gsub(".*Acid",1,ImpAndHRMNoMissing$AcidReflux)
+ImpAndHRMNoMissing$Hiatalhernia<-ifelse(ImpAndHRMNoMissing$Hiatalhernia=="Yes",1,0)
+ImpAndHRMNoMissing$AcidReflux<-as.numeric(ImpAndHRMNoMissing$AcidReflux)
+
+
+
+#3. Get some basic descriptive stats:
+rr<-data.frame(describe(ImpAndHRMNoMissing),stringsAsFactors=FALSE)
+#panderOptions("digits", 2)
+#panderOptions('table.alignment.rownames', 'left')
+#pander(rr)
+#4. Get rid of bad outliers
+#5. Transform variables
+```
+
+
+
+## Methods
+All variables from HRM and pH impedance results of patients who had undergone studies at Guy's and St Thomas' Foundation NHS Trust was extracted 
+
+**$\color{red}{\text{F.Define the Location}}$.**
+The results of high resolution studies performed in patients with cough as part of the presenting complaint to the gastroenterology service at Guy's and St Thomas' NHS Trust were examined retrospectively between `r paste(min(lubridate::month(ImpAndHRM$VisitDate.x, label = TRUE, abbr = FALSE)),min(lubridate::year(ImpAndHRM$VisitDate.x))) ` and `r paste(max(lubridate::month(ImpAndHRM$VisitDate.x, label = TRUE, abbr = FALSE)),max(lubridate::year(ImpAndHRM$VisitDate.x)))`
+
+**$\color{red}{\text{F.Define the Eligibility}}$.**
+All patients selected were adults over the age of 18. Ethics was approved (IRAS number) and by the local ethics board.
+
+**$\color{red}{\text{F.Define the Exclusion}}$.**
+In cases where there was more than one pH impedance or HRM result, either test was matched with the other test performed most recently to prevent duplication or contradictory results. Only patients who had both HRM and pH impedance were included. A total of `r nrow(unique(ImpAndHRM$HospNum_Id)) ` studies were retrieved (3562 individual patients)
+
+**$\color{red}{\text{G.Define the Sampling}}$.**
+
+The impedance study results were classified as positive for acid reflux if the following thresholds were positive:  Acid exposure total, recumbent or upright percent time exceeded 4.2%,1.2% or 6.3% respectively.
+
+```{r PatientDemographics,echo=FALSE, message=FALSE,warning=FALSE}
+```
+
+The age and sex of the patients was:
+
+
+```{r PrelimAnalysisHRM,echo=FALSE, message=FALSE,warning=FALSE}
+
+
+#Select HRM only. Also get rid of DistalLESfromnarescm,ProximalLESfromnarescm,EsophageallengthLESUEScenterscm as these are colinear and reflect length of oesophagus altogether)
+
+#4. Variable selection- choose HRM variables only here. Got rid of BasalrespiratorymeanmmHg,ContractileFrontVelocity,HiatusHernia and most oesophageal length measurements because of colinearity concerns with other variables
+ImpAndHRMNoMissingFinal<-ImpAndHRMNoMissing %>%
+  ungroup()%>%
+  select(IntraabdominalLESlengthcm,
+         Hiatalhernia,
+         LOS_relax,
+BasalrespiratoryminmmHg,
+ResidualmeanmmHg,
+DistalcontractileintegralmeanmmHgcms,
+IntraboluspressureATLESRmmHg,
+Distallatency,
+failedChicagoClassification,
+panesophagealpressurization,
+largebreaks,
+prematurecontraction,
+rapidcontraction,
+smallbreaks, 
+AcidReflux)
+
+#Check for multicolinearity
+#library("PerformanceAnalytics")
+#chart.Correlation(ImpAndHRMNoMissingFinal, histogram=TRUE, pch=1)
+#Exploratory data analysis:
+#create_report(ImpAndHRMNoMissingFinal)
+
+#Consider changing variables and repeat step 4
+
+
+```
+
+
+After assessment of colinearity and exclusion of significantly correlated variables, the following variables were chosen for further analysis from the HRM report: Intraabdominal LES length,presence of a Hiatal hernia,  Basal respiratory minimum pressure, Residual mean pressure, Distal contractile integral, Intrabolus pressure, Distal latency, failed peristalsis percentage, panesophageal pressurization percentage, large breaks percentage, premature contraction percentage, rapid contraction percentage and small breaks percentage. The dependent variable was the presence of acid reflux on impedance.
+
+```{r HRM_MultipleLogRegression,echo=FALSE, message=FALSE,warning=FALSE}
+
+library(MASS)
+# Fit the full model 
+data<-na.omit(ImpAndHRMNoMissingFinal)
+full.model <- glm(AcidReflux ~ ., data = data)
+# Stepwise regression model
+step.model <- stepAIC(full.model, direction = "both", 
+                      trace = FALSE)
+
+modelSum<-summary(step.model)
+
+
+panderOptions("digits", 2)
+panderOptions('table.alignment.rownames', 'left')
+pander(modelSum)
+detach("package:MASS", unload=TRUE)
+
+```
+
+
+```{r HRM_MultipleLogRegressionSummarised,echo=FALSE, message=FALSE,warning=FALSE}
+
+library(jtools)
+library(pROC)
+export_summs(step.model,scale = TRUE,error_format = "[{conf.low}, {conf.high}]")
+plot_summs(step.model, scale = TRUE, plot.distributions = TRUE)
+
+
+
+
+predpr <- predict(full.model,type=c("response"))
+roccurve <- roc(AcidReflux ~ predpr, data = data)
+plot(roccurve)
+auc(roccurve)
+
+```
+
+A generalised linear multiple regression model was implemented in R (MASS package) using a stepwise bidirectional linear regression method. The model determined that the most important variables for the prediction of a positive pH impedance test were the following (Table 1). The area under the curve for the model was `r auc(roccurve)`
+
+```{r HRM_UnivariateAnalysis,echo=FALSE, message=FALSE,warning=FALSE}
+
+# Set up for the univariate analysis:
+NegImpAndHRMNoMissingFinal<-ImpAndHRMNoMissingFinal[ImpAndHRMNoMissingFinal$AcidReflux==1,]
+PosImpAndHRMNoMissingFinal<-ImpAndHRMNoMissingFinal[ImpAndHRMNoMissingFinal$AcidReflux==0,]
+
+#Create the univariate table by selection from summary statistics using the psych package:
+
+library(psych)
+A<-describe(ImpAndHRMNoMissingFinal)
+A$n<-paste0(round(A$mean,digits=2)," (sd: ",round(A$sd,digits=1),")")
+colnames(A) <- paste("All_Pat",colnames(A), sep = "_")
+
+P<-describe(PosImpAndHRMNoMissingFinal)
+P$n<-paste0(round(P$mean,digits=2)," (sd: ",round(P$sd,digits=1),")")
+colnames(P) <- paste("Pos_Pat",colnames(P), sep = "_")
+
+N<-describe(NegImpAndHRMNoMissingFinal)
+N$n<-paste0(round(N$mean,digits=2)," (sd: ",round(N$sd,digits=1),")")
+colnames(N) <- paste("Neg_Pat",colnames(N), sep = "_")
+
+ss<-cbind(A,P,N)
+ss<-ss%>%select(All_Pat_n,Pos_Pat_n,Neg_Pat_n)
+
+
+#Add the n values to show the total numbers of patients in each group:
+df<-data.frame(nrow(ImpAndHRMNoMissingFinal),nrow(PosImpAndHRMNoMissingFinal),nrow(NegImpAndHRMNoMissingFinal))
+names(df)<-names(ss)
+ss <- rbind(df, ss)
+
+#Add each of the p-values for each comparison
+IntraabdominalLESlengthcmttest<-t.test(NegImpAndHRMNoMissingFinal$IntraabdominalLESlengthcm,PosImpAndHRMNoMissingFinal$IntraabdominalLESlengthcm,paired=FALSE)
+Hiatalherniattest<-t.test(NegImpAndHRMNoMissingFinal$Hiatalhernia,PosImpAndHRMNoMissingFinal$Hiatalhernia,paired=FALSE)
+LOS_relaxttest<-chisq.test(ImpAndHRMNoMissingFinal$LOS_relax, ImpAndHRMNoMissingFinal$AcidReflux)
+BasalrespiratoryminmmHgttest<-t.test(NegImpAndHRMNoMissingFinal$BasalrespiratoryminmmHg,PosImpAndHRMNoMissingFinal$BasalrespiratoryminmmHg,paired=FALSE)
+ResidualmeanmmHgttest<-t.test(NegImpAndHRMNoMissingFinal$ResidualmeanmmHg,PosImpAndHRMNoMissingFinal$ResidualmeanmmHg,paired=FALSE)
+DistalcontractileintegralmeanmmHgcmsttest<-t.test(NegImpAndHRMNoMissingFinal$DistalcontractileintegralmeanmmHgcms,PosImpAndHRMNoMissingFinal$DistalcontractileintegralmeanmmHgcms,paired=FALSE)
+IntraboluspressureATLESRmmHgttest<-t.test(NegImpAndHRMNoMissingFinal$IntraboluspressureATLESRmmHg,PosImpAndHRMNoMissingFinal$IntraboluspressureATLESRmmHg,paired=FALSE)
+Distallatencyttest<-t.test(NegImpAndHRMNoMissingFinal$Distallatency,PosImpAndHRMNoMissingFinal$Distallatency,paired=FALSE)
+failedChicagoClassificationttest<-t.test(NegImpAndHRMNoMissingFinal$failedChicagoClassification,PosImpAndHRMNoMissingFinal$failedChicagoClassification,paired=FALSE)
+panesophagealpressurizationttest<-t.test(NegImpAndHRMNoMissingFinal$panesophagealpressurization,PosImpAndHRMNoMissingFinal$panesophagealpressurization,paired=FALSE)
+largebreaksttest<-t.test(NegImpAndHRMNoMissingFinal$largebreaks,PosImpAndHRMNoMissingFinal$largebreaks,paired=FALSE)
+prematurecontractionttest<-t.test(NegImpAndHRMNoMissingFinal$prematurecontraction,PosImpAndHRMNoMissingFinal$prematurecontraction,paired=FALSE)
+rapidcontractionttest<-t.test(NegImpAndHRMNoMissingFinal$rapidcontraction,PosImpAndHRMNoMissingFinal$rapidcontraction,paired=FALSE)
+smallbreaksttest<-t.test(NegImpAndHRMNoMissingFinal$smallbreaks, PosImpAndHRMNoMissingFinal$smallbreaks,paired=FALSE)
+
+df<-c("-",format.pval(IntraabdominalLESlengthcmttest$p.value),format.pval(Hiatalherniattest$p.value),
+      format.pval(LOS_relaxttest$p.value),
+      format.pval(BasalrespiratoryminmmHgttest$p.value),
+      format.pval(ResidualmeanmmHgttest$p.value),
+      format.pval(DistalcontractileintegralmeanmmHgcmsttest$p.value),
+      format.pval(IntraboluspressureATLESRmmHgttest$p.value),
+      format.pval(Distallatencyttest$p.value),
+      format.pval(failedChicagoClassificationttest$p.value),
+      format.pval(panesophagealpressurizationttest$p.value),
+      format.pval(largebreaksttest$p.value),
+      format.pval(prematurecontractionttest$p.value),
+      format.pval(rapidcontractionttest$p.value),
+      format.pval(smallbreaksttest$p.value),"N/A")
+
+#Add the column to the table:
+
+ss<-cbind(ss,df)
+
+#Rename the columns
+
+names(ss)<-c("All","GORD Positive","Gord Negative","p value")
+
+#Rename the rows:
+rownames(ss)<-c("n","Intraabdominal LES length (cm)","Hiatal hernia","LOS relax","Basal respiratory min (mmHg)","Residual mean (mmHg)","Distal contractile integralmean (mmHg/cm/s)","Intrabolus pressure @ LESR(mmHg)","Distal latency","failedPeristalsis(%)","Panesophageal pressurization(%)","Large breaks(%)","Premature contraction(%)","Rapid contraction(%)","small breaks(%)","Acid Reflux")
+
+
+#Render in html
+xtable(ss)
+
+```
+
+```{r VarDiagram,echo=FALSE, message=FALSE,warning=FALSE}
+#### Documenting the sets 
+
+# nodes <- create_node_df(n=6, 
+#                         nodes=c("ImpAll", "AllBravo", "NegativeImpedance","MyBravoFromNegativeImpedance","MyBravoFromNegativeImpedancePOSITIVE_BRAVO","MyBravoFromNegativeImpedanceNEGATTIVE_BRAVO"),
+#                         label=c(paste0("ImpAll: ",nrow(ImpAll)), stringr::str_wrap(paste0("All BRAVO: ",nrow(AllBravo)),10), stringr::str_wrap(paste0("Negative Impedance: ",nrow(NegativeImpedance)),10),
+#                                 stringr::str_wrap(paste0("MyBravo (Negative Impedance):",nrow(MyBravoFromNegativeImpedance)),10),
+#                                 stringr::str_wrap(paste0("Positive BRAVO:",nrow(MyBravoFromNegativeImpedancePOSITIVE_BRAVO)),10),
+#                                 stringr::str_wrap(paste0("Negative BRAVO: ",nrow(MyBravoFromNegativeImpedanceNEGATTIVE_BRAVO)),10)),
+#                         shape = "rectangle",
+#                         fontsize=5)
+# 
+# edges <-
+#   create_edge_df(
+#     from = c(1,2,3,4,4),
+#     to = c(3,4,4,5,6))
+# 
+# 
+# g <- create_graph(nodes_df=nodes, 
+#                   edges_df=edges)%>%
+#    add_global_graph_attrs(
+#       attr = c("layout", "rankdir", "splines"),
+#       value = c("dot", "TB", "false"),
+#       attr_type = c("graph", "graph", "graph"))
+# render_graph(g)
+
+```
+
+```{r CodeGraph,echo=FALSE, message=FALSE,warning=FALSE}
+####Documenting the code: 
+
+# library(CodeDepends)
+# sc = readScript("/home/rstudio/PhysiMineR/Questions/ImpedanceQues/NegImpBRAVO/NegativeImpedanceBRAVO.Rmd")
+# g = makeVariableGraph( info =getInputs(sc))
+# if(require(Rgraphviz))
+#   edgemode(g) <- "directed"
+# x <- layoutGraph(g, layoutType="neato")
+# zz = layoutGraph(g)
+# graph.par(list(nodes = list(fontsize = 100)))
+# renderGraph(zz)
+
+
+```
+
+## Results
+
+
+**$\color{red}{\text{I.Define the Statistical methods}}$.**
+
+**eg** Clinical isolates of MRSP cases (n = 150) and methicillin-susceptible S. pseudintermedius (MSSP) controls (n = 133) and their corresponding host signalment and medical data covering the six months prior to staphylococcal isolation were analysed by multivariable logistic regression.
+
+The identity of all MRSP isolates was confirmed through demonstration of S. intermedius-group specific nuc and mecA.
+
+**$\color{red}{\text{I.Describe demographics}}$.**
+The mean age was 57.3 ± 17 years, and 62.3% of the subjects were male. 
+The age-adjusted incidence rates were 13.8 (non-lobar) and 4.9 (lobar) per 100,000 person-years.
+**$\color{red}{\text{J.Then describe level one results}}$.**
+
+**$\color{red}{\text{K.Then describe subset results}}$.**
+
+**eg** In the final model, cats (compared to dogs, OR 18.5, 95% CI 1.8–188.0, P = 0.01), animals that had been
+hospitalised (OR 104.4, 95% CI 21.3–511.6, P < 0.001), or visited veterinary clinics more frequently (>10 visits
+OR 7.3, 95% CI 1.0–52.6, P = 0.049) and those that had received topical ear medication (OR 5.1, 95% CI 1.8–
+14.9, P = 0.003) or glucocorticoids (OR 22.5, 95% CI 7.0–72.6, P < 0.001) were at higher risk of MRSP infection,
+whereas S. pseudintermedius isolates from ears were more likely to belong to the MSSP group (OR 0.09, 95%
+CI 0.03–0.34, P < 0.001).
+
+**Choose your statistical analysis**
+
+
+## Discussion
+
+**$\color{red}{\text{L.Sentence 1: To be decided}}$.**
+
+**$\color{red}{\text{M.Sentence 2: To be decided}}$.**
+
+**$\color{red}{\text{N.Sentence 3: To be decided}}$.**
+**eg** These results indicate an association of MRSP infection with veterinary clinic/hospital
+settings and possibly with chronic skin disease.
+
+## Limitations
+**$\color{red}{\text{O.Sentence 1: To be decided}}$.**
+**eg** There was an unexpected lack of association between MRSP and antimicrobial therapy; this requires further investigation .(Lehner et al., 2014).
+
+
+
+
