@@ -1,3 +1,9 @@
+---
+title: "HRMPredictorsOfAllPosBRAVO"
+author: "Sebastian Zeki"
+date: "20/11/2018"
+output: html_document
+---
 
 ## Title and abstract
 
@@ -7,30 +13,27 @@ Remember to use **PICO**
 
 **1.Patient population**
 
+#In patients being investigated for GORD with a negative pH impedance study 
+
 **2.Intervention**
+
+#who go on to have a BRAVO study
 
 **3.Comparison**
 
+Is there a significant increase between the two tests
+
 **4.Outcome**
 
-**5. Further **
+in the patients who have GORD
 
-in these areas:
+**5. Further**
 
-**Therapy** in patients with z condition, is x therapy better than y therapy at reducing mortlity 
-In adult intravenous drug users with endocarditis	Are oral antibiotics	As effective in treating infection and reducing complications or mortality	As intravenous antibiotics?
+What can predict a BRAVO positive, pH impedance negative investigation to support a Straight-to-BRAVO test?
 
-**Prevention** in patients with z condition,does a parameter lower the risk of mortality compared with b parameter
-In hypertensive adult women who have type 2 diabetes without diabetic complications	Does a target diastolic blood pressure (DBP) of 80 mm hg	Lower risk of stroke, MI, or cardiovascular death	Compared with a target DBP of 90 mm hg?
 
-**Diagnosis** in patients with a condition does a test have a better sensitivity and specificity than b test
-In older patients with suspected cognitive impairment	Does a brief screening tool for dementia	Have sensitivity, specificity and predictive values	Similar to those of the standard screening tool, the MMSE?
 
-**Prognosis** in patients with a condition what is the risk of death at one year
-eg. In middle-aged patients who present with transient loss of consciousness	Within the year after presentation	What is the relative risk of morbidity (such as seizures or strokes) or death?	 
-
-**Etiology** or Harm Do patients with a condition have higher mortality than patients without a condition
-eg. Do adults	Who binge drink	Have higher mortality rates	Than those who do not binge drink?
+**Diagnosis** a) In patients being investigated for GORD with a negative impedance study for GORD who go on to have a BRAVO study, what proportion have a positive BRAVO for GORD condition
 
 
 **$\color{red}{\text{A.Indicate the study’s design with a commonly used term in the title or the abstract}}$.**
@@ -44,19 +47,14 @@ Example 2
 Title: ‘Case-control study of risk factors associated with Brucella melitensis on goat farms in Peninsular Malaysia’ (Bamaiyi et al., 2014).
 
 **Explanation **
-Including the study design term in the title or abstract when
-a standard study design is used, or at least identifying that a study is observational, allows the reader to easily identify the
-design and helps to ensure that articles are correctly indexed in electronic databases (Benson and Hartz, 2000). In STROBE,
-item 1a only requests that a common study design term be used. However, in veterinary research, not all observational studies are
-easily categorized into cohort, case–control, or cross-sectional study designs. Therefore, we recommend including that the study
-was observational and, if possible, the study design or important design characteristics, for example longitudinal, in the title.
+Including the study design term in the title or abstract when a standard study design is used, or at least identifying that a study is observational, allows the reader to easily identify the design and helps to ensure that articles are correctly indexed in electronic databases (Benson and Hartz, 2000). In STROBE, item 1a only requests that a common study design term be used. However, in veterinary research, not all observational studies are easily categorized into cohort, case–control, or cross-sectional study designs. Therefore, we recommend including that the study was observational and, if possible, the study design or important design characteristics, for example longitudinal, in the title.
 
 
 ---
 title: "Template for STROBE presentation at conference abstracts"
 author: "Sebastian Zeki"
 date: "04/09/2018"
-output: powerpoint_presentation
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -65,12 +63,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-
 **$\color{red}{\text{B.Introductory sentence 1: Define the disease condition}}$.**
 
 **eg** Aperistaltic oesophagus is a term that covers all conditions where achalasia is absent and there is no peristaltic activity
-
-**eg** Methicillin-resistant Staphylococcus pseudintermedius (MRSP) has emerged as a highly drug-resistant small animalveterinary pathogen.
 
 **$\color{red}{\text{C.Introductory sentence 2: The overview of the disease condition}}$.**
 
@@ -92,7 +87,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 **eg** The aim of the study was to assess the number of patients with aperistaltic oesophagus without achalasia and ascertain their demographics
 
-**eg** his study’s objective was to identify risk factors for MRSP infections in dogs and cats.
 
 ```{r Aim}
 ```
@@ -111,16 +105,14 @@ Standard sentence here about GSTT
 The results of high resolution studies performed in patients with cough as part of the presenting complaint to the gastroenterology service at Guy's and St Thomas' NHS Trust were examined retrospectively between June 2008 and January 2018. 
 
 **$\color{red}{\text{F.Define the Eligibility}}$.**
-All patients selected were adults over the age of 18. Ethics was approved (IRAS number)and by the local ethics board.
+All patients selected were adults over the age of 18. Ethics was approved (IRAS number) and by the local ethics board.
 
 **$\color{red}{\text{F.Define the Exclusion}}$.**
 Patients with incomplete data sets were exluded from the study. Where x was not available fromt the report, the raw file was located and manually analysed
 
 **$\color{red}{\text{G.Define the Sampling}}$.**
 
-Patients were selected according to Chicago Classification v3.
-Patients symptoms were selected from self reporting at impedance if this was done at the same time as high resolution manometry
-If this was not the case then the symptoms were extracted either from the final report summarising the patient's condition and physiological diagnosis, or from the clinicians details when ordering the investigation.
+Patients were selected according to Chicago Classification v3. Patients symptoms were selected from self reporting at impedance if this was done at the same time as high resolution manometry. If this was not the case then the symptoms were extracted either from the final report summarising the patient's condition and physiological diagnosis, or from the clinicians details when ordering the investigation.
 
 **$\color{red}{\text{H.Define the data cleaning methodology methods}}$.**
 
@@ -128,81 +120,476 @@ This involves how the relevant columns were accordionised (eg categorising the p
 
 
 
-```{r Methods}
+```{r Acquisition}
+library(PhysiMineR)
+library(DiagrammeR)
+library(CodeDepends)
+library(tidyverse)
+library(readxl)
+library(EndoMineR)
+library(dplyr)
+library(kableExtra)
+
+
 ######################################### Data acquisiton######################################### 
+source("/home/rstudio/PhysiMineR/R/sourcing_Data/PhysiData_Acq.R")
 
-#library(RODBC)
-#channel <- odbcConnectAccess("S:\\Gastroenterology\\Seb\\JavaPortableLauncher\\PhysiPopDONOTTOUCH\\Physiology6.mdb")
-#dataHRM(channel)
-# OR
-# HRMAndSwallows(channel)
-# OR
-# HRMAndDiag(channel)
-# 
-# dataImp2(x)
-# OR
-# dataImp_Symp(channel)
-# 
-# dataBRAVOTotal(channel)
-# OR
-# dataBRAVO(channel)
-
-
-
-######################################### Data cleaning######################################### 
-#Date cleaning
-# HRMCleanUp1(x)
-# 
-# 
-# dataImpClean(Impedance2)
-# dataImpSympClean(ImpSymp)
-# 
-# dataBRAVOClean
-
-
-
+######################################### Data cleaning & Data merging######################################### 
+source("/home/rstudio/PhysiMineR/R/sourcing_Data/PhysiData_Clean.R")
 
 ######################################### Data accordionisation######################################### 
-# SymptomsExtraction(HRMdataset,"IndicANDHx")
-# AND
-# HRMDiagnoses(HRMdataset)
+source("/home/rstudio/PhysiMineR/R/sourcing_Data/PhysiData_Accordion.R")
+```
+
+```{r Forking}
+######################################### Data forking (filtering and subsetting) #########################
+
+#No need to subset the data here
+
+```
+
+```{r DataLinkage}
+
+#Here I merge the impedance dataset and then the HRM dataset. The tests need to be merged based on the nearest date to prevent duplication etc.
 
 
-# ImpSymp<-dataImpSymptoms(ImpSymp) 
-# AcidSubtypes(Impedance)
-# SupragastricBelching(Impedance)
-# HypersensitiveOesophagus(Impedance)
-# FunctionalHeartburn(Impedance)
+#Now you need to get all the BRAVOs that are closest to the impedance
 
-######################################### Data merging######################################### 
-#Impedance3<-merge(Impedance2,ImpSymp,by="Imp_Id")
-#MyImpedanceDataWithHRM(Impedance3,dataHRM)
 
-######################################### Data Meta-cleaning (outliers and imputation of missing data) #########################################
-#library(outliers)
-#outlier(dataframe, opposite = FALSE, logical = FALSE)
+HRMImportMain$LOS_relax<-as.factor(HRMImportMain$LOS_relax)
+HRMImportMain$LowerOesoph<-as.factor(HRMImportMain$LowerOesoph)
 
-######################################### Data forking (filtering and subsetting)#######################
 
-##By CONDITION
+#Merge all hrm with AllBravo to get the full dataset
+#This merges the tests so that the nearest hrm to the BRAVO is chosen to avoid replication
+#Note that a lot of Bravo's do not have HRM as may not have been requested by outside referrers
+BravoAndHRM <- HRMImportMain %>%
+  inner_join(AllBravo, by ="HospNum_Id") %>%
+  mutate(Date_ABS_Diff = abs(VisitDate.x - VisitDate.y)) %>%
+  arrange(HospNum_Id, Date_ABS_Diff) %>%
+  group_by(HospNum_Id) %>%
+  slice(1)
+```
 
-# HRMAll_Diag5AchalasiaAll<-HRMAll_Diag4[grepl("Achalasia",HRMAll_Diag4$dx),]
-# HRMAll_Diag5AchalasiaType1<-HRMAll_Diag4[grepl("AchalasiaType1",HRMAll_Diag4$dx),]
-# HRMAll_Diag5AchalasiaType2<-HRMAll_Diag4[grepl("AchalasiaType2",HRMAll_Diag4$dx),]
-# HRMAll_Diag5AchalasiaType3<-HRMAll_Diag4[grepl("AchalasiaType3",HRMAll_Diag4$dx),]
-# HRMAll_Diag5EGOO<-HRMAll_Diag4[grepl("EGOO",HRMAll_Diag4$dx),]
-# HRMAll_Diag5PossibleAchalasia<-HRMAll_Diag4[grepl("PossibleAchalasia",HRMAll_Diag4$dx),]
-# HRMAll_Diag5AperistalsisAll<-HRMAll_Diag4[grepl("AbsentPeristalsis",HRMAll_Diag4$dx),]
-# HRMAll_Diag5DES<-HRMAll_Diag4[grepl("DES",HRMAll_Diag4$dx),]
-# HRMAll_Diag5EGOO<-HRMAll_Diag4[grepl("EGOO",HRMAll_Diag4$dx),]
-# HRMAll_Diag5FFP<-HRMAll_Diag4[grepl("FrequentFailedPeristalsis",HRMAll_Diag4$dx),]
-# HRMAll_Diag5AchalasiaAll<-HRMAll_Diag4[grepl("JackHammer",HRMAll_Diag4$dx),]
-# 
-# Impedance_Acid<-Impedance4[grepl("Acid",Impedance4$TypeOfAcid),]
+```{r DataPreparation}
 
-##By SYMPTOM:
-# Impedance_Heartburn<-Impedance3[grepl("Heartburn",Impedance3$AllImpSymptom),] #Heartburn,StomachPain,Chest,Regurgitation,Vomiting,Nausea,Cough,Belch,Throat
-# HRMAll_Heartburn<-HRMAll_Diag2[grepl("Heartburn",HRMAll_Diag2$AllSymptoms),] #Heartburn,StomachPain,Chest,Regurgitation,Vomiting,Nausea,Cough,Belch,Throat,Dysphagia
+#Really exploratory data analysis
+#Exploratory data analysis- use Data Explorer package or GGally package
+######Univariate analysis....
+#Show all the missing data in each column
+#Overall things to report in multivariate analysis from https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5457877/
+
+#(1) Selection of independent variables; 
+#(2) Fitting procedure; 
+#(3) Coding of variables; 
+#(4) Interactions; 
+#(5) Collinearity; 
+#(6) Statistical significance (OR, 95% confidence interval [CI], P value); 
+#(7) Goodness-of-fit; 
+#(8) Checking for outliers; 
+#(9) Complete identification of the statistical software application that was used; 
+#(10) Sufficient events (>10) per variable; 
+#(11) Participation of statisticians and epidemiologists; and 
+#(12) Conformity with linear gradient.
+
+
+library(DataExplorer)
+
+#Steps:
+#1. Get rid of bad columns with missing data
+
+#Tells you which columns have the most missing data so they can be excluded
+missing<-profile_missing(BravoAndHRM)
+
+#Only <10% for each row missing data is accepted 
+BravoAndHRMNoMissing<-missing[!grepl("Bad|Remove",missing$group),]
+
+#Pick the columns with good data in them from this set
+BravoAndHRMNoMissing<-BravoAndHRM[,match(as.character(BravoAndHRMNoMissing$feature),names(BravoAndHRM))]
+                                                                               
+                                                                               
+library(psych)
+#Only select the numerical variables
+
+#2.Recoding
+BravoAndHRMNoMissing$AcidRefluxBRAVO<-gsub("NoAcid",0,BravoAndHRMNoMissing$AcidRefluxBRAVO)
+BravoAndHRMNoMissing$AcidRefluxBRAVO<-gsub(".*Acid",1,BravoAndHRMNoMissing$AcidRefluxBRAVO)
+BravoAndHRMNoMissing$Hiatalhernia<-ifelse(BravoAndHRMNoMissing$Hiatalhernia=="Yes",1,0)
+BravoAndHRMNoMissing$AcidRefluxBRAVO<-as.numeric(BravoAndHRMNoMissing$AcidRefluxBRAVO)
+
+
+
+#3. Get some basic descriptive stats:
+rr<-describe(BravoAndHRMNoMissing)
+
+#4. Get rid of bad outliers
+
+#5. Transform variables
+```
+
+```{r PrelimAnalysisHRM}
+
+
+#Select HRM only. Also get rid of DistalLESfromnarescm,ProximalLESfromnarescm,EsophageallengthLESUEScenterscm as these are colinear and reflect length of oesophagus altogether)
+
+#4. Variable selection- choose HRM variables only here. Got rid of BasalrespiratorymeanmmHg,ContractileFrontVelocity,HiatusHernia and most oesophageal length measurements because of colinearity concerns with other variables
+BravoAndHRMNoMissingFinal<-BravoAndHRMNoMissing %>%
+  ungroup()%>%
+  select(IntraabdominalLESlengthcm,
+         Hiatalhernia,
+         LOS_relax,
+BasalrespiratoryminmmHg,
+ResidualmeanmmHg,
+DistalcontractileintegralmeanmmHgcms,
+IntraboluspressureATLESRmmHg,
+Distallatency,
+failedChicagoClassification,
+panesophagealpressurization,
+largebreaks,
+prematurecontraction,
+rapidcontraction,
+smallbreaks, 
+AcidRefluxBRAVO)
+
+#Check for multicolinearity
+library("PerformanceAnalytics")
+chart.Correlation(BravoAndHRMNoMissingFinal, histogram=TRUE, pch=1)
+#Exploratory data analysis:
+create_report(BravoAndHRMNoMissingFinal)
+
+#Consider changing variables and repeat step 4
+
+
+```
+
+```{r HRM_MultipleLogRegression}
+
+library(MASS)
+# Fit the full model 
+data<-na.omit(BravoAndHRMNoMissingFinal)
+full.model <- glm(AcidRefluxBRAVO ~ ., data = data)
+# Stepwise regression model
+step.model <- stepAIC(full.model, direction = "both", 
+                      trace = FALSE)
+
+summary(step.model)
+
+library(pROC)
+predpr <- predict(full.model,type=c("response"))
+roccurve <- roc(AcidRefluxBRAVO ~ predpr, data = data)
+plot(roccurve)
+auc(roccurve)
+
+detach("package:MASS", unload=TRUE)
+```
+
+```{r HRM_UnivariateAnalysis}
+
+#Univariate analysis:
+NegBRAVOAndHRMFinal<-BravoAndHRMNoMissingFinal[BravoAndHRMNoMissingFinal$AcidRefluxBRAVO==1,]
+PosBRAVOAndHRMFinal<-BravoAndHRMNoMissingFinal[BravoAndHRMNoMissingFinal$AcidRefluxBRAVO==0,]
+
+
+#Univariate analysis
+t.test(NegBRAVOAndHRMFinal$BasalrespiratoryminmmHg ,PosBRAVOAndHRMFinal$BasalrespiratoryminmmHg,paired=FALSE)
+
+chisq.test(NegBRAVOAndHRMFinal$Hiatalhernia,PosBRAVOAndHRMFinal$Hiatalhernia)
+t.test(NegImpPosBRAVOFinal$Distallatency,NegImpNegBRAVOFinal$Distallatency,paired=FALSE)
+t.test(NegImpPosBRAVOFinal$largebreaks,NegImpNegBRAVOFinal$largebreaks,paired=FALSE)
+
+```
+###################################### Nothing done from here down ######################################
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
+```{r PrelimAnalysisImp}
+
+#Use the data set loaded above
+                                                                               
+library(psych)
+#Only select the numerical variables
+
+#4. Get rid of bad outliers
+
+#5. Transform variables
+
+
+#Select HRM only. Also get rid of DistalLESfromnarescm,ProximalLESfromnarescm,EsophageallengthLESUEScenterscm as these are colinear and reflect length of oesophagus altogether)
+
+#4. Variable selection- choose HRM variables only here. Got rid of BasalrespiratorymeanmmHg,ContractileFrontVelocity,HiatusHernia and most oesophageal length measurements because of colinearity concerns with other variables
+
+#Variables removed: MainReflxSettingsAnalysisDurationUpright(as is a 24 hour clock) 
+#MainAcidCompositeScorePatientValueRecumbentTimeInReflux,
+#MainAcidCompositeScorePatientValueEpisodesOver5min,
+#MainAcidCompositeScorePatientValueLongestEpisode,
+#MainAcidCompositeScorePatientValueTotalEpisodes,
+#MainAcidCompositeScorePatientScoreTotalEpisodes,
+#MainAcidCompositeScorePatientScoreUprightTimeInReflux,
+#MainAcidCompositeScorePatientScoreRecumbentTimeInReflux,
+#MainAcidCompositeScorePatientScoreTotalTimeInReflux,
+#MainAcidCompositeScorePatientScoreEpisodesOver5min,
+#MainAcidCompositeScorePatientScoreLongestEpisode,
+#MainAcidCompositeScorePatientValueUprightTimeInReflux,(all the composite scores are likely to be related to the other scores anyway)
+#MainPPPostprandExpoAnalysisDurationUpright,
+#MainPPPostprandExpoAnalysisDurationRecumbent,
+#MainPPPostprandExpoAnalysisDurationTotal,
+#MainReflxSettingsAnalysisDurationRecumbent,
+#MainReflxSettingsAnalysisDurationTotal,(all the duration are 24 hour clock times)
+#MainAcidExpUprightGastricChannelTimepHLessThan40, (gastric channel unlikely to be relevant)
+#MainAcidExpRecumbentGastricChannelTimepHLessThan40, (gastric channel unlikely to be relevant)
+
+#Postprandial exclude for now:
+# MainPPBolusExpoAcidPercentTime,
+# MainPPBolusExpoNonacidTime,
+# MainPPBolusExpoNonacidPercentTime,
+# MainPPBolusExpoAllRefluxTime,
+# MainPPBolusExpoAllRefluxPercentTime,
+# MainPPBolusExpoMedianBolusClearanceTime,
+# PPReflEpisodeActExpoAcid,
+# PPReflEpisodeActExpoNonacid,
+# PPReflEpisodeActExpoAllReflux,
+# MainPPBolusExpoAcidTime,
+# MainPPAcidExpoClearanceChannelNumberofAcidEpisodes,
+# MainPPAcidExpoClearanceChannelTime,
+# MainPPAcidExpoClearanceChannelPercentTime,
+# MainPPAcidExpoClearanceChannelMeanAcidClearanceTime,
+# MainPPAcidExpoClearanceChannelLongestEpisode,
+# MainPPAcidExpoGastricChannelPercentTime,
+# MainAcidExpTotalGastricChannelTimepHLessThan40,
+
+# MainRflxEpisodeUprightAcid,
+# MainRflxEpisodeRecumbentAcid,
+# MainRflxEpisodeTotalAcid,
+# MainRflxEpisodeUprightNonacid,
+# MainRflxEpisodeRecumbentNonacid,
+# MainRflxEpisodeTotalNonacid,
+# MainRflxEpisodeUprightAllReflux,
+# MainRflxEpisodeRecumbentAllReflux,
+# MainRflxEpisodeTotalAllReflux,
+
+#This lot likely to already be represented under PercentTime
+# MainAcidExpUprightClearanceChannelTime,
+# MainAcidExpRecumbentClearanceChannelTime,
+# MainAcidExpTotalClearanceChannelTime,
+# MainAcidExpUprightClearanceChannelMeanAcidClearanceTime,
+# MainAcidExpRecumbentClearanceChannelMeanAcidClearanceTime,
+# MainAcidExpTotalClearanceChannelMeanAcidClearanceTime,
+
+# Colinearity issues:
+# MainAcidExpUprightClearanceChannelPercentTime,
+# MainAcidExpUprightClearanceChannelNumberofAcidEpisodes,
+
+# Don't seem to be contributing much to the model:
+# MainAcidExpRecumbentClearanceChannelLongestEpisode
+# MainAcidExpTotalClearanceChannelLongestEpisode
+
+NegImpALL_BRAVO_WithImpNoMissing<- NegImpALL_BRAVO_WithImpAndHRMNoMissing %>% 
+    ungroup()%>%
+select(
+MainAcidExpRecumbentClearanceChannelNumberofAcidEpisodes,
+MainAcidExpTotalClearanceChannelNumberofAcidEpisodes,
+MainAcidExpRecumbentClearanceChannelPercentTime,
+MainAcidExpTotalClearanceChannelPercentTime,
+MainAcidExpUprightClearanceChannelLongestEpisode,
+MainAcidCompositeScorePatientValueTotalTimeInReflux,
+MainAcidCompositeScorePatientValueRecumbentTimeInReflux,
+MainAcidCompositeScorePatientValueUprightTimeInReflux,
+AcidRefluxBRAVO)
+
+NegImpALL_BRAVO_WithImpNoMissing<-dplyr::select_if(NegImpALL_BRAVO_WithImpNoMissing, is.numeric)
+
+#Check for multicolinearity
+library("PerformanceAnalytics")
+chart.Correlation(NegImpALL_BRAVO_WithImpNoMissing, histogram=FALSE, pch=1)
+cor(NegImpALL_BRAVO_WithImpNoMissing, method = "pearson", use = "complete.obs")
+
+#Exploratory data analysis:
+create_report(NegImpALL_BRAVO_WithImpNoMissing)
+
+#Consider changing variables and repeat step 4
+```
+
+```{r Imp_MultipleLogRegression}
+
+
+
+#Running multivariate analysis
+library(MASS)
+# Fit the full model 
+data<-na.omit(NegImpALL_BRAVO_WithImpNoMissing)
+full.model <- glm(AcidRefluxBRAVO ~ ., data = data)
+# Stepwise regression model
+step.model <- stepAIC(full.model, direction = "both", trace = FALSE)
+summary(step.model)
+
+library(pROC)
+predpr <- predict(full.model,type=c("response"))
+roccurve <- roc(AcidRefluxBRAVO ~ predpr, data = data)
+plot(roccurve)
+auc(roccurve)
+
+detach("package:MASS", unload=TRUE)
+```
+
+```{r Imp_UnivariateAnalysis}
+
+
+#Univariate analysis:
+NegImpPosBRAVO<-NegImpALL_BRAVO_WithImpNoMissing[NegImpALL_BRAVO_WithImpNoMissing$AcidRefluxBRAVO==1,]
+NegImpNegBRAVO<-NegImpALL_BRAVO_WithImpNoMissing[NegImpALL_BRAVO_WithImpNoMissing$AcidRefluxBRAVO==0,]
+
+
+#3. Check normality
+library(ggpubr)
+ggqqplot(NegImpPosBRAVO$PIPfromnarescm)
+
+
+#Univariate analysis
+t.test(NegImpPosBRAVO$MainAcidExpUprightClearanceChannelLongestEpisode,NegImpNegBRAVO$MainAcidExpUprightClearanceChannelLongestEpisode,paired=FALSE)
+
+#Get a ROC curve
+library(ROCR)
+prediction( NegImpALL_BRAVO_WithImpNoMissing$MainAcidExpUprightClearanceChannelLongestEpisode, NegImpALL_BRAVO_WithImpNoMissing$AcidRefluxBRAVO)
+
+perf1 <- performance(pred, "sens", "spec")
+plot(perf1)
+
+library(OptimalCutpoints)
+NegImpALL_BRAVO_WithImpNoMissing<-data.frame(NegImpALL_BRAVO_WithImpNoMissing,stringsAsFactors = F)
+optimal.cutpoints(X="MainAcidCompositeScorePatientValueUprightTimeInReflux",status="AcidRefluxBRAVO",tag.healthy=1,methods = "Youden",data=NegImpALL_BRAVO_WithImpNoMissing, pop.prev = NULL,
+control = control.cutpoints(), ci.fit = FALSE, conf.level = 0.95, trace = FALSE)
+
+
+```
+
+```{r PrelimAnalysisImpAndHRM}
+
+NegImpALL_BRAVO_WithImpNoMissing$failedChicagoClassification<-as.factor(NegImpALL_BRAVO_WithImpNoMissing$failedChicagoClassification)
+NegImpALL_BRAVO_WithImpNoMissing$panesophagealpressurization<-as.factor(NegImpALL_BRAVO_WithImpNoMissing$panesophagealpressurization)
+NegImpALL_BRAVO_WithImpNoMissing$largebreaks<-as.factor(NegImpALL_BRAVO_WithImpNoMissing$largebreaks)
+NegImpALL_BRAVO_WithImpNoMissing$prematurecontraction<-as.factor(NegImpALL_BRAVO_WithImpNoMissing$prematurecontraction)
+NegImpALL_BRAVO_WithImpNoMissing$rapidcontraction<-as.factor(NegImpALL_BRAVO_WithImpNoMissing$rapidcontraction)
+NegImpALL_BRAVO_WithImpNoMissing$smallbreaks<-as.factor(NegImpALL_BRAVO_WithImpNoMissing$smallbreaks)
+
+NegImpALL_BRAVO_WithImpNoMissing<- NegImpALL_BRAVO_WithImpAndHRMNoMissing %>%  
+  ungroup()%>%
+  select(
+IntraabdominalLESlengthcm,
+ Hiatalhernia,
+         LOS_relax,
+         LowerOesoph,
+BasalrespiratoryminmmHg,
+ResidualmeanmmHg,
+DistalcontractileintegralmeanmmHgcms,
+IntraboluspressureATLESRmmHg,
+Distallatency,
+failedChicagoClassification,
+panesophagealpressurization,
+largebreaks,
+prematurecontraction,
+rapidcontraction,
+smallbreaks,
+MainAcidExpRecumbentClearanceChannelNumberofAcidEpisodes,
+MainAcidExpTotalClearanceChannelNumberofAcidEpisodes,
+MainAcidExpRecumbentClearanceChannelPercentTime,
+MainAcidExpTotalClearanceChannelPercentTime,
+MainAcidExpUprightClearanceChannelLongestEpisode,
+MainAcidCompositeScorePatientValueTotalTimeInReflux,
+MainAcidCompositeScorePatientValueRecumbentTimeInReflux,
+MainAcidCompositeScorePatientValueUprightTimeInReflux,
+AcidRefluxBRAVO)
+
+
+NegImpALL_BRAVO_WithImpNoMissing<-dplyr::select_if(NegImpALL_BRAVO_WithImpNoMissing, is.numeric)
+
+
+#Check for multicolinearity
+library("PerformanceAnalytics")
+chart.Correlation(NegImpALL_BRAVO_WithImpNoMissing, histogram=FALSE, pch=1)
+cor(NegImpALL_BRAVO_WithImpNoMissing, method = "pearson", use = "complete.obs")
+
+#Exploratory data analysis:
+create_report(NegImpALL_BRAVO_WithImpNoMissing)
+
+```
+
+```{r ImpAndHRM_LogisticRegression}
+
+
+
+library(MASS)
+# Fit the full model 
+data<-na.omit(NegImpALL_BRAVO_WithImpNoMissing)
+full.model <- glm(AcidRefluxBRAVO ~ ., data = data)
+# Stepwise regression model
+step.model <- stepAIC(full.model, direction = "both", trace = FALSE)
+summary(step.model)
+
+library(pROC)
+predpr <- predict(full.model,type=c("response"))
+roccurve <- roc(AcidRefluxBRAVO ~ predpr, data = data)
+plot(roccurve)
+auc(roccurve)
+
+detach("package:MASS", unload=TRUE)
+
+
+```
+
+```{r ImpAndHRM_UnivariateAnalysis}
+#Univariate analysis:
+NegImpPosBRAVO<-NegImpALL_BRAVO_WithImpNoMissing[NegImpALL_BRAVO_WithImpNoMissing$AcidRefluxBRAVO==1,]
+NegImpNegBRAVO<-NegImpALL_BRAVO_WithImpNoMissing[NegImpALL_BRAVO_WithImpNoMissing$AcidRefluxBRAVO==0,]
+
+
+t.test(NegImpPosBRAVO$Distallatency,NegImpNegBRAVO$Distallatency,paired=FALSE)
+
+
+```
+
+```{r VarDiagram}
+#### Documenting the sets 
+
+nodes <- create_node_df(n=6, 
+                        nodes=c("ImpAll", "AllBravo", "NegativeImpedance","MyBravoFromNegativeImpedance","MyBravoFromNegativeImpedancePOSITIVE_BRAVO","MyBravoFromNegativeImpedanceNEGATTIVE_BRAVO"),
+                        label=c(paste0("ImpAll: ",nrow(ImpAll)), stringr::str_wrap(paste0("All BRAVO: ",nrow(AllBravo)),10), stringr::str_wrap(paste0("Negative Impedance: ",nrow(NegativeImpedance)),10),
+                                stringr::str_wrap(paste0("MyBravo (Negative Impedance):",nrow(MyBravoFromNegativeImpedance)),10),
+                                stringr::str_wrap(paste0("Positive BRAVO:",nrow(MyBravoFromNegativeImpedancePOSITIVE_BRAVO)),10),
+                                stringr::str_wrap(paste0("Negative BRAVO: ",nrow(MyBravoFromNegativeImpedanceNEGATTIVE_BRAVO)),10)),
+                        shape = "rectangle",
+                        fontsize=5)
+
+edges <-
+  create_edge_df(
+    from = c(1,2,3,4,4),
+    to = c(3,4,4,5,6))
+
+
+g <- create_graph(nodes_df=nodes, 
+                  edges_df=edges)%>%
+   add_global_graph_attrs(
+      attr = c("layout", "rankdir", "splines"),
+      value = c("dot", "TB", "false"),
+      attr_type = c("graph", "graph", "graph"))
+render_graph(g)
+
+```
+
+```{r CodeGraph}
+####Documenting the code: 
+
+# library(CodeDepends)
+# sc = readScript("/home/rstudio/PhysiMineR/Questions/ImpedanceQues/NegImpBRAVO/NegativeImpedanceBRAVO.Rmd")
+# g = makeVariableGraph( info =getInputs(sc))
+# if(require(Rgraphviz))
+#   edgemode(g) <- "directed"
+# x <- layoutGraph(g, layoutType="neato")
+# zz = layoutGraph(g)
+# graph.par(list(nodes = list(fontsize = 100)))
+# renderGraph(zz)
 
 
 ```
@@ -232,76 +619,13 @@ CI 0.03–0.34, P < 0.001).
 
 **Choose your statistical analysis**
 
-# <img src="StatisticalChoices.png" align="right" />
 
 ```{r Results}
 ######################################### Data analysis######################################### 
 
-#Exploratory data analysis- use Data Explorer package or GGally package
-######Univariate analysis....
-#Show all the missing data in each column
-#plot_missing(dataset)
-#Plot the continuous variables to see how they are distributed as a bar plot
-#plot_histogram(dataset)
-#Plot the continuous variables to see how they are distributed as a density plot
-#plot_density(dataset)
-
-#Plot categorical variables to see how they are distributed
-#plot_bar(dataset)
-
-#This is even better 
-#library(PerformanceAnalytics)
-#chart.Correlation(HRMAll_Diag4[13:19], method="spearman",histogram=TRUE,pch=16)
-
-######Multivariate analyses
-#plot_correlation(dataset)
-
-
-######Get the whole thing:
-#create_report(dataset)
-
-####Get descriptive stats on all the columns:
-#library(xda)
-#numSummary(Impedance3)
-#or 
-#summary(Impedance3)
-#or
-#use rattle()
-
-#### Get some bivariate analyses in there (for numerical variables)
-#pairs(Impedance3[18:25])
 
 
 
-################ Multivariate analyses ################
-
-# 1.	Recode data new dichotomous variables (i.e., URBAN, RURAL, & GENDER)
-# 2.	Conduct preliminary analyses
-# a.	Examine descriptive statistics of the continuous variables 
-# b.	Check the normality assumption by examining histograms of the continuous variables
-# c.	Check the linearity assumption by examining correlations between continuous variables and scatter diagrams of the dependent variable versus independent variables. 
-# 3.	Conduct multiple linear regression analysis
-# a.	Run model with dependent and independent variables
-# b.	Model Check
-# i.	Examine collinearity diagnostics to check for  multicollinearity
-# ii.	Examine residual plots to check error variance assumptions (i.e., normality and homogeneity of variance)
-# iii.	Examine influence diagnostics (residuals, dfbetas) to check for outliers
-# iv.	Examine significance of coefficient estimates to trim the model 
-# c.	Revise the model and rerun the analyses based on the results of steps i-iv.
-# d.	Write the final regression equation and interpret the coefficient estimates.
-
-#or just use rattle and go through all the tabs
-
-#To get the the contribution of each variable in logistic regression you need to get the odds ratio
-
-######################################### Code overview (with CodeDepends)######################################### 
-#library(codeDepends)
-#sc = readScript("S:\\Gastroenterology\\Seb\\R\\Scripts\\Eosinophilics\\Eosinophilix.R")
-#g = makeVariabl**eg**raph( info =getInputs(sc))
-
-
-#if(require(Rgraphviz))
-#  plot(g)
 ```
 
 ## Discussion
@@ -439,5 +763,6 @@ the abstract, for example only statistically significant results or the outcome 
  localisation and prognosis. Conclusions: The incidence of non-lobar SICH was high, but lower than
  in most non-white populations. This lower incidence could be due to a lower population prevalence of
  risk factors, a higher socioeconomic level in this population, or chance.
+
 
 

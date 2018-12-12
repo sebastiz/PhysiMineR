@@ -15,7 +15,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-**$\color{red}{\text{B.Introductory sentence 1: Define the disease condition}}$.**
 
 Patients with suspected gastrooesophageal reflux disease (GORD) often undergo pH impedance and manometry if there is diagnostic doubt or as a work-up for anti-reflux procedures. pH impedance is usually performed as a 24 hour test and therefore may be negative in patients with intermittent acid reflux. In cases of clinical suspicion the patient may undergo a longer period of acid reflux monitoring which can be performed with an endoscopically inserted wireless capsule (BRAVO TM). It is unclear which patients with negative pH impedance should be selected for further testing and it may be that high resolution (HRM) parameters can give us insight as to who is at an increased risk having GORD even if undetected by pH impedance.The aim of the current study was to determine variables from either pH impedance or high resolution manometry, in cases where the pH impedance was negative, that may predict a pH impedance study that is positive for GORD.
 
@@ -187,49 +186,10 @@ AcidReflux)
 
 
 ```
-
-
-After assessment of colinearity and exclusion of significantly correlated variables, the following variables were chosen for further analysis from the HRM report: Intraabdominal LES length,presence of a Hiatal hernia,  Basal respiratory minimum pressure, Residual mean pressure, Distal contractile integral, Intrabolus pressure, Distal latency, failed peristalsis percentage, panesophageal pressurization percentage, large breaks percentage, premature contraction percentage, rapid contraction percentage and small breaks percentage. The dependent variable was the presence of acid reflux on impedance.
-
-```{r HRM_MultipleLogRegression,echo=FALSE, message=FALSE,warning=FALSE}
-
-library(MASS)
-# Fit the full model 
-data<-na.omit(ImpAndHRMNoMissingFinal)
-full.model <- glm(AcidReflux ~ ., data = data)
-# Stepwise regression model
-step.model <- stepAIC(full.model, direction = "both", 
-                      trace = FALSE)
-
-modelSum<-summary(step.model)
-
-
-panderOptions("digits", 2)
-panderOptions('table.alignment.rownames', 'left')
-pander(modelSum)
-detach("package:MASS", unload=TRUE)
-
-```
-
-
-```{r HRM_MultipleLogRegressionSummarised,echo=FALSE, message=FALSE,warning=FALSE}
-
-library(jtools)
-library(pROC)
-export_summs(step.model,scale = TRUE,error_format = "[{conf.low}, {conf.high}]")
-plot_summs(step.model, scale = TRUE, plot.distributions = TRUE)
+Quantitative data were presented as mean±SD. Data transformation by square root was applied to the operative time and blood loss during surgery, to meet the normality requirement. Operative time and blood loss were standardized by minusing their mean and then dividing by their SD.17 Student t test or χ2 test was applied to examine the difference of each variable as indicated. Linear regression was utilized to determine the relationships between the patients’ variables and endpoints (operative time, blood loss during surgery), whereas logistic regression was applied for postoperative morbidity. After univariate analysis, variables with a P<0.25 were selected for multivariate analysis. A multivariate analysis was performed using a multiple linear regression or logistic model, with a stepwise (forward selection/backward elimination) method. The statistical analysis was performed using SAS software (SAS Institute Inc., Cary, NC), and P<0.05 was considered to be significant.The strength of the corresponding associations was estimated by using univariate analysis and multivariate logistic regression analysis, and expressed as odds ratio (OR)
 
 
 
-
-predpr <- predict(full.model,type=c("response"))
-roccurve <- roc(AcidReflux ~ predpr, data = data)
-plot(roccurve)
-auc(roccurve)
-
-```
-
-A generalised linear multiple regression model was implemented in R (MASS package) using a stepwise bidirectional linear regression method. The model determined that the most important variables for the prediction of a positive pH impedance test were the following (Table 1). The area under the curve for the model was `r auc(roccurve)`
 
 ```{r HRM_UnivariateAnalysis,echo=FALSE, message=FALSE,warning=FALSE}
 
@@ -302,11 +262,65 @@ names(ss)<-c("All","GORD Positive","Gord Negative","p value")
 #Rename the rows:
 rownames(ss)<-c("n","Intraabdominal LES length (cm)","Hiatal hernia","LOS relax","Basal respiratory min (mmHg)","Residual mean (mmHg)","Distal contractile integralmean (mmHg/cm/s)","Intrabolus pressure @ LESR(mmHg)","Distal latency","failedPeristalsis(%)","Panesophageal pressurization(%)","Large breaks(%)","Premature contraction(%)","Rapid contraction(%)","small breaks(%)","Acid Reflux")
 
+knitr::kable(ss)
 
-#Render in html
-xtable(ss)
 
 ```
+
+Stepwise multiple logistic regression analysis was used to identify significant predictor variables of a major final diagnosis. The prediction model was built using SAS stepwise logistic regression analysis on the exploratory sample population with an entry criterion of p<0.3. The stepwise procedure added the independent variables to the model one at a time. In the final model variables were removed if the retention criterion of p⩽0.05 was not met. The study population was randomly divided into an exploration group (n=1908) and a validation group (n=1907). Thirteen predictor variables (age, sex, ASA classification of comorbidity, bleeding, vomiting, heartburn, dysphagia, weight loss, early satiety, chest pain, odynophagia, anaemia, and feeding problems) were included in the model building process. Interaction among the predictor variables was analysed using the Breslow day test for homogeneity.20 Once the model was established using the exploratory group, the parameter estimates were applied to the validation group to test the predictive accuracy of the model. The predictive value of the model was assessed with a receiver operating characteristic (ROC) curve. The curve represents the relationship between sensitivity and specificity for the prediction of a major final diagnosis.21
+Because prediction rules based on logistic regression are often too complex for routine clinical use, we also developed a simplified clinical prediction rule. The variables specified in the logistic regression model were evaluated using a univariate logistic analysis to justify inclusion in the simplified model. The simplified rule corresponds to current consensus recommendations on endoscopic evaluation of dyspepsia. All patients aged ⩾45 years or with any “alarm” symptoms (those identified as risk factors in the multivariate model) were considered to have a “positive” indication. The sensitivity and specificity of the simplified rule was determined by comparison with the actual endoscopic findings among those with and without a “positive” indication. We also varied the age cut off from 30 to 70 years and determined the sensitivity and specificity at each cut off.
+ 
+
+After assessment of colinearity and exclusion of significantly correlated variables, the following variables were chosen for further analysis from the HRM report: Intraabdominal LES length,presence of a Hiatal hernia,  Basal respiratory minimum pressure, Residual mean pressure, Distal contractile integral, Intrabolus pressure, Distal latency, failed peristalsis percentage, panesophageal pressurization percentage, large breaks percentage, premature contraction percentage, rapid contraction percentage and small breaks percentage. The dependent variable was the presence of acid reflux on impedance.
+
+```{r HRM_MultipleLogRegression,echo=FALSE, message=FALSE,warning=FALSE}
+library(kableExtra)
+library(MASS)
+library(epiDisplay)
+# Fit the full model 
+data<-na.omit(ImpAndHRMNoMissingFinal)
+full.model <- glm(AcidReflux ~ ., data = data)
+# Stepwise regression model
+step.model <- stepAIC(full.model, direction = "both", 
+                      trace = FALSE)
+modelSum<-summary(step.model)
+modelSum%>%xtable%>%kable
+
+kable(logistic.display(step.model))%>%
+   kable_styling(bootstrap_options = "striped", full_width = T, position = "float_right")
+detach("package:epiDisplay", unload=TRUE)
+
+detach("package:MASS", unload=TRUE)
+
+library(stargazer)
+library(Gmisc)
+Gmisc::htmltable(stargazer(step.model,type="text"))
+xtable(stargazer(step.model,type="text"))
+
+
+
+library()
+
+
+```
+
+
+```{r HRM_MultipleLogRegressionSummarised,echo=FALSE, message=FALSE,warning=FALSE}
+
+library(jtools)
+library(pROC)
+export_summs(step.model,scale = TRUE,error_format = "[{conf.low}, {conf.high}]")
+plot_summs(step.model, scale = TRUE, plot.distributions = TRUE)
+predpr <- predict(full.model,type=c("response"))
+roccurve <- roc(AcidReflux ~ predpr, data = data)
+plot(roccurve)
+auc(roccurve)
+
+```
+
+A generalised linear multiple regression model was implemented in R (MASS package) using a stepwise bidirectional linear regression method. The model determined that the most important variables for the prediction of a positive pH impedance test were the following (Table 1). The area under the curve for the model was `r auc(roccurve)`
+
+
 
 ```{r VarDiagram,echo=FALSE, message=FALSE,warning=FALSE}
 #### Documenting the sets 
