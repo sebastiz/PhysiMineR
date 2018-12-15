@@ -1,5 +1,5 @@
 ---
-title: "HRMPredictorsOfAllPosBRAVO"
+title: "FundoplicationFailedPeristalsis"
 author: "Sebastian Zeki"
 date: "20/11/2018"
 output: html_document
@@ -143,33 +143,30 @@ source("/home/rstudio/PhysiMineR/R/sourcing_Data/PhysiData_Accordion.R")
 
 ```{r Forking}
 ######################################### Data forking (filtering and subsetting) #########################
-#1. All Filters should be numeric nrows and start with the term Fil_ appended to the nrow from which it is derived eg mydf becomes Fil_mydf<-nrow(mydf)
 
-#No need to subset the data here
+#Get the fundoplication data
+
+FundoplicationData <- read_excel("/home/rstudio/PhysiMineR/data/FundoplicationHospitalNums.xlsx")
+
+names(FundoplicationData)<-c("HospNum_Id")
+
+
+
+#Get all the HRM which are 100% failed
+Aperistaltic_HRMImportMain<-HRMImportMain[HRMImportMain$failedChicagoClassification>99,]
+#Get the HRM for all the Fundoplication patients
+HRM_In_Fundoplication<-filter(Aperistaltic_HRMImportMain, HospNum_Id %in% FundoplicationData$HospNum_Id)
+
+
+
+
+#Get the fundoplication 
 
 ```
 
 ```{r DataLinkage}
 
-#Here I merge the impedance dataset and then the HRM dataset. The tests need to be merged based on the nearest date to prevent duplication etc.
 
-
-#Now you need to get all the BRAVOs that are closest to the impedance
-
-
-HRMImportMain$LOS_relax<-as.factor(HRMImportMain$LOS_relax)
-HRMImportMain$LowerOesoph<-as.factor(HRMImportMain$LowerOesoph)
-
-
-#Merge all hrm with AllBravo to get the full dataset
-#This merges the tests so that the nearest hrm to the BRAVO is chosen to avoid replication
-#Note that a lot of Bravo's do not have HRM as may not have been requested by outside referrers
-BravoAndHRM <- HRMImportMain %>%
-  inner_join(AllBravo, by ="HospNum_Id") %>%
-  mutate(Date_ABS_Diff = abs(VisitDate.x - VisitDate.y)) %>%
-  arrange(HospNum_Id, Date_ABS_Diff) %>%
-  group_by(HospNum_Id) %>%
-  slice(1)
 ```
 
 ```{r DataPreparation}
@@ -200,7 +197,7 @@ library(DataExplorer)
 #1. Get rid of bad columns with missing data
 
 #Tells you which columns have the most missing data so they can be excluded
-missing<-profile_missing(BravoAndHRM)
+missing<-profile_missing(HRM_In_Fundoplication)
 
 #Only <10% for each row missing data is accepted 
 BravoAndHRMNoMissing<-missing[!grepl("Bad|Remove",missing$group),]
@@ -212,16 +209,11 @@ BravoAndHRMNoMissing<-BravoAndHRM[,match(as.character(BravoAndHRMNoMissing$featu
 library(psych)
 #Only select the numerical variables
 
-#2.Recoding
-BravoAndHRMNoMissing$AcidRefluxBRAVO<-gsub("NoAcid",0,BravoAndHRMNoMissing$AcidRefluxBRAVO)
-BravoAndHRMNoMissing$AcidRefluxBRAVO<-gsub(".*Acid",1,BravoAndHRMNoMissing$AcidRefluxBRAVO)
-BravoAndHRMNoMissing$Hiatalhernia<-ifelse(BravoAndHRMNoMissing$Hiatalhernia=="Yes",1,0)
-BravoAndHRMNoMissing$AcidRefluxBRAVO<-as.numeric(BravoAndHRMNoMissing$AcidRefluxBRAVO)
 
 
 
 #3. Get some basic descriptive stats:
-rr<-describe(BravoAndHRMNoMissing)
+rr<-describe(HRM_In_Fundoplication)
 
 #4. Get rid of bad outliers
 
@@ -254,7 +246,7 @@ AcidRefluxBRAVO)
 
 #Check for multicolinearity
 library("PerformanceAnalytics")
-chart.Correlation(BravoAndHRMNoMissingFinal, histogram=TRUE, pch=1)
+chart.Correlation(HRM_In_Fundoplication, histogram=TRUE, pch=1)
 #Exploratory data analysis:
 create_report(BravoAndHRMNoMissingFinal)
 

@@ -131,9 +131,16 @@ rr<-data.frame(describe(ImpAndHRMNoMissing),stringsAsFactors=FALSE)
 
 
 ## Methods
-All variables from HRM and pH impedance results of patients who had undergone studies at Guy's and St Thomas' Foundation NHS Trust was extracted 
+All variables from HRM and pH impedance results of patients who had undergone studies at Guy's and St Thomas' Foundation NHS Trust was extracted Study Design and Patient Population 
+The study population consisted of adult patients (18 years of age) with refractory heartburn or suspected EER symptoms (asthma, cough, or hoarseness) referred to the Esophageal Motility Center at the Vanderbilt University Medical Center (Nashville, TN) and had failed > 8 week course of high dose (twice-daily) PPI therapy. Excluded were patients with a history of fundoplication, radiation, or malignancy. The external validation cohort obtained from the Mayo Clinic (Rochester, MN) and the Washington University in St Louis (St Louis, MO) used these same inclusion and exclusion criteria. All patients underwent esophagogastroduodenoscopy (EGD) and 48-hour wireless pH monitoring by a single provider . Data were prospectively collected and included patient characteristics (age, sex, race, and body mass index [BMI]), presence of secondary GERD symptoms (heartburn with or without regurgitation) in patients with primary extraesophageal symptoms, and current acidsuppressive medication regimen (or no treatment). The presence and size of a hiatal hernia and the presence and severity of esophagitis (graded by the Los Angeles Classification as A, B, C, or D) were determined with endoscopy.
 
 **$\color{red}{\text{F.Define the Location}}$.**
+
+
+Wireless pH Monitoring 
+Patients stopped taking PPIs and H2-receptor antagonists at least 7 days before undergoing 48-hour wireless ambulatory pH monitoring (Given Imaging, Duluth, GA). Patients underwent EGD for visual anatomic inspection (for presence and size of hiatal hernia and evaluation of esophageal mucosal integrity for esophagitis) and distance measurements from the incisors to the squamocolumnar junction. Wireless capsules were calibrated by submersion in buffer solutions at pH 7.0 and 1.0 and then activated by magnet removal. Capsules were placed 6 cm above the squamocolumnar junction and attached with vacuum suction using the manufacturer’s delivery system. Placement was confirmed with endoscopy. Subsequently, patients wore wireless pH recorders on their waists or kept them within 3–5 feet at all times. Recording devices received pH data sampling transmitted by the capsule at 433 Hz with 6-second sampling intervals during the 48-hour study. Patients were instructed to perform their normal daily activities and dietary practices.13 After study completion, data were downloaded to dedicated computers. Patient-recorded symptoms were entered into the computer-based record. Measurements of total, upright, and supine percentage of time when esophageal pH was below 4 were determined over days 1 and 2 of the wireless study. Total acid exposure time (percentage of total time with pH <4) greater than 5.5% (mild reflux) and 12% (moderate to severe reflux) were used as cutoffs based on the average of 2 days.14 A 12% cutoff was used to define moderate to severe reflux based on prior surgical data showing that 12% predicted positive fundoplication outcomes at 1 year in patients with EER symptoms.15 This is the only currently available study in the literature that has evaluated acid exposure time and surgical outcome in this population.
+
+
 The results of high resolution studies performed in patients with cough as part of the presenting complaint to the gastroenterology service at Guy's and St Thomas' NHS Trust were examined retrospectively between `r paste(min(lubridate::month(ImpAndHRM$VisitDate.x, label = TRUE, abbr = FALSE)),min(lubridate::year(ImpAndHRM$VisitDate.x))) ` and `r paste(max(lubridate::month(ImpAndHRM$VisitDate.x, label = TRUE, abbr = FALSE)),max(lubridate::year(ImpAndHRM$VisitDate.x)))`
 
 **$\color{red}{\text{F.Define the Eligibility}}$.**
@@ -145,6 +152,16 @@ In cases where there was more than one pH impedance or HRM result, either test w
 **$\color{red}{\text{G.Define the Sampling}}$.**
 
 The impedance study results were classified as positive for acid reflux if the following thresholds were positive:  Acid exposure total, recumbent or upright percent time exceeded 4.2%,1.2% or 6.3% respectively.
+
+
+
+
+
+
+
+
+
+
 
 ```{r PatientDemographics,echo=FALSE, message=FALSE,warning=FALSE}
 ```
@@ -272,6 +289,11 @@ Because prediction rules based on logistic regression are often too complex for 
  
 
 After assessment of colinearity and exclusion of significantly correlated variables, the following variables were chosen for further analysis from the HRM report: Intraabdominal LES length,presence of a Hiatal hernia,  Basal respiratory minimum pressure, Residual mean pressure, Distal contractile integral, Intrabolus pressure, Distal latency, failed peristalsis percentage, panesophageal pressurization percentage, large breaks percentage, premature contraction percentage, rapid contraction percentage and small breaks percentage. The dependent variable was the presence of acid reflux on impedance.
+
+
+
+Statistical Analysis
+There was strict control and supervision of the data entry and access for this study and all data were collected and stored at the secure web-based Vanderbilt Digestive Disease Center REDCap (Research Electronic Data Capture; 1 UL1 RR024975 NCRR/NIH). Categorical variables were summarized using percentages and continuous variables were summarized using median and interquartile range (25th–75th percentile). Wilcoxon rank sum and Pearson c2 tests were used to compare continuous and categorical variables between groups, respectively. Separate multivariable proportional odds ordinal logistic regression models were developed for heartburn or EER symptoms to determine factors associated with abnormal pH. The 2 models were constructed by (1) pre-specifying a set of easily obtained demographic and clinical predictors, (2) fitting a multivariable model with these predictors, and (3) using a single backward selection step to remove insignificant predictors (P < .05) to simplify the model. For the heartburn model, the predictors age, BMI, hiatal hernia, and regurgitation were initially inputted. The EER model mirrored the heartburn model except for the addition of cough or hoarseness and asthma. Age and regurgitation were not significant in either model and were excluded. The model was based on continuous variables and then simplified to a scoring system that could be used at bedside. BMI was modeled flexibly as a continuous variable in the initial predictive model. We subsequently used a cutoff of BMI >25 kg/m2 in the final model because this corresponded to a similar percentage of increase in the probability of abnormal pH as the other binary predictors in the scoring system (heartburn and asthma). All analyses were conducted using the R statistical program using principles for reproducible research.16 We subsequently validated the performance of the prediction model using an external dataset from 2 tertiary care medical centers (Mayo Clinic and Washington University in St Louis)
 
 ```{r HRM_MultipleLogRegression,echo=FALSE, message=FALSE,warning=FALSE}
 library(kableExtra)
