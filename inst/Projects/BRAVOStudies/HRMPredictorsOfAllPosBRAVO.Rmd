@@ -192,7 +192,6 @@ BravoAndHRM <- HRMImportMain %>%
 #(11) Participation of statisticians and epidemiologists; and 
 #(12) Conformity with linear gradient.
 
-
 library(DataExplorer)
 
 #Steps:
@@ -200,14 +199,16 @@ library(DataExplorer)
 
 #Tells you which columns have the most missing data so they can be excluded
 missing<-profile_missing(BravoAndHRM)
-
+missing<-data.frame(missing,stringsAsFactors = FALSE)
 #Only <10% for each row missing data is accepted 
 BravoAndHRMNoMissing<-missing[!grepl("Bad|Remove",missing$group),]
 
 #Pick the columns with good data in them from this set
 BravoAndHRMNoMissing<-BravoAndHRM[,match(as.character(BravoAndHRMNoMissing$feature),names(BravoAndHRM))]
-                                                                               
-                                                                               
+
+#Hash the hospital numbers
+#BravoAndHRMNoMissing$HospNum_Id<-unlist(lapply(BravoAndHRMNoMissing$HospNum_Id, function(x) digest(x,algo="sha1")))
+
 library(psych)
 #Only select the numerical variables
 
@@ -216,7 +217,6 @@ BravoAndHRMNoMissing$AcidRefluxBRAVO<-gsub("NoAcid",0,BravoAndHRMNoMissing$AcidR
 BravoAndHRMNoMissing$AcidRefluxBRAVO<-gsub(".*Acid",1,BravoAndHRMNoMissing$AcidRefluxBRAVO)
 BravoAndHRMNoMissing$Hiatalhernia<-ifelse(BravoAndHRMNoMissing$Hiatalhernia=="Yes",1,0)
 BravoAndHRMNoMissing$AcidRefluxBRAVO<-as.numeric(BravoAndHRMNoMissing$AcidRefluxBRAVO)
-
 
 
 #3. Get some basic descriptive stats:

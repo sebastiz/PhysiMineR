@@ -1,3 +1,9 @@
+---
+title: "FundoplicationFailedPeristalsis"
+author: "Sebastian Zeki"
+date: "20/11/2018"
+output: html_document
+---
 
 ## Title and abstract
 
@@ -122,6 +128,7 @@ library(tidyverse)
 library(readxl)
 library(EndoMineR)
 library(dplyr)
+library(kableExtra)
 
 
 ######################################### Data acquisiton######################################### 
@@ -137,42 +144,27 @@ source("/home/rstudio/PhysiMineR/R/sourcing_Data/PhysiData_Accordion.R")
 ```{r Forking}
 ######################################### Data forking (filtering and subsetting) #########################
 
-#Get the patients who have had both the BRAVO and impedance study- need to cross match 
-#Get all the negative Impedance results
-NegativeImpedance<-dataImpSypmAndImpedanceMain[is.na(dataImpSypmAndImpedanceMain$AcidReflux),]
+#Get the fundoplication data
 
+FundoplicationData <- read_excel("/home/rstudio/PhysiMineR/data/FundoplicationHospitalNums.xlsx")
+
+names(FundoplicationData)<-c("HospNum_Id")
+
+
+
+#Get all the HRM which are 100% failed
+Aperistaltic_HRMImportMain<-HRMImportMain[HRMImportMain$failedChicagoClassification>99,]
+#Get the HRM for all the Fundoplication patients
+HRM_In_Fundoplication<-filter(Aperistaltic_HRMImportMain, HospNum_Id %in% FundoplicationData$HospNum_Id)
+
+
+
+
+#Get the fundoplication 
 
 ```
 
 ```{r DataLinkage}
-
-#Here I merge the impedance dataset and then the HRM dataset. The tests need to be merged based on the nearest date to prevent duplication etc.
-
-
-#Now you need to get all the BRAVOs that are closest to the impedance
-MyBravoFromNegativeImpedance <- NegativeImpedance %>%
-  inner_join(AllBravo, by ="HospNum_Id") %>%
-  mutate(Date_ABS_Diff = abs(VisitDate.x - VisitDate.y)) %>%
-  arrange(HospNum_Id, Date_ABS_Diff) %>%
-  group_by(HospNum_Id) %>%
-  slice(1)
-
-
-HRMImportMain$LOS_relax<-as.factor(HRMImportMain$LOS_relax)
-HRMImportMain$LowerOesoph<-as.factor(HRMImportMain$LowerOesoph)
-
-#Merge all hrm with AllBravo to get the full dataset
-#This merges the tests so that the nearest hrm to the BRAVO is chosen to avoid replication
-MyBravoFromNegativeImpedance <- MyBravoFromNegativeImpedance %>%
-  inner_join(HRMImportMain, by ="HospNum_Id") %>%
-  mutate(Date_ABS_Diff = abs(VisitDate.x - VisitDate.y)) %>%
-  arrange(HospNum_Id, Date_ABS_Diff) %>%
-  group_by(HospNum_Id) %>%
-  slice(1)
-
-#Then try to ascertain positive and negative BRAVOs
-NegImpALL_BRAVO_WithImpAndHRM_NEGBRAVO<-MyBravoFromNegativeImpedance[!grepl("NoAcid",MyBravoFromNegativeImpedance$AcidRefluxBRAVO),]
-NegImpALL_BRAVO_WithImpAndHRM_POSBRAVO<-MyBravoFromNegativeImpedance[grepl("NoAcid",MyBravoFromNegativeImpedance$AcidRefluxBRAVO),]
 
 
 ```
@@ -205,28 +197,23 @@ library(DataExplorer)
 #1. Get rid of bad columns with missing data
 
 #Tells you which columns have the most missing data so they can be excluded
-missing<-profile_missing(MyBravoFromNegativeImpedance)
+missing<-profile_missing(HRM_In_Fundoplication)
 
 #Only <10% for each row missing data is accepted 
-NegImpALL_BRAVO_WithImpAndHRMNoMissing<-missing[!grepl("Bad|Remove",missing$group),]
+BravoAndHRMNoMissing<-missing[!grepl("Bad|Remove",missing$group),]
 
 #Pick the columns with good data in them from this set
-NegImpALL_BRAVO_WithImpAndHRMNoMissing<-MyBravoFromNegativeImpedance[,match(as.character(NegImpALL_BRAVO_WithImpAndHRMNoMissing$feature),names(MyBravoFromNegativeImpedance))]
+BravoAndHRMNoMissing<-BravoAndHRM[,match(as.character(BravoAndHRMNoMissing$feature),names(BravoAndHRM))]
                                                                                
                                                                                
 library(psych)
 #Only select the numerical variables
 
-#2.Recoding
-NegImpALL_BRAVO_WithImpAndHRMNoMissing$AcidRefluxBRAVO<-gsub("NoAcid",0,NegImpALL_BRAVO_WithImpAndHRMNoMissing$AcidRefluxBRAVO)
-NegImpALL_BRAVO_WithImpAndHRMNoMissing$AcidRefluxBRAVO<-gsub(".*Acid",1,NegImpALL_BRAVO_WithImpAndHRMNoMissing$AcidRefluxBRAVO)
-NegImpALL_BRAVO_WithImpAndHRMNoMissing$Hiatalhernia<-ifelse(NegImpALL_BRAVO_WithImpAndHRMNoMissing$Hiatalhernia=="Yes",1,0)
-NegImpALL_BRAVO_WithImpAndHRMNoMissing$AcidRefluxBRAVO<-as.numeric(NegImpALL_BRAVO_WithImpAndHRMNoMissing$AcidRefluxBRAVO)
 
 
 
 #3. Get some basic descriptive stats:
-rr<-describe(NegImpALL_BRAVO_WithImpAndHRMNoMissing)
+rr<-describe(HRM_In_Fundoplication)
 
 #4. Get rid of bad outliers
 
@@ -239,21 +226,29 @@ rr<-describe(NegImpALL_BRAVO_WithImpAndHRMNoMissing)
 #Select HRM only. Also get rid of DistalLESfromnarescm,ProximalLESfromnarescm,EsophageallengthLESUEScenterscm as these are colinear and reflect length of oesophagus altogether)
 
 #4. Variable selection- choose HRM variables only here. Got rid of BasalrespiratorymeanmmHg,ContractileFrontVelocity,HiatusHernia and most oesophageal length measurements because of colinearity concerns with other variables
-NegImpALL_BRAVO_WithImpAndHRMNoMissingFinal<-NegImpALL_BRAVO_WithImpAndHRMNoMissing %>%
+BravoAndHRMNoMissingFinal<-BravoAndHRMNoMissing %>%
   ungroup()%>%
-  select(
-
+  select(IntraabdominalLESlengthcm,
+         Hiatalhernia,
+         LOS_relax,
 BasalrespiratoryminmmHg,
-
+ResidualmeanmmHg,
+DistalcontractileintegralmeanmmHgcms,
+IntraboluspressureATLESRmmHg,
+Distallatency,
+failedChicagoClassification,
+panesophagealpressurization,
 largebreaks,
- 
+prematurecontraction,
+rapidcontraction,
+smallbreaks, 
 AcidRefluxBRAVO)
 
 #Check for multicolinearity
 library("PerformanceAnalytics")
-chart.Correlation(NegImpALL_BRAVO_WithImpAndHRMNoMissingFinal, histogram=TRUE, pch=1)
+chart.Correlation(HRM_In_Fundoplication, histogram=TRUE, pch=1)
 #Exploratory data analysis:
-create_report(NegImpALL_BRAVO_WithImpAndHRMNoMissingFinal)
+create_report(BravoAndHRMNoMissingFinal)
 
 #Consider changing variables and repeat step 4
 
@@ -264,7 +259,7 @@ create_report(NegImpALL_BRAVO_WithImpAndHRMNoMissingFinal)
 
 library(MASS)
 # Fit the full model 
-data<-na.omit(NegImpALL_BRAVO_WithImpAndHRMNoMissingFinal)
+data<-na.omit(BravoAndHRMNoMissingFinal)
 full.model <- glm(AcidRefluxBRAVO ~ ., data = data)
 # Stepwise regression model
 step.model <- stepAIC(full.model, direction = "both", 
@@ -284,18 +279,26 @@ detach("package:MASS", unload=TRUE)
 ```{r HRM_UnivariateAnalysis}
 
 #Univariate analysis:
-NegImpPosBRAVOFinal<-NegImpALL_BRAVO_WithImpAndHRMNoMissingFinal[NegImpALL_BRAVO_WithImpAndHRMNoMissingFinal$AcidRefluxBRAVO==1,]
-NegImpNegBRAVOFinal<-NegImpALL_BRAVO_WithImpAndHRMNoMissingFinal[NegImpALL_BRAVO_WithImpAndHRMNoMissingFinal$AcidRefluxBRAVO==0,]
+NegBRAVOAndHRMFinal<-BravoAndHRMNoMissingFinal[BravoAndHRMNoMissingFinal$AcidRefluxBRAVO==1,]
+PosBRAVOAndHRMFinal<-BravoAndHRMNoMissingFinal[BravoAndHRMNoMissingFinal$AcidRefluxBRAVO==0,]
 
 
 #Univariate analysis
-t.test(NegImpPosBRAVOFinal$BasalrespiratoryminmmHg ,NegImpNegBRAVOFinal$BasalrespiratoryminmmHg,paired=FALSE)
-t.test(NegImpPosBRAVOFinal$prematurecontraction,NegImpNegBRAVOFinal$prematurecontraction,paired=FALSE)
+t.test(NegBRAVOAndHRMFinal$BasalrespiratoryminmmHg ,PosBRAVOAndHRMFinal$BasalrespiratoryminmmHg,paired=FALSE)
+
+chisq.test(NegBRAVOAndHRMFinal$Hiatalhernia,PosBRAVOAndHRMFinal$Hiatalhernia)
 t.test(NegImpPosBRAVOFinal$Distallatency,NegImpNegBRAVOFinal$Distallatency,paired=FALSE)
 t.test(NegImpPosBRAVOFinal$largebreaks,NegImpNegBRAVOFinal$largebreaks,paired=FALSE)
 
 ```
-
+##################################################################################################################
+###################################### Nothing done from here down ######################################
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
 ```{r PrelimAnalysisImp}
 
 #Use the data set loaded above
@@ -754,5 +757,6 @@ the abstract, for example only statistically significant results or the outcome 
  localisation and prognosis. Conclusions: The incidence of non-lobar SICH was high, but lower than
  in most non-white populations. This lower incidence could be due to a lower population prevalence of
  risk factors, a higher socioeconomic level in this population, or chance.
+
 
 

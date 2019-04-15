@@ -101,6 +101,8 @@ library(DataExplorer)
 #Tells you which columns have the most missing data so they can be excluded
 missing<-profile_missing(ImpAndHRM)
 
+missing<-data.frame(missing)
+
 #Only <10% for each row missing data is accepted 
 ImpAndHRMNoMissing<-missing[!grepl("Bad|Remove",missing$group),]
 
