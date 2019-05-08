@@ -5,57 +5,7 @@ date: "20/11/2018"
 output: html_document
 ---
 
-## Title and abstract
 
-**Study Design**
-
-Remember to use **PICO**
-
-**1.Patient population**
-
-#In patients being investigated for GORD with a negative pH impedance study 
-
-**2.Intervention**
-
-#who go on to have a BRAVO study
-
-**3.Comparison**
-
-Is there a significant increase between the two tests
-
-**4.Outcome**
-
-in the patients who have GORD
-
-**5. Further**
-
-What can predict a BRAVO positive, pH impedance negative investigation to support a Straight-to-BRAVO test?
-
-
-
-**Diagnosis** a) In patients being investigated for GORD with a negative impedance study for GORD who go on to have a BRAVO study, what proportion have a positive BRAVO for GORD condition
-
-
-**$\color{red}{\text{A.Indicate the study’s design with a commonly used term in the title or the abstract}}$.**
-
-**Example 1**
-
-Title: ‘An observational study with long-term follow-up of canine cognitive dysfunction: Clinical characteristics, survival
-and risk factors’ (Fast et al., 2013).
-
-Example 2
-Title: ‘Case-control study of risk factors associated with Brucella melitensis on goat farms in Peninsular Malaysia’ (Bamaiyi et al., 2014).
-
-**Explanation **
-Including the study design term in the title or abstract when a standard study design is used, or at least identifying that a study is observational, allows the reader to easily identify the design and helps to ensure that articles are correctly indexed in electronic databases (Benson and Hartz, 2000). In STROBE, item 1a only requests that a common study design term be used. However, in veterinary research, not all observational studies are easily categorized into cohort, case–control, or cross-sectional study designs. Therefore, we recommend including that the study was observational and, if possible, the study design or important design characteristics, for example longitudinal, in the title.
-
-
----
-title: "Template for STROBE presentation at conference abstracts"
-author: "Sebastian Zeki"
-date: "04/09/2018"
-output: html_document
----
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -64,18 +14,13 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Introduction
 
 **$\color{red}{\text{B.Introductory sentence 1: Define the disease condition}}$.**
-
-**eg** Aperistaltic oesophagus is a term that covers all conditions where achalasia is absent and there is no peristaltic activity
-
 **$\color{red}{\text{C.Introductory sentence 2: The overview of the disease condition}}$.**
-
-**eg** Aperistaltic oesophagus remains a difficult condition to treat with no specific and effective treatments
-
 **$\color{red}{\text{D.Introductory sentence 3: The problem being addressed}}$.**
 
-**eg** The number of non-achalasia aperistaltic oesophagus patients is unknown.
-
-**eg** Although often isolated from outpatients in veterinary clinics, there is concern that MRSP follows a veterinary-hospital associated epidemiology
+1. Aperistaltic oesophagus is a term that covers all conditions where achalasia is absent and there is no peristaltic activity
+2. Aperistaltic oesophagus remains a difficult condition to treat with no specific and effective treatments
+3. The number of non-achalasia aperistaltic oesophagus patients is unknown.
+4. Although often isolated from outpatients in veterinary clinics, there is concern that MRSP follows a veterinary-hospital associated epidemiology
 
 
 ```{r Introduction}
@@ -83,8 +28,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Aim
-
-
 **eg** The aim of the study was to assess the number of patients with aperistaltic oesophagus without achalasia and ascertain their demographics
 
 
@@ -97,26 +40,23 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 **$\color{red}{\text{E.Define the Dates}}$.**
-
-Get the dates from the minimum of the VisitDate column `r 1+1 `
-
 **$\color{red}{\text{F.Define the Location}}$.**
-Standard sentence here about GSTT
-The results of high resolution studies performed in patients with cough as part of the presenting complaint to the gastroenterology service at Guy's and St Thomas' NHS Trust were examined retrospectively between June 2008 and January 2018. 
-
 **$\color{red}{\text{F.Define the Eligibility}}$.**
-All patients selected were adults over the age of 18. Ethics was approved (IRAS number) and by the local ethics board.
-
 **$\color{red}{\text{F.Define the Exclusion}}$.**
-Patients with incomplete data sets were exluded from the study. Where x was not available fromt the report, the raw file was located and manually analysed
-
 **$\color{red}{\text{G.Define the Sampling}}$.**
-
-Patients were selected according to Chicago Classification v3. Patients symptoms were selected from self reporting at impedance if this was done at the same time as high resolution manometry. If this was not the case then the symptoms were extracted either from the final report summarising the patient's condition and physiological diagnosis, or from the clinicians details when ordering the investigation.
-
 **$\color{red}{\text{H.Define the data cleaning methodology methods}}$.**
 
-This involves how the relevant columns were accordionised (eg categorising the patients/and how subgroups were formed).
+1. Get the dates from the minimum of the VisitDate column `r 1+1 `
+
+2. Standard sentence here about GSTT: The results of high resolution studies performed in patients with cough as part of the presenting complaint to the gastroenterology service at Guy's and St Thomas' NHS Trust were examined retrospectively between June 2008 and January 2018. 
+
+3. All patients selected were adults over the age of 18. Ethics was approved (IRAS number) and by the local ethics board.
+
+4. Patients with incomplete data sets were exluded from the study. Where x was not available fromt the report, the raw file was located and manually analysed
+
+5. Patients were selected according to Chicago Classification v3. Patients symptoms were selected from self reporting at impedance if this was done at the same time as high resolution manometry. If this was not the case then the symptoms were extracted either from the final report summarising the patient's condition and physiological diagnosis, or from the clinicians details when ordering the investigation.
+
+6. This involves how the relevant columns were accordionised (eg categorising the patients/and how subgroups were formed).
 
 
 

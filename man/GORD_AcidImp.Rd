@@ -16,7 +16,7 @@ Or if there are a large number of reflux events (>73) - field called
 Or if the the final report says pathological reflux or nocturnal (as the total may be normal) then the patient has a GORD diagnosis
 }
 \examples{
-#GORD_AcidImp(x)
+#GORD_AcidImpImp(x)
 }
 \keyword{GORD}
 \keyword{Impedance}

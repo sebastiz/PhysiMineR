@@ -1,0 +1,136 @@
+---
+title: "Template Script"
+author: "Sebastian Zeki"
+date: "20/11/2018"
+output: html_document
+
+---
+
+
+In patients being investigated for GORD with a negative pH impedance study who go on to have a BRAVO study.Is there a significant increase between the two tests in the patients who have GORD, what can predict a BRAVO positive, pH impedance negative investigation to support a Straight-to-BRAVO test?
+OR In patients being investigated for GORD with a negative impedance study for GORD who go on to have a BRAVO study, what proportion have a positive BRAVO for GORD condition
+
+
+
+
+```{r setup, warning = FALSE, message = FALSE,include=FALSE}
+knitr::opts_chunk$set(results = 'asis', echo = FALSE, comment = FALSE,  warning = FALSE, message = FALSE, fig.align = 'center')
+library(knitr)
+library(here)
+library(EndoMineR)
+library(DiagrammeR)
+library(CodeDepends)
+library(readxl)
+library(dplyr)
+library(stringr)
+library(here)
+library(tidyr)
+library(PhysiMineR)
+library(DataExplorer)
+```
+
+### Introduction
+
+**$\color{red}{\text{B.Introductory sentence 1: Define the disease condition}}$.**
+**$\color{red}{\text{C.Introductory sentence 2: The overview of the disease condition}}$.**
+**$\color{red}{\text{D.Introductory sentence 3: The problem being addressed}}$.**
+
+
+### Aim
+
+
+
+
+### Methods
+
+
+**$\color{red}{\text{E.Define the Dates}}$.**
+**$\color{red}{\text{F.Define the Location}}$.**
+**$\color{red}{\text{F.Define the Eligibility}}$.**
+**$\color{red}{\text{F.Define the Exclusion}}$.**
+**$\color{red}{\text{G.Define the Sampling}}$.**
+**$\color{red}{\text{H.Define the data cleaning methodology methods}}$.**
+
+
+Get the dates from the minimum of the VisitDate column `r 1+1 `
+
+
+Standard sentence here about GSTT
+The results of high resolution studies performed in patients with cough as part of the presenting complaint to the gastroenterology service at Guy's and St Thomas' NHS Trust were examined retrospectively between June 2008 and January 2018. All patients selected were adults over the age of 18. Ethics was approved (IRAS number) and by the local ethics board. Patients with incomplete data sets were exluded from the study. Where x was not available fromt the report, the raw file was located and manually analysed. Patients were selected according to Chicago Classification v3. Patients symptoms were selected from self reporting at impedance if this was done at the same time as high resolution manometry. If this was not the case then the symptoms were extracted either from the final report summarising the patient's condition and physiological diagnosis, or from the clinicians details when ordering the investigation. This involves how the relevant columns were accordionised (eg categorising the patients/and how subgroups were formed).
+
+
+
+
+
+```{r echo=FALSE}
+read_chunk(here("inst","Projects","BRAVOStudies", "NegImpPredictorsOfAllPosBRAVO","munge", "PreProcessing.R"))
+```
+
+
+
+```{r dataImport,echo=FALSE}
+
+```
+
+
+```{r dataClean,echo=FALSE}
+```
+
+```{r dataMerge,echo=FALSE}
+```
+
+```{r dataClean2,echo=FALSE}
+```
+
+```{r dataExtrapolate,echo=FALSE}
+```
+
+```{r DataExploration,echo=FALSE}
+```
+
+```{r HRM_UnivariateAnalysis,echo=FALSE}
+```
+
+```{r VariableSelection,echo=FALSE}
+```
+
+```{r HRM_MultipleLogRegression,echo=FALSE}
+```
+
+```{r dataDiagrammeR,echo=FALSE}
+```
+
+
+## Results
+
+**$\color{red}{\text{I.Define the Statistical methods}}$.**
+**$\color{red}{\text{I.Describe demographics}}$.**
+**$\color{red}{\text{J.Then describe level one results}}$.**
+**$\color{red}{\text{K.Then describe subset results}}$.**
+
+
+**Choose your statistical analysis**
+
+
+
+## Discussion
+
+**$\color{red}{\text{L.Sentence 1: To be decided}}$.**
+**$\color{red}{\text{M.Sentence 2: To be decided}}$.**
+**$\color{red}{\text{N.Sentence 3: To be decided}}$.**
+
+
+## Limitations
+**$\color{red}{\text{O.Sentence 1: To be decided}}$.**
+
+
+
+
+
+
+
+
+
+
+
+
