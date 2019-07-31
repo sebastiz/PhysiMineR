@@ -57,6 +57,7 @@ HRMAndDiag<-function(channel){
 #' This cleans HRM data by making sure all the data is in the correct format
 #' @param x dataframe
 #' @keywords HRM CleanUp
+#' @importFrom lubridate parse_date_time
 #' @export
 #' @examples #HRMCleanUp1(x)
 
@@ -114,6 +115,21 @@ HRMCleanUp1<-function(x){
     x$VisitDate<-as.Date(x$VisitDate,"%d_%m_%Y")
   }
 
+  #Get rid of anything that is after the first date
+  x$DOBAge<-gsub("(.*?\\d{4}).*","\\1",x$DOBAge)
+  #Standardise teh separators between numbers:
+  x$DOBAge<-gsub("-|\\.","_",x$DOBAge)
+  #Sort out the years which have been abbreviated to only two digits
+  x$DOBAge<-gsub("(^\\d{2}_\\d{2}_)(\\d{2}($|\\s))","\\119\\2",x$DOBAge)
+  #Get rid of extra characters after the date
+  x$DOBAge<-gsub("(^\\d{2}_\\d{2}_\\d{4}).*","\\1",x$DOBAge)
+  #Get rid of extra characters before the date
+  x$DOBAge<-gsub(".*(\\d{2}_\\d{2}_\\d{4})","\\1",x$DOBAge)
+
+
+  x$DOBAge<-parse_date_time(x = x$DOBAge,orders = c("d b Y", "m d Y","d m Y"))
+  #Convert dates with named months
+
   x$DOBAge<-as.character(x$DOBAge)
   x$DOBAge<-as.Date(x$DOBAge,"%Y-%m-%d")
   x$Age<-x$VisitDate-x$DOBAge
@@ -137,10 +153,11 @@ x$Hiatalhernia<-gsub("^.*:","",x$Hiatalhernia)
   x$Distallatency<-as.numeric(as.character((x$Distallatency)))
 
   x$LOS_relax<-ifelse(((x$ResidualmeanmmHg-x$BasalrespiratoryminmmHg/x$BasalrespiratorymeanmmHg)*100)<90,"NonRelaxLOS","NormalRelaxLOS")
+  x$LOS_relax<-as.character(x$LOS_relax)
   x$LowerOesoph<-ifelse(x$BasalrespiratoryminmmHg<4.7&x$Hiatalhernia=="Yes","HypotensiveLOSWithHH",
                            ifelse(x$BasalrespiratoryminmmHg<4.7,"HypotensiveLOS",
                                   ifelse(x$Hiatalhernia=="Yes","HHOnly","Normal")))
-
+  x$LowerOesoph<-as.character(x$LowerOesoph)
 
   x<-data.frame(x,stringsAsFactors = FALSE)
   return(x)

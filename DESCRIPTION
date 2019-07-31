@@ -12,7 +12,9 @@ Imports:
         lubridate,
         stringr,
         rlang,
-        dplyr
+        dplyr,
+        tidyverse,
+        EndoMineR
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

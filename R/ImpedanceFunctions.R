@@ -267,6 +267,55 @@ dataImpSymptoms<-function(x){
 }
 
 
+###################################### BRAVO Symptom Subset Prepare ###################################################
+
+#Get the symptoms in each row then into own dataset so that each dataset contains the findings for those symptoms
+#To extract the symptoms into their own box:
+
+#' BRAVO symptom extractor function
+#'
+#' This extracts the relevant symptoms from the impedance dataset
+#' @param x the BRAVO dataframe for extraction from SAPTotal as probably more accurate as patient entered (rather than from summary)
+#' @keywords Impedance symptoms
+#' @export
+#' @examples
+#' #dataBRAVOSymptoms(x)
+
+dataBRAVOSymptoms<-function(x){
+
+
+  myframe<-x[,grepl("SITotal",colnames(x))]
+
+  #Add the colnames to each value in each row:
+  mine<-data.frame(apply(myframe,1,function(y) unlist(paste0(colnames(myframe),y))))
+
+  #Concatenate them
+  AllSymps<-as.character(apply(mine, 2, paste, collapse=","))
+
+  #Now extract the symptoms that have a value associated with them (ie should ignore the NA's)
+  AllSymps2<-stringr::str_extract_all(AllSymps,"SITotal[A-Za-z]*\\d+")
+
+  #Concatenate them:
+  x$AllSymps<-unlist(lapply(AllSymps2,function(x) paste0(unlist(x),collapse=",")))
+
+  #Now Clean it up
+  x$AllSymps<-gsub("SITotal","",x$AllSymps)
+  x$AllSymps<-gsub("\\d*","",x$AllSymps)
+
+  return(x)
+
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 ###### Categorise the BRAVO diagnoses ######
@@ -338,7 +387,7 @@ GORD_AcidImp<-function(x){
 
   x<-x %>%
     mutate(
-      AcidReflux = case_when(
+      AcidReflux_Imp = case_when(
         MainAcidExpTotalClearanceChannelPercentTime > 4.2        ~ "TotalAcid",
         MainAcidExpRecumbentClearanceChannelPercentTime > 1.2        ~ "RecumbentAcid",
         MainAcidExpUprightClearanceChannelPercentTime > 6.3        ~ "UprightAcid",

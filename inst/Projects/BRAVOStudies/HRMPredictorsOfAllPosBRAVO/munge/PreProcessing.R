@@ -110,11 +110,19 @@ Diag2<-Diag %>%
 
 
 #Clean up the HRM HRMImportMain (to get rid of duplicates mainly)
-#This looks for all the duplicates by hospital number and DistalLESfromnarescm (the latter so that duplicates means same test rather than same patient on two different days)
+#This looks for all the duplicates by hospital number and DistalLESfromnarescm
+#(the latter so that duplicates means same test rather than same patient on two different days)
 
 HRMImportMain2<-AllHRM %>%
   group_by(HospNum_Id,DistalLESfromnarescm) %>%
   summarise_all(.funs = function(x) paste(unique(c(dplyr::lag(x, default = NULL), x)), collapse = ":"))
+
+#Or is it this way around?..choose either this way or the one above....
+HRMImportMain2<-AllHRM %>%
+  group_by(DistalLESfromnarescm,HospNum_Id) %>%
+  summarise_all(.funs = function(x) paste(unique(c(dplyr::lag(x, default = NULL), x)), collapse = ":"))
+
+
 
 #Clean Up the main HRM
 HRMImportMain<-HRMCleanUp1(HRMImportMain2)
