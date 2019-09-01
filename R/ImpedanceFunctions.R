@@ -263,6 +263,18 @@ dataImpSymptoms<-function(x){
   x$Vomiting<-NULL
   x$Belch<-NULL
   x$Chest<-NULL
+
+
+  x$AllSymps_Impgrouped<-gsub("Heartburn|Regurgitation","Typical",x$AllImpSymptom)
+  x$AllSymps_Impgrouped<-gsub("ChestPain|Cough|Belch|Vomiting|StomachPain|Throat|Nausea","Atypical",x$AllSymps_Impgrouped)
+
+  interim<-strsplit(x$AllSymps_Impgrouped,",")
+  interim<-lapply(interim,function(x)unique(x,","))
+  interim<-lapply(interim,function(x) sort(x))
+  new<-unlist(lapply(interim,function(x) paste0(x,collapse=",")))
+  x$AllSymps_Impgrouped<-gsub("Atypical,Typical","Mixed",new)
+
+
   return (x)
 }
 
@@ -284,7 +296,7 @@ dataImpSymptoms<-function(x){
 dataBRAVOSymptoms<-function(x){
 
 
-  myframe<-x[,grepl("SITotal",colnames(x))]
+  myframe<-x[,grepl("ReflDayTotalTimepHLessThan4min|SITotal|SAPTotal",colnames(x))]
 
   #Add the colnames to each value in each row:
   mine<-data.frame(apply(myframe,1,function(y) unlist(paste0(colnames(myframe),y))))
@@ -293,14 +305,37 @@ dataBRAVOSymptoms<-function(x){
   AllSymps<-as.character(apply(mine, 2, paste, collapse=","))
 
   #Now extract the symptoms that have a value associated with them (ie should ignore the NA's)
-  AllSymps2<-stringr::str_extract_all(AllSymps,"SITotal[A-Za-z]*\\d+")
+  AllSymps2<-stringr::str_extract_all(AllSymps,"(ReflDayTotalTimepHLessThan4min[A-Za-z]*\\d+)|SITotal[A-Za-z]*\\d+|SAPTotal[A-Za-z]*\\d+")
 
   #Concatenate them:
-  x$AllSymps<-unlist(lapply(AllSymps2,function(x) paste0(unlist(x),collapse=",")))
+  x$AllSymps_BRAVO<-unlist(lapply(AllSymps2,function(x) paste0(unlist(x),collapse=",")))
 
   #Now Clean it up
-  x$AllSymps<-gsub("SITotal","",x$AllSymps)
-  x$AllSymps<-gsub("\\d*","",x$AllSymps)
+  x$AllSymps_BRAVO<-gsub("ReflDayTotalTimepHLessThan4min|SITotal|SAPTotal","",x$AllSymps_BRAVO)
+  x$AllSymps_BRAVO<-gsub("\\d*","",x$AllSymps_BRAVO)
+  x$AllSymps_BRAVO<-gsub("Meal,|Other,|PostPr,|Supine,|Total,|Upright,|Upright|PostPr","",x$AllSymps_BRAVO)
+
+  #Now put symptoms into compartments (oesophageal/LPR/other)
+  x$AllSymps_BRAVOcompartment<-gsub("Heartburn|Regurgitation","Oesophageal",x$AllSymps_BRAVO)
+  x$AllSymps_BRAVOcompartment<-gsub("Cough|Throat","LPR",x$AllSymps_BRAVOcompartment)
+  x$AllSymps_BRAVOcompartment<-gsub("Vomiting|ChestPain|StomachPain|Nausea|Epigastric|Belch","Other",x$AllSymps_BRAVOcompartment)
+
+  interim<-strsplit(x$AllSymps_BRAVOcompartment,",")
+  interim<-lapply(interim,function(x)unique(x,","))
+  interim<-lapply(interim,function(x) sort(x))
+  x$AllSymps_BRAVOcompartment<-unlist(lapply(interim,function(x) paste0(x,collapse=",")))
+
+
+  #Now group them into typical and atypical
+  x$AllSymps_BRAVOgrouped<-gsub("Heartburn|Regurgitation","Typical",x$AllSymps_BRAVO)
+  x$AllSymps_BRAVOgrouped<-gsub("ChestPain|Cough|Belch|Vomiting|StomachPain|Throat|Nausea|Epigastric","Atypical",x$AllSymps_BRAVOgrouped)
+
+  interim<-strsplit(x$AllSymps_BRAVOgrouped,",")
+  interim<-lapply(interim,function(x)unique(x,","))
+  interim<-lapply(interim,function(x) sort(x))
+  new<-unlist(lapply(interim,function(x) paste0(x,collapse=",")))
+
+  x$AllSymps_BRAVOgrouped<-gsub("Atypical,Typical","Mixed",new)
 
   return(x)
 
@@ -339,34 +374,65 @@ GORD_AcidBRAVO<-function(dd){
     #Check that Fraction is % Time Spent in Reflux
     mutate(
       AcidRefluxBRAVO = case_when(
-        ReflDay1FractionTimepHLessThan4Supine  > 4.9        ~ "SupineAcid",
-        ReflDay1FractionTimepHLessThan4Upright> 5.2        ~ "UprightAcid",
-        ReflDay1FractionTimepHLessThan4Total > 3.3        ~ "TotalAcid",
-        ReflDay1NumberofRefluxesTotal > 36 ~ "TotalAcid",
+        #ReflDay1FractionTimepHLessThan4Supine  > 4.9        ~ "SupineAcid",
+        #ReflDay1FractionTimepHLessThan4Upright> 5.2        ~ "UprightAcid",
+        ReflDay1FractionTimepHLessThan4Total > 4.9       ~ "TotalAcid",
+        #ReflDay1NumberofRefluxesTotal > 36 ~ "TotalAcid",
 
-        ReflDay2FractionTimepHLessThan4Supine > 6.8        ~ "SupineAcid",
-        ReflDay2FractionTimepHLessThan4Upright > 8.8        ~ "UprightAcid",
-        ReflDay2FractionTimepHLessThan4Total > 6.0        ~ "TotalAcid",
-        ReflDay2NumberofRefluxesTotal > 62 ~ "TotalAcid",
+        #ReflDay2FractionTimepHLessThan4Supine > 6.8        ~ "SupineAcid",
+        #ReflDay2FractionTimepHLessThan4Upright > 8.8        ~ "UprightAcid",
+        ReflDay2FractionTimepHLessThan4Total > 4.9        ~ "TotalAcid",
+        #ReflDay2NumberofRefluxesTotal > 62 ~ "TotalAcid",
 
-        ReflDay3FractionTimepHLessThan4Supine > 6.8        ~ "SupineAcid",
-        ReflDay3FractionTimepHLessThan4Upright > 8.8        ~ "UprightAcid",
-        ReflDay1FractionTimepHLessThan4Total > 6.0 ~ "TotalAcid",
-        ReflDay2NumberofRefluxesTotal > 62        ~ "TotalAcid",
+        #ReflDay1_2FractionTimepHLessThan4Supine > 6.8        ~ "SupineAcid",
+        #ReflDay1_2FractionTimepHLessThan4Upright > 8.8        ~ "UprightAcid",
+        ReflDay1_2FractionTimepHLessThan4Total > 4.9 ~ "TotalAcid",
+       # ReflDay1_2NumberofRefluxesTotal > 62        ~ "TotalAcid",
 
-        ReflDay4FractionTimepHLessThan4Supine > 6.8        ~ "SupineAcid",
-        ReflDay4FractionTimepHLessThan4Upright > 4.2        ~ "UprightAcid",
-        ReflDay4FractionTimepHLessThan4Total > 6.0        ~ "TotalAcid",
-        ReflDay4NumberofRefluxesTotal > 62 ~ "TotalAcid",
+        #ReflDay2_2FractionTimepHLessThan4Supine > 6.8        ~ "SupineAcid",
+        #ReflDay2_2FractionTimepHLessThan4Upright > 4.2        ~ "UprightAcid",
+        ReflDay2_2FractionTimepHLessThan4Total > 4.9       ~ "TotalAcid",
+        #ReflDay2_2NumberofRefluxesTotal > 62 ~ "TotalAcid",
 
-        ReflDayTotalFractionTimepHLessThan4Supine > 6.8        ~ "SupineAcid",
-        ReflDayTotalFractionTimepHLessThan4Upright > 4.2        ~ "UprightAcid",
-        ReflDayTotalFractionTimepHLessThan4Total > 4.2        ~ "TotalAcid",
-        ReflDayTotalNumberofRefluxesTotal > 62 ~ "TotalAcid",
+        #ReflDayTotalFractionTimepHLessThan4Supine > 6.8        ~ "SupineAcid",
+       # ReflDayTotalFractionTimepHLessThan4Upright > 4.2        ~ "UprightAcid",
+        ReflDayTotalFractionTimepHLessThan4Total > 4.9        ~ "TotalAcid",
+        #ReflDayTotalNumberofRefluxesTotal > 62 ~ "TotalAcid",
         TRUE ~ "NoAcid"
       )
-    )
+    ) %>%
+   mutate(
+     AcidRefluxBRAVOTotalOnly = case_when(
+       ReflDay1FractionTimepHLessThan4Total > 4.9        ~ 1,
+       ReflDay2FractionTimepHLessThan4Total > 4.9       ~ 1,
+       ReflDay1_2FractionTimepHLessThan4Total > 4.9        ~ 1,
+       ReflDay2_2FractionTimepHLessThan4Total > 4.9        ~ 1,
+       ReflDayTotalFractionTimepHLessThan4Total > 4.9        ~ 1,
+
+       TRUE ~ 0
+     )
+   )
   return(de)
+}
+
+
+###### Categorise the Impedance diagnoses ######
+
+#' Create Worst day and Average day analysis of BRAVO
+#'
+#' This extracts whether the patient had a formal GORD diagnosis
+#' This is based on the Acid exposure table. The rules are that if a patient has a long acid exposure percentage (>4.2% total)
+#' Or if there are a large number of reflux events (>73) - field called
+#' Or if the the final report says pathological reflux or nocturnal (as the total may be normal) then the patient has a GORD diagnosis
+#' @param x the impedance dataset for extraction
+#' @keywords Impedance acid GORD
+#' @export
+#' @importFrom dplyr select
+#' @examples #GORD_AcidImpImp(x)
+
+GORD_BravoWDAAndAverage<-function(x){
+
+
 }
 
 ###### Categorise the Impedance diagnoses ######
@@ -389,12 +455,12 @@ GORD_AcidImp<-function(x){
     mutate(
       AcidReflux_Imp = case_when(
         MainAcidExpTotalClearanceChannelPercentTime > 4.2        ~ "TotalAcid",
-        MainAcidExpRecumbentClearanceChannelPercentTime > 1.2        ~ "RecumbentAcid",
-        MainAcidExpUprightClearanceChannelPercentTime > 6.3        ~ "UprightAcid",
+        #MainAcidExpRecumbentClearanceChannelPercentTime > 1.2        ~ "RecumbentAcid",
+        #MainAcidExpUprightClearanceChannelPercentTime > 6.3        ~ "UprightAcid",
 
         MainAcidCompositeScorePatientValueTotalTimeInReflux > 4.2        ~ "TotalAcid",
-        MainAcidCompositeScorePatientValueRecumbentTimeInReflux > 1.2        ~ "RecumbentAcid",
-        MainAcidCompositeScorePatientValueUprightTimeInReflux > 6.3        ~ "UprightAcid",
+        #MainAcidCompositeScorePatientValueRecumbentTimeInReflux > 1.2        ~ "RecumbentAcid",
+        #MainAcidCompositeScorePatientValueUprightTimeInReflux > 6.3        ~ "UprightAcid",
         TRUE ~ "NoAcid"
         )
     )

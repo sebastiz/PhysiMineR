@@ -152,6 +152,8 @@ library(digest)
 Barium_DiagAndHRM$HospNum_Id<-unlist(lapply(Barium_DiagAndHRM$HospNum_Id, function(x) digest(x,algo="sha1")))
 
 
+#This is the point at which I gave to Perfrancesco I think- need to check this.
+
 #Patient demographics:
 
 #Age: Get the DOB column in the correct order
