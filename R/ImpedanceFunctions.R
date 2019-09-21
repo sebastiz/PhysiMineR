@@ -90,6 +90,12 @@ dataImpClean<-function(x){
   x$MainPtDataPhysician<-as.character(x$MainPtDataPhysician)
   x$MainPtDataPatientSex<-as.character(x$MainPtDataPatientSex)
 
+  #Merge the composite score with the MainAcidExp score in cases where the latter is missing for whatever reason:
+
+  x$MainAcidExpUprightClearanceChannelPercentTime<-ifelse(is.na(x$MainAcidExpUprightClearanceChannelPercentTime),x$MainAcidCompositeScorePatientValueUprightTimeInReflux,x$MainAcidExpUprightClearanceChannelPercentTime)
+  x$MainAcidExpRecumbentClearanceChannelPercentTime<-ifelse(is.na(x$MainAcidExpRecumbentClearanceChannelPercentTime),x$MainAcidCompositeScorePatientValueRecumbentTimeInReflux,x$MainAcidExpRecumbentClearanceChannelPercentTime)
+  x$MainAcidExpTotalClearanceChannelPercentTime<-ifelse(is.na(x$MainAcidExpTotalClearanceChannelPercentTime),x$MainAcidCompositeScorePatientValueTotalTimeInReflux,x$MainAcidExpTotalClearanceChannelPercentTime)
+
   #Get the date of birth properly formatted
   x$MainPtDataDateofBirth<-lubridate::ymd(x$MainPtDataDateofBirth)
   x$MainPtDataDateofBirth<-as.Date(as.character(x$MainPtDataDateofBirth),format="%Y-%m-%d",origin="30/12/1899")
@@ -118,6 +124,156 @@ dataImpClean<-function(x){
   #Also exclude the first columns with hospital number etc.
   x[i2] <- lapply(x[i2], as.numeric)
 
+
+
+  x <- x %>%
+    mutate(
+      SAPHeartburn = case_when(
+        SxMainRSAPAcidHeartburn  >94 ~ 1,
+        TRUE ~ 0
+      )) %>%
+    mutate(
+      SAPChestPain = case_when(
+        SxMainRSAPAcidChestPain  >94 ~ 1,
+        TRUE ~ 0
+      )) %>%
+    mutate(
+      SAPVomiting = case_when(
+        SxMainRSAPAcidVomiting  >94 ~ 1,
+        TRUE ~ 0
+      )) %>%
+    mutate(
+      SAPNausea = case_when(
+        SxMainRSAPAcidNausea  >94 ~ 1,
+        TRUE ~ 0
+      )) %>%
+    mutate(
+      SAPRegurgitation = case_when(
+        SxMainRSAPAcidRegurgitation  >94 ~ 1,
+        TRUE ~ 0
+      )) %>%
+    mutate(
+      SAPBelch = case_when(
+        SxMainRSAPAcidBelch  >94 ~ 1,
+        TRUE ~ 0
+      )) %>%
+    mutate(
+      SAPStomachPain = case_when(
+        SxMainRSAPAcidStomachPain  >94 ~ 1,
+        TRUE ~ 0))%>%
+
+
+
+
+    mutate(
+      SIHeartburn = case_when(
+        MainSxRSIAcidHeartburn  >94 ~ 1,
+        TRUE ~ 0
+      )) %>%
+    mutate(
+      SIChestPain = case_when(
+        MainSxRSIAcidChestPain  >94 ~ 1,
+        TRUE ~ 0
+      )) %>%
+    mutate(
+      SIVomiting = case_when(
+        MainSxRSIAcidVomiting  >94 ~ 1,
+        TRUE ~ 0
+      )) %>%
+    mutate(
+      SINausea = case_when(
+        MainSxRSIAcidNausea  >94 ~ 1,
+        TRUE ~ 0
+      )) %>%
+    mutate(
+      SIRegurgitation = case_when(
+        MainSxRSIAcidRegurgitation  >94 ~ 1,
+        TRUE ~ 0
+      )) %>%
+    mutate(
+      SIBelch = case_when(
+        MainSxRSIAcidBelch  >94 ~ 1,
+        TRUE ~ 0
+      )) %>%
+    mutate(
+      SIStomachPain = case_when(
+        MainSxRSIAcidStomachPain   >94 ~ 1,
+        TRUE ~ 0
+      )) %>%
+
+    mutate(
+      SAPOesophageal = case_when(
+        SxMainRSAPAcidHeartburn  >94 ~ 1,
+        SxMainRSAPAcidChestPain  >94 ~ 1,
+        TRUE ~ 0
+      )) %>%
+    mutate(
+      SAPOther = case_when(
+        SxMainRSAPAcidVomiting >94 ~ 1,
+        SxMainRSAPAcidNausea  >94 ~ 1,
+        SxMainRSAPAcidRegurgitation  >94 ~ 1,
+        SxMainRSAPAcidBelch  >94 ~ 1,
+        SxMainRSAPAcidStomachPain >94 ~ 1,
+        TRUE ~ 0
+      ))%>%
+    mutate(
+      SIOesophageal = case_when(
+        MainSxRSIAcidHeartburn  >49 ~ 1,
+        MainSxRSIAcidChestPain  >49 ~ 1,
+        TRUE ~ 0
+      ))%>%
+    mutate(
+      SIOther = case_when(
+        MainSxRSIAcidVomiting >49 ~ 1,
+        MainSxRSIAcidNausea  >49 ~ 1,
+        MainSxRSIAcidRegurgitation  >49 ~ 1,
+        MainSxRSIAcidBelch  >49 ~ 1,
+        MainSxRSIAcidStomachPain >49 ~ 1,
+        TRUE ~ 0
+      ))%>%
+    mutate(
+      SAPLPR = case_when(
+        SxMainRSAPAcidThroat >94 ~ 1,
+        SxMainRSAPAcidCough  >94 ~ 1,
+        TRUE ~ 0
+      )) %>%
+    mutate(
+      SILPR = case_when(
+        MainSxRSIAcidThroat >49 ~ 1,
+        MainSxRSIAcidCough  >49 ~ 1,
+        TRUE ~ 0
+      ))
+
+
+
+  x$SAPOesophageal<-as.factor(x$SAPOesophageal)
+  x$SIOesophageal<-as.factor(x$SIOesophageal)
+
+  x$SAPLPR<-as.factor(x$SAPLPR)
+  x$SILPR<-as.factor(x$SILPR)
+
+  x$SAPOther <-as.factor(x$SAPOther)
+  x$SIOther <-as.factor(x$SIOther)
+
+  x$SAPHeartburn <-as.factor(x$SAPHeartburn)
+  x$SAPChestPain <-as.factor(x$SAPChestPain )
+  x$SAPVomiting <-as.factor(x$SAPVomiting)
+  x$SAPNausea <-as.factor(x$SAPNausea)
+  x$SAPRegurgitation <-as.factor(x$SAPRegurgitation)
+  x$SAPBelch <-as.factor(x$SAPBelch)
+  x$SAPStomachPain <-as.factor(x$SAPStomachPain)
+
+  x$SIHeartburn <-as.factor(x$SIHeartburn)
+  x$SIChestPain <-as.factor(x$SIChestPain)
+  x$SIVomiting <-as.factor(x$SIVomiting)
+  x$SINausea <-as.factor(x$SINausea)
+  x$SIRegurgitation <-as.factor(x$SIRegurgitation)
+  x$SIBelch <-as.factor(x$SIBelch)
+  x$SIStomachPain <-as.factor(x$SIStomachPain)
+
+
+
+
   #Return as a dataframe instead of a tibble
   x<-data.frame(x)
   return(x)
@@ -135,6 +291,19 @@ dataImpSympClean<-function(x){
   x<-as.data.frame(lapply(x, FUN = function(t) gsub("pcent", "", t)))
   x<-as.data.frame(lapply(x, FUN = function(t) as.numeric(t)))
   x<-data.frame(x)
+
+
+
+
+
+
+
+
+
+
+
+
+
   return(x)
 }
 
@@ -376,27 +545,27 @@ GORD_AcidBRAVO<-function(dd){
       AcidRefluxBRAVO = case_when(
         #ReflDay1FractionTimepHLessThan4Supine  > 4.9        ~ "SupineAcid",
         #ReflDay1FractionTimepHLessThan4Upright> 5.2        ~ "UprightAcid",
-        ReflDay1FractionTimepHLessThan4Total > 4.9       ~ "TotalAcid",
+        ReflDay1FractionTimepHLessThan4Total > 5.3       ~ "TotalAcid",
         #ReflDay1NumberofRefluxesTotal > 36 ~ "TotalAcid",
 
         #ReflDay2FractionTimepHLessThan4Supine > 6.8        ~ "SupineAcid",
         #ReflDay2FractionTimepHLessThan4Upright > 8.8        ~ "UprightAcid",
-        ReflDay2FractionTimepHLessThan4Total > 4.9        ~ "TotalAcid",
+        ReflDay2FractionTimepHLessThan4Total > 5.3        ~ "TotalAcid",
         #ReflDay2NumberofRefluxesTotal > 62 ~ "TotalAcid",
 
         #ReflDay1_2FractionTimepHLessThan4Supine > 6.8        ~ "SupineAcid",
         #ReflDay1_2FractionTimepHLessThan4Upright > 8.8        ~ "UprightAcid",
-        ReflDay1_2FractionTimepHLessThan4Total > 4.9 ~ "TotalAcid",
+        ReflDay1_2FractionTimepHLessThan4Total > 5.3 ~ "TotalAcid",
        # ReflDay1_2NumberofRefluxesTotal > 62        ~ "TotalAcid",
 
         #ReflDay2_2FractionTimepHLessThan4Supine > 6.8        ~ "SupineAcid",
         #ReflDay2_2FractionTimepHLessThan4Upright > 4.2        ~ "UprightAcid",
-        ReflDay2_2FractionTimepHLessThan4Total > 4.9       ~ "TotalAcid",
+        ReflDay2_2FractionTimepHLessThan4Total > 5.3       ~ "TotalAcid",
         #ReflDay2_2NumberofRefluxesTotal > 62 ~ "TotalAcid",
 
         #ReflDayTotalFractionTimepHLessThan4Supine > 6.8        ~ "SupineAcid",
        # ReflDayTotalFractionTimepHLessThan4Upright > 4.2        ~ "UprightAcid",
-        ReflDayTotalFractionTimepHLessThan4Total > 4.9        ~ "TotalAcid",
+        ReflDayTotalFractionTimepHLessThan4Total > 5.3        ~ "TotalAcid",
         #ReflDayTotalNumberofRefluxesTotal > 62 ~ "TotalAcid",
         TRUE ~ "NoAcid"
       )
@@ -412,6 +581,13 @@ GORD_AcidBRAVO<-function(dd){
        TRUE ~ 0
      )
    )
+
+ #Recoding the BRAVO rewflux columns:
+ de$AcidRefluxBRAVO<-gsub("NoAcid",0,de$AcidRefluxBRAVO)
+ de$AcidRefluxBRAVO<-gsub(".*Acid",1,de$AcidRefluxBRAVO)
+ de$AcidRefluxBRAVO<-as.numeric(de$AcidRefluxBRAVO)
+
+
   return(de)
 }
 
@@ -433,7 +609,69 @@ GORD_AcidBRAVO<-function(dd){
 GORD_BravoWDAAndAverage<-function(x){
 
 
+  #Use Fraction <pH4 as the analysis:
+  #x<-ForBRAVODescriptionLater[,grepl("FractionTimepHLessThan4Total|AcidRefluxBRAVO|SAP|SI",names(ForBRAVODescriptionLater))]
+
+  #Only select the GORD patients by pH<4
+  #x$SIDay1Heartburn<-as.numeric(x$SIDay1Heartburn)
+  x$average<-rowMeans(select_if(x, is.numeric)%>%select(matches("y[0-9]*_*[0-9]FractionTimepHLessThan4Total")), na.rm = TRUE)
+  x$worst<-do.call(pmax, c(select_if(x, is.numeric)%>%select(matches("y[0-9]*_*[0-9]FractionTimepHLessThan4Total")), na.rm = TRUE))
+
+  #Need to get which day was the worst:
+  x$worstDaypH<-names(select_if(x, is.numeric)%>%select(matches("y[0-9]*_*[0-9]FractionTimepHLessThan4Total")))[max.col(replace(select_if(x, is.numeric)%>%select(matches("y[0-9]*_*[0-9]FractionTimepHLessThan4Total")), is.na(select_if(x, is.numeric)%>%select(matches("y[0-9]*_*[0-9]FractionTimepHLessThan4Total"))),0),ties.method = "first")]
+  #Clean up the days:
+  x$worstDaypH<-gsub("FractionTimepHLessThan4Total","",x$worstDaypH)
+  x$worstDaypH<-gsub("ReflDay","",x$worstDaypH)
+  x$worstDaypH<-gsub("1_2","3",x$worstDaypH)
+  x$worstDaypH<-gsub("2_2","4",x$worstDaypH)
+  x$worstDaypH<-gsub("3_2","5",x$worstDaypH)
+
+  x$worstDaypH<-as.numeric(x$worstDaypH)
+
+  x$Day2Pos<-ifelse(x$ReflDay2FractionTimepHLessThan4Total>5,"Day2Pos","Day2Neg")
+
+  x<-x%>%
+    mutate(
+      Day1Pos=case_when(
+        ReflDay1FractionTimepHLessThan4Total > 4.9        ~ 1,
+        TRUE ~ 0
+      ))%>%
+    mutate(
+      Day2Pos=case_when(
+        ReflDay2FractionTimepHLessThan4Total > 4.9         ~ 1,
+        TRUE ~ 0
+      ))%>%
+    mutate(
+      Day3Pos=case_when(
+        ReflDay1_2FractionTimepHLessThan4Total > 4.9         ~ 1,
+        TRUE ~ 0
+      ))%>%
+    mutate(
+      Day4Pos=case_when(
+        ReflDay2_2FractionTimepHLessThan4Total > 4.9         ~ 1,
+        TRUE ~ 0
+      ))%>%
+    mutate(
+      Day5Pos=case_when(
+        ReflDay3_2FractionTimepHLessThan4Total > 4.9         ~ 1,
+        TRUE ~ 0
+      ))%>%
+    mutate(
+      Day6Pos=case_when(
+        ReflDay4_2FractionTimepHLessThan4Total > 4.9         ~ 1,
+        TRUE ~ 0
+      ))
+  #Sum the rows to see how many days are positive
+  x$NumDaysBravoPositive<-rowSums(x[grep("^Day", names(x))])
+
+  return(x)
+
+
 }
+
+
+
+
 
 ###### Categorise the Impedance diagnoses ######
 
@@ -455,15 +693,24 @@ GORD_AcidImp<-function(x){
     mutate(
       AcidReflux_Imp = case_when(
         MainAcidExpTotalClearanceChannelPercentTime > 4.2        ~ "TotalAcid",
+        MainAcidExpTotalClearanceChannelPercentTime < 4.1        ~ "NoAcid",
         #MainAcidExpRecumbentClearanceChannelPercentTime > 1.2        ~ "RecumbentAcid",
         #MainAcidExpUprightClearanceChannelPercentTime > 6.3        ~ "UprightAcid",
 
-        MainAcidCompositeScorePatientValueTotalTimeInReflux > 4.2        ~ "TotalAcid",
+        #MainAcidCompositeScorePatientValueTotalTimeInReflux > 5.9        ~ "TotalAcid",
+        #MainAcidCompositeScorePatientValueTotalTimeInReflux > 4.1        ~ "NoAcid",
         #MainAcidCompositeScorePatientValueRecumbentTimeInReflux > 1.2        ~ "RecumbentAcid",
         #MainAcidCompositeScorePatientValueUprightTimeInReflux > 6.3        ~ "UprightAcid",
-        TRUE ~ "NoAcid"
+        TRUE ~ "PossibleAcid"
         )
     )
+
+  #Recoding the impedance reflux columns:
+
+  x$AcidReflux_Imp<-gsub("NoAcid|PossibleAcid",0,x$AcidReflux_Imp)
+  x$AcidReflux_Imp<-gsub("TotalAcid",1,x$AcidReflux_Imp)
+  x$AcidReflux_Imp<-as.numeric(x$AcidReflux_Imp)
+
 
 return(x)
 }
@@ -513,8 +760,9 @@ AcidSubtypes<-function(x){
 #Will need to get this via natural language query from the text
 #' Supragastric belching function
 #'
-#' Extracts all the patients with supragastric belchng
-#' @param x the impedance dataset for extraction
+#' Extracts all the patients with supragastric belching- can only be done once the whole report
+#' #has been merged with the impedance results
+#' @param x the impedance merged with whole report dataset for extraction
 #' @keywords belching
 #' @export
 #' @examples #SupragastricBelching(x)

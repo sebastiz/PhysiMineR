@@ -164,6 +164,8 @@ Age<-describe(as.numeric(demog$age_at_event))
 Sex<-table(demog$sex)
 
 
+
+
 #Then decribe the hypermotility with divertics
 #Have to exclude the ones who had surgery
 #Also have to then describe the parameters of those with divertics

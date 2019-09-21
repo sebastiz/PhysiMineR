@@ -153,11 +153,11 @@ x$Hiatalhernia<-gsub("^.*:","",x$Hiatalhernia)
   x$Distallatency<-as.numeric(as.character((x$Distallatency)))
 
   x$LOS_relax<-ifelse(((x$ResidualmeanmmHg-x$BasalrespiratoryminmmHg/x$BasalrespiratorymeanmmHg)*100)<90,"NonRelaxLOS","NormalRelaxLOS")
-  x$LOS_relax<-as.character(x$LOS_relax)
+  x$LOS_relax<-as.factor(x$LOS_relax)
   x$LowerOesoph<-ifelse(x$BasalrespiratoryminmmHg<4.7&x$Hiatalhernia=="Yes","HypotensiveLOSWithHH",
                            ifelse(x$BasalrespiratoryminmmHg<4.7,"HypotensiveLOS",
                                   ifelse(x$Hiatalhernia=="Yes","HHOnly","Normal")))
-  x$LowerOesoph<-as.character(x$LowerOesoph)
+  x$LowerOesoph<-as.factor(x$LowerOesoph)
 
   x<-data.frame(x,stringsAsFactors = FALSE)
   return(x)
@@ -231,18 +231,18 @@ ifelse(x$ResidualmeanmmHg>=15&!is.na(x$ResidualmeanmmHg)&x$failedChicagoClassifi
 ifelse(x$ResidualmeanmmHg<15&x$ResidualmeanmmHg>10&!is.na(x$ResidualmeanmmHg)&x$failedChicagoClassification==100&!is.na(x$failedChicagoClassification),"PossibleAchalasia",
 ifelse(x$ResidualmeanmmHg>=15&!is.na(x$ResidualmeanmmHg),"AchalasiaType2or3orEGOO",
 ifelse(x$ResidualmeanmmHg<=15&x$failedChicagoClassification==100&!is.na(x$ResidualmeanmmHg)&!is.na(x$failedChicagoClassification),"AbsentPeristalsis",
-ifelse(x$ResidualmeanmmHg<=15&(x$prematurecontraction>=20|x$Simultaneous>=20|x$Distallatency<4.5)&x$DCI>=450&!is.na(x$ResidualmeanmmHg)&(!is.na(x$prematurecontraction)&!is.na(x$Simultaneous))&!is.na(x$DCI),"DES",
-ifelse(x$ResidualmeanmmHg<=15&(x$DCI>=8000)|(x$DCI>=8000|x$DCI>=8000)&!is.na(x$ResidualmeanmmHg)&!is.na(x$DCI),"JackHammer",
-       ifelse(x$ResidualmeanmmHg<=15& ((x$failedChicagoClassification<100&x$failedChicagoClassification>50)|grepl("IOM|neffective oesoph",x$WholReport))&!is.na(x$ResidualmeanmmHg)&!is.na(x$DCI),"IOM",
+ifelse(x$ResidualmeanmmHg<=15&(x$prematurecontraction>=20|x$Simultaneous>=20|x$Distallatency<4.5)&x$DistalcontractileintegralmeanmmHgcms>=450&!is.na(x$ResidualmeanmmHg)&(!is.na(x$prematurecontraction)&!is.na(x$Simultaneous))&!is.na(x$DistalcontractileintegralmeanmmHgcms),"DES",
+ifelse(x$ResidualmeanmmHg<=15&(x$DistalcontractileintegralmeanmmHgcms>=8000)|(x$DistalcontractileintegralmeanmmHgcms>=8000|x$DistalcontractileintegralmeanmmHgcms>=8000)&!is.na(x$ResidualmeanmmHg)&!is.na(x$DistalcontractileintegralmeanmmHgcms),"JackHammer",
+       ifelse(x$ResidualmeanmmHg<=15& ((x$failedChicagoClassification<100&x$failedChicagoClassification>50)|grepl("IOM|neffective oesoph",x$WholeReport))&!is.na(x$ResidualmeanmmHg)&!is.na(x$DistalcontractileintegralmeanmmHgcms),"IOM",
 #ifelse(x$ResidualmeanmmHg<15&x$Contractilefrontvelocitycms>9&x$Distallatency>=4.5&!is.na(x$ResidualmeanmmHg)&!is.na(x$Contractilefrontvelocitycms)&!is.na(x$Distallatency),"RapidContraction",
-#ifelse(x$ResidualmeanmmHg<15&(x$DCI>=5000|x$DCI>=5000)&x$Distallatency>=4.5&!is.na(x$ResidualmeanmmHg)&!is.na(x$Distallatency)&!is.na(x$DCI),"HypertensivePeristalsis",
+#ifelse(x$ResidualmeanmmHg<15&(x$DistalcontractileintegralmeanmmHgcms>=5000|x$DistalcontractileintegralmeanmmHgcms>=5000)&x$Distallatency>=4.5&!is.na(x$ResidualmeanmmHg)&!is.na(x$Distallatency)&!is.na(x$DistalcontractileintegralmeanmmHgcms),"HypertensivePeristalsis",
 #ifelse(x$ResidualmeanmmHg<=15&x$smallbreaks>=30&x$largebreaks>=20&!is.na(x$ResidualmeanmmHg)&!is.na(x$smallbreaks)&!is.na(x$largebreaks),"WeakPeristalsis",
 ifelse(x$ResidualmeanmmHg<15&x$largebreaks>=50&!is.na(x$ResidualmeanmmHg)&!is.na(x$failedChicagoClassification),"FrequentFailedPeristalsis","Normal")))))))))))
   return(x)
 }
 
 
-#Note Ineffective esophageal motility is diagnosed when >50% of swallows is ineffective, that is either failed (DCI <100mmHg cm s) or weak (DCI 100–450 mmHg cm s).
+#Note Ineffective esophageal motility is diagnosed when >50% of swallows is ineffective, that is either failed (DistalcontractileintegralmeanmmHgcms <100mmHg cm s) or weak (DistalcontractileintegralmeanmmHgcms 100–450 mmHg cm s).
 #Fragmented peristalsis is defined as >50% of swallows with a large break (>5 cm) and not matching criteria for ineffective esophageal motility
 
 

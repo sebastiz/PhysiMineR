@@ -1,135 +1,98 @@
 ---
-title: "Predictors of the detection of gastro-oesophageal reflux disease on prolonged acid monitoring given a negative 24 pH impedance using the high resolution manometry and 24 hour pH impedance result"
-author: "Sebastian Zeki"
-date: "20/11/2018"
-output: html_document
+title             : "Predictors of positive wireless pH monitoring study after a negative pH impedance study"
+shorttitle        : "Predictors of positive wireless pH monitoring study after a negative pH impedance study"
 
+author: 
+  - name          : "Sebastian S Zeki"
+    affiliation   : "1,3"
+    corresponding : yes    # Define only one corresponding author
+    address       : "Gastroenterology Department,Westminster Bridge Road, London SE1 7EH"
+    email         : "sebastiz@hotmail.com"
+  - name          : "Anna Wolak"
+    affiliation   : "1"
+  - name          : "Ismail Miah"
+    affiliation   : "1"
+  - name          : "Minerva daSilva"
+    affiliation   : "1"
+  - name          : "Jason Dunn"
+    affiliation   : "1,2"
+  - name          : "Andrew Davies"
+    affiliation   : "1,2"
+  - name          : "James Gossage"
+    affiliation   : "1,2"
+  - name          : "Abrie Botha"
+    affiliation   : "1,2"
+  - name          : "Guiping Sui"
+    affiliation   : "1"
+  - name          : "Jafar Jafari"
+    affiliation   : "1"
+  - name          : "Terry Wong"
+    affiliation   : "1,2"
+
+affiliation:
+  - id            : "1"
+    institution   : "Centre for Oeosphageal Diseases, Guy's and St. Thomas Hospital, Westminster Bridge Road, London"
+  - id            : "2"
+    institution   : "Karolinska Instituet, Karolinska,Sweden"
+  - id            : "3"
+    institution   : "Bart's Cancer Institute,Charterhouse Square, London"
+    
+    
+
+
+authornote: |
+header-includes:
+  - \usepackage{setspace}\doublespacing
+  - \AtBeginEnvironment{tabular}{\singlespacing}
+  - \AtBeginEnvironment{lltable}{\singlespacing}
+  - \AtBeginEnvironment{tablenotes}{\doublespacing}
+  - \captionsetup[table]{font={stretch=1.5}}
+  - \captionsetup[figure]{font={stretch=1.5}}
+
+
+abstract: |
+  One or two sentences providing a **basic introduction** to the field,  comprehensible to a scientist in any discipline.Two to three sentences of **more detailed background**, comprehensible  to scientists in related disciplines.One sentence clearly stating the **general problem** being addressed by  this particular study. One sentence summarizing the main result (with the words "**here we show**" or their equivalent). Two or three sentences explaining what the **main result** reveals in direct comparison to what was thought to be the case previously, or how the  main result adds to previous knowledge. One or two sentences to put the results into a more **general context**.Two or three sentences to provide a **broader perspective**, readily comprehensible to a scientist in any discipline.
+  
+  <!-- https://tinyurl.com/ybremelq -->
+  
+keywords          : "Gastro-oesophageal reflux disease, pH studies, wireless pH monitoring"
+wordcount         : This document contains `r wordcountaddin::word_count()` words
+
+bibliography      : ["r-references.bib"]
+
+floatsintext      : yes
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+linenumbers       : yes
+mask              : no
+draft             : no
+
+documentclass     : "apa6"
+classoption       : "man"
+output            : papaja::apa6_pdf
 ---
 
 
-```{r setup, warning = FALSE, message = FALSE,include=FALSE}
-knitr::opts_chunk$set(results = 'asis', echo = FALSE, comment = FALSE,  warning = FALSE, message = FALSE, fig.align = 'center')
-options(digits=2)
-testrmd::init()
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed, echo = FALSE, comment = FALSE,  warning = FALSE, message = FALSE)
+set.seed(42)
+options(digits=2,xtable.comment = FALSE)
+library("papaja")
+```
+
+```{r analysis-preferences}
+# Seed for random number generation
+
 library(knitr)
 library(here)
 library(EndoMineR)
-library(DiagrammeR)
-library(CodeDepends)
-library(readxl)
 library(dplyr)
-library(stringr)
-library(here)
 library(tidyr)
-library(PhysiMineR)
-library(DataExplorer)
-library(finalfit)
 library(kableExtra)
-
+library(ggpubr)
 ```
-
-
-
-
-### Introduction
-
-A significant proportion of patients with gastro-oesophageal reflux disease (GORD) have intermittent symptoms. Standard pH monitoring and 24 hour pH impedance only allows assessment over a 24 hour period and therefore may miss episodes of significant reflux. New technologies that allow prolonged acid reflux monitoring of up to 96 hours are now in widespread usage. It has been estimated that a significant proportion of patients with intermittent symptoms would have a positive finding of GORD with extended pH assessment (REF BSG article esp on BRAVO usage).
-
-It is at the clinicians discretion as to whether further, prolonged pH assessment is indicated. A clinican may take into account a number of factors including the nature and frequency of the symptoms, or other tests such as the endoscopy or manometry which may provide circumstantial evidence of GORD (REF). There is however no guidance about who should undergo prolonged acid monitoring in the presence of a negative pH study. The aim of the current study was to establish predictors of a BRAVO study demonstrating GORD on a worst day analysis given a negative 24 pH study.
-
-
-### Methods
-
------Subjects
-
-The results of all patients who had undergone a successful 24 hour pH impedance for any reason and a subsequent BRAVO between DATE(Get the dates from the minimum of the VisitDate column `r 1+1 `) were retrospectively investigated. Only patients who had undergone an initially negative 24 hour pH impedance result were included (a pH negative impedance result was interpreted as:...... a positive BRAVO result was interpreted as.....).
-
-All patients selected were adults over the age of 18. Ethics was approved (IRAS number) and by the local ethics board. 
-
-Patients were excluded for the following reasons: 
-
-1. Previous oesophageal surgery or intervention such as endoscopic mucosal resection or radiofrequency ablation.
-2. Less than 24 hours of recording on pH impedance.
-3. Less than 48 hours of recorded data from the patient's BRAVO study
-4. Bravo days performed on PPI.
-
-
-**HRM protocol**
-Following local analgesia of the nares the catheter was introduced trans-nasally and patient was instructed to drink water through a straw whilst HRM catheter was advanced to the stomach. The HRM catheter depth was adjusted to ensure manometric visual of the UOS, GOJ and gastric pressures.  Patients were then given an short adaptation period due to the catheterisation and when patient felt ready for motility assessment, they were given 5ml of water through a syringe to conduct a single swallow. 10 single swallow of 5ml was performed with each being 20 seconds apart. Patients then rested for 30 seconds to record the Landmark ID for UOS tone and LOS tone. Patient undertook adjunctive testing with i) multiple water swallows with 5 rapid swallows of 2ml water and ii) solid bolus swallows with bread and butter sandwich meal to eat with taking patients’ normal bitesize and conducting a single swallow of the bolus after appropriate chewing. All swallow assessment were performed in the upright sitting position.
- 
-After the HRM was completed, the captured recording was reviewed using the Manoview software (version 3) (Sierra Scientific Instruments). The thermal sensitivity was corrected using the thermal compensation function. The landmark ID phase was identified and the UOS marker and GOJ marker were correctly positioned at the sphincter sites. The gastric sensor was placed at the lowest pressure point below the GOJ. Each single 5ml water swallow was then assessed in accordance to Chicago classification (version 3)(1). Adjunctive testing MWS was to assess the peristaltic integrity/vigour compared to standard 5ml single swallow and bread swallows were benchmarked against normal range from (2). The oesophageal body motility parameters (distal contractile integral [DCI], contractile deceleration point [CDP], contractile front velocity [CFV] and distal latency [DL] were approximately used to assess swallows with respect to bolus type (1, 2). The GOJ morphology was analysed in accordance to (3).
-
-**pH impedance protocol:** 
-
-All patients underwent evaluation with pH impedance using TOOL catheter as part of their routine clinical care. Prior to placement of the pH impedance catheter, high resolution manometry was performed using TOOL. Parameters recorded at HRM included...PARAMETERS.
-
-
-
-**Bravo protocol:** 
-
-96 hour Bravo protocol
-
-The 96 hour Bravo procedure was performed after a 6 hour fasting period and discontinuation of acid suppressant medication eg PPIs (5-7 days), H2 receptor blockers (2 days) and antacids (night before).  Patients on Warfarin needed to have an INR of less than 3, and those on other anticoagulants should have stopped medication 24-48hrs before the procedure.  The patient was advised not to start any anti acid medication during the study, unless advised at the first follow up visit (48h).
-The patient was asked to complete a diary of symptoms and meal/drink times (except for still water), using the clock on the bravo receiver, during the 96-hour pH recording. 3 symptoms of reflux were decided by the patient and symbols allocated for each symptom.  The patient was requested to record these symptoms by pressing the appropriate symptom markers (symbols) on the receiver, when the symptom occurred. If the patient consumed alcohol during the study, it necessary to press the meal/drink button and document the event on the hard copy diary.
-Exclusion criteria for the procedure – 
-•	Pacemaker or implantable cardiac defibrillators
-•	Pregnancy
-•	Bleeding diathesis
-•	Severe oesophagitis
-•	Strictures, varices or obstruction
-
-Calibration
-The bravo capsule was soaked in buffer solutions 1.07 and 7.01 (Reagecon, Synectics Medical Ltd.) respectively to calibrate the correct pH reading.  Bravo receiver was set up with correct values from the receiver menu and verified to ensure that the receiver correctly read the capsule. The receiver was charged to last for 96 hours prior to use.
-
-Procedure
-The patient was sedated with IV Fentanyl and Midazolam. Following endoscopic examination of the upper GI tract, measurements were taken from the Z line to the incisors.  A pH sensor located in a capsule (Bravo pH capsule: 25mm x 6mm x 5.5 mm) was pinned temporarily to the wall of the Oesophagus 6 cm proximal to the Z line.  
-
-The capsule transmits data using radio signals to a receiver, that the patient was asked to wear at all times during the study except when having a shower.  This was in order to prevent any disturbance in the transmission of signals between the receiver and the capsule. 
-The patient was instructed to follow as normal a routine as possible i.e. to eat meals at the usual time, go to bed at and get up at the usual time, and to sleep with the normal number of pillows since this will reflect the condition more accurately.
-Between 5 and 12 days after the study the capsule naturally detaches from the Oesophagus and passes through the digestive tract. 
-Patients were advised against undergoing an MRI study for 30 days from the start of the pH study, as the capsule is not compatible for use in an MRI magnetic field.
-
-Follow up
-A follow up appointment at 48h was encouraged and arranged if patient was agreeable.
-At 48/96 hours the data stored in the receiver was transferred to the software application Accuview pH-Z v.5.2. The meal/drink and supine event times recorded in the patient’s electronic diary were compared with the hardcopy diary that was maintained by the patient during the study. At the first follow up visit (48h) if the patient showed pathological gastroesophageal reflux, a PPI was started for the second 48h of the study, in order to objectively assess whether the medication suppressed acid reflux and alleviated the symptoms.
-Any artefacts on the tracing, meal times and detachment of the capsule from the oesophagus during the study were excluded from the analysis.
-
-The following parameters were obtained from the analysis and compared against normal reference values (Reference to be obtained from Jafar) as shown in the table below.
-
-1)	Number of reflux episodes per day
-2)	Total % time spent in reflux
-3)	% time spent in reflux in the upright position
-4)	% time spent in reflux in the supine position
-5)	% time spent in reflux post prandial
-6)	De Meester Score
-7)	Symptom analysis – Symptom-reflux association is obtained using SI = Symptom index for reflux (SI ≥ 50%) and SAP = Symptom association probability (SAP ≥ 95% ie. Probability that the symptom and reflux are not associated solely by chance: >95% is significant).
-The interpretation of the reflux-symptom association was based on the worst result obtained during the duration of the study and recorded in the report.
-
- Symptoms were recorded by the patient at the time of recording. As the symptom recording was contemporaneous, these were taken as the symptoms in the predictive model. Separate symptoms were also recorded as typical (heartburn, regurgitation) or atypical (chest pain, throat symptoms,cough, stomach pain) and also as oesophageal (heartburn, regurgitation), abdominal (abdominal pain or bloating) or laryngo=pharyngeal (LPR- hoarse voice, cough, throat clearing). 
-
-
-**Data cleaning:**
-
-Wireless pH monitoring, manometry and pH impedance results were merged according to the patient identifier and dat of the study. 
-To ensure that there was no duplicated data for patients who had undergone more than two of any test, only tests chronologically closest to the test to be merged were chosen. To ensure relevance, tests were merged only if there was less than one year's difference between the two. 
-
-Variables for analysis were chosen from Impedance and HRM data on the following basis: Lack of multicolinearity, adequate number of data points to remove skew from missing data. 
-
-
-All quantitative data were presented as mean±SD.  Student's t-test was used to compare numerical data (NORMALITY ASSUMPTION TO EXPAND AND SAY WHICH TEST WAS USED). Categorical data was compared using Chi-squared. 
-
-
-**GORD Diagnosis**
-
-Patients were diagnosed as having a negative pH impedance study when the 24 hour total pH <4 was <4.2% (CHECK THIS). Wireless acid monitoring was assessed using worst day analysis (REF) with the percentage of time of pH <4 as >4.2% in a 24 hour period. For wireless acid detection, a positive diagnosis was made if the patient had a Total Fraction of time with pH <4 in the oesophagus of >5.3% on any day per 24 hours of recording. 
-
-
-**Statistical analyses:**
-
-Feature selection suggested the following variables for analysis:
-Age (years), lower oesophageal length (cm),Basal respiratory minimum (mmHg),Mean Residual Pressure (mmHg),Distal Contractile Integral (mean mmHg/cm/s),Contractile Front Velocity (m/s),Distal Latency,percentage failed swallows,percentage panoesophageal pressurization,percentage large Breaks,percentage premature contractions,percentage rapid contractions,Number of small breaks,Number of Acid Episodes,Percentage Time pH <4,Mean Acid Clearance Time and the longest acid episode
-
-Univariate analysis was carried out on all recorded parameters and those with p<0.25 were selected for evaluation in a multivariate model with a stepwise (forward selection/backward elimination) method. p<0.05 was taken as the threshold of significance for the multivariate model and the strength of association was expressed as odds ration (OR).
 
 
 ```{r echo=FALSE}
@@ -139,7 +102,6 @@ read_chunk(here("inst","Projects","BRAVOStudies", "NegImpPredictorsOfAllPosBRAVO
 
 
 ```{r dataImport,echo=FALSE,cache=TRUE}
-
 ```
 
 
@@ -161,215 +123,208 @@ read_chunk(here("inst","Projects","BRAVOStudies", "NegImpPredictorsOfAllPosBRAVO
 ```{r missingClean,cache=TRUE}
 ```
 
+# Introduction
 
 
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-
-## Results ##
+Wireless pH monitoring (WPM) is a useful method for the analysis of oesophageal pH. It is most commonly used as an alternative to catheter based studies especially in patients who are intolerant of the catheter or in whom catheter based studies are negative for acid reflux but with a strong *a priori* possibility of a true positive result (**REF**). False negative catheter studies may occur if reflux is intermittent so that a 24 hour window of assessment is insufficient ((**REF**)). WPM allows prolonged acid reflux monitoring for up to 96 hours and is now in widespread use. It has been estimated that a significant proportion of patients would have a positive finding of GORD with extended pH assessment ((**REF**) BSG article esp on BRAVO usage/Sweis/ Pandolfino etc.).
 
 
 
+When deciding on the need for further pH testing given a negative 24 hour study, a clinican may take into account a number of factors including the nature and frequency of the symptoms, or other tests such as the endoscopy or manometry which may provide circumstantial evidence of GORD ((**REF**)). There is however no guidance about who should undergo prolonged acid monitoring in the presence of a negative pH study. The aim of the current study was to establish predictors of a wireless pH study demonstrating GORD on a worst day analysis given a negative 24 pH study.
 
 
 
+# Methods
+
+### Subjects
+
+The results of all consecutive patients who had undergone a successful 24 hour pH impedance for any reason and a subsequent WPM between `r paste(min(lubridate::month(ImpAndBravoWithHRM$MainPtDataDateofAdmission,label=TRUE, abbr=FALSE)),min(lubridate::year(ImpAndBravoWithHRM$MainPtDataDateofAdmission)))` and `r paste(max(lubridate::month(ImpAndBravoWithHRM$MainPtDataDateofAdmission,label=TRUE, abbr=FALSE)),max(lubridate::year(ImpAndBravoWithHRM$MainPtDataDateofAdmission)))` were retrospectively investigated. Only patients who had undergone an initially negative 24 hour pH impedance result were included. A negative pH impedance test was defined as having a pH<4 for less than 4% of a 24 hour period ((**REF**)). A WPM study was defined as positive if the patient had a pH<4 for <5% of any 24 hour period (worst day analysis-(**REF**)). A worst day analysis was chosen as it is more sensitive than average day analysis ((**REF**)).
+
+All patients selected were adults over the age of 18. Ethics was approved (IRAS number) and by the local ethics board. Patients were excluded for the following reasons:  1. Previous oesophageal surgery or intervention such as endoscopic mucosal resection or radiofrequency ablation. 2. Less than 24 hours of recording on pH impedance. 3. Less than 48 hours of recorded data from the patient's WPM study 4. WPM days performed on PPI.
 
 
-**The characteristics of GORD positive BRAVO recordings **
+### High resolution manometry protocol
+Following local analgesia of the nares the catheter was introduced trans-nasally and the patient was instructed to drink water through a straw whilst the HRM catheter was advanced to the stomach. The high resolution manometry (HRM) catheter depth was adjusted to ensure manometric visual of the upper oesophageal sphincter (UOS), the gastro-oesophageal junction (GOJ) and gastric pressures.  10 single swallows of 5ml were performed with each being 20 seconds apart. Each 5ml water swallow was then assessed in accordance to Chicago classification (version 3)(**REF**) using Manoview software (version 3) (Sierra Scientific Instruments). 
+
+### pH impedance protocol:
+
+Patients underwent reflux monitoring using Sandhill Scientific multichannel impedance pH catheters (ZAN-BG-44) which were inserted trans-nasally after applying local anaesthesia (xylocaine). The dual pH sensors of the catheter were positioned 5cm below and above the manometric LOS. The impedance sensors were positioned above the LOS by 3cm, 5cm, 9cm, 15cm and 19cm. Acid reflux was considered when a retrograde impedance flow was observed and the oesophageal pH sensor was detecting a pH value of <4. The data was captured by ZepHrTM recording device and data was analysed using the BioVIEW Analysis software (5.7.1.0).
+ 
 
 
 
-```{r BRAVOdescription,echo=FALSE}
+### WPM protocol: 
+
+96 hour WPM protocol
+The 96 hour WPM procedure was performed after a 6 hour fasting period and discontinuation of acid suppressant The patient was asked to complete a diary of symptoms and meal/drink times (except for still water), using the clock on the WPM receiver, during the 96-hour pH recording. 3 symptoms of reflux were decided by the patient and symbols allocated for each symptom. The patient was requested to record these symptoms by pressing the appropriate symptom markers (symbols) on the receiver, when the symptom occurred. 
+
+After the WPM capsule was calibrated, the patient was sedated according to local practice. Following a complete endoscopic examination of the upper GI tract a pH sensor located in a capsule (WPM pH capsule: 25mm x 6mm x 5.5 mm) was pinned temporarily to the wall of the Oesophagus 6 cm proximal to the Z line.
+The following parameters were obtained from the analysis and compared against normal reference values (Reference to be obtained from Jafar) 1. Number of reflux episodes per day, 2.	Total percent of time spent in reflux, 3.	Percent of time spent in reflux in the upright position, 4.	Percent of time spent in reflux in the supine position, 5.	Percent of time spent in reflux post prandial, 6.	De Meester Score
+
+### Data cleaning:
+
+WPM, HRM and pH impedance results were merged according to the patient identifier and date of the study. 
+To ensure that there was no duplicated data for patients who had undergone more than two of any test, only tests chronologically closest to the test to be merged were chosen. To ensure relevance, tests were merged only if there was less than one year's difference between the two. 
+
+Variables for analysis were chosen from Impedance and HRM data on the following basis: Lack of multicolinearity, adequate number of data points to remove skew from missing data. 
+
+All quantitative data were presented as mean±SD.  Student's t-test was used to compare numerical data (NORMALITY ASSUMPTION TO EXPAND AND SAY WHICH TEST WAS USED). Categorical data was compared using Chi-squared. 
+
+
+### Statistical analyses:
+
+Feature selection suggested the following variables for analysis:
+Age (years), lower oesophageal length (cm),Basal respiratory minimum (mmHg),Mean Residual Pressure (mmHg),Distal Contractile Integral (mean mmHg/cm/s),Contractile Front Velocity (m/s),Distal Latency,percentage failed swallows,percentage panoesophageal pressurization,percentage large Breaks,percentage premature contractions,percentage rapid contractions,Number of small breaks,Number of Acid Episodes,Percentage Time pH <4,Mean Acid Clearance Time and the longest acid episode
+
+Univariate analysis was carried out on all recorded parameters and those with p<0.25 were selected for evaluation in a multivariate model with a stepwise (forward selection/backward elimination) method. p<0.05 was taken as the threshold of significance for the multivariate model and the strength of association was expressed as odds ration (OR).
+
+
+
+# Results
+
+
+```{r BRAVOdescription,echo=FALSE,fig.width=12,fig.height=8,fig.align="left",fig.cap="The characteristics of GORD positive BRAVO recordings for patients with negative impedance studies. a) Histogram of the worst day for GORD positive and GORD negative WPM studies b) The percentage acid exposure time for GORD positive and GORD negative WPM studies c)The number of days with GORD for GORD positive WPM studies"}
 ```
-**Figure 1: The characteristics of GORD positive BRAVO recordings **
 
-The distribution of time fraction with pH <4 is shown in Figure 1. The worst day analysis demonstrated a positive skew towards the first day. Based on worst day analysis, a GORD diagnosis based on pH <4 for >=6% of a 24 hour period was demonstrated in  `r pHWDA` . The worst day SAP analysis demonstrated a positive SAP in `r SAPWDA`. Worst day analysis of the SAP demonstrated that the majority of the worst days occurred in the first 24 hours
+<br>
+<br>
 
-
+The distribution of time fraction with pH <4 is shown in Figure 1. The worst day analysis demonstrated a positive skew towards the first day. Based on worst day analysis, a GORD diagnosis based on pH <4 for >=6% of a 24 hour period was demonstrated in  `r pHWDA`% . The worst day SAP analysis demonstrated a positive SAP in `r SAPWDA`%. The majority of the worst SAP days occurred in the first 24 hours for both positive and negative WPM studies (**check this is true for the proportion of studies rather than absolute counts**). The majority of patients classified as GORD positive WPM studies were positive for only 1 day (**percentage positive for one day**).
 
 ```{r HRM_UnivariateAnalysisOR,echo=FALSE}
 ```
 
-**Table one** illustrates the variables selected for univariate analysis from the two groups
+<br>
+<br>
 
+
+**Table 1:** Table of demographics for GORD-positive ('Positive') WPM and GORD-negative ('Negative') WPM studies
+<br>
+<br>
 
 
 ```{r HRM_MultipleLogRegression1,echo=FALSE}
 ```
 
-<br>
-<br>
-
-**Baseline demographic data**
-
-Of the `r nrow(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal)` included,there were `r nrow(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal[NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal$AcidRefluxBRAVO=="Positive",])` studies positive for GORD (Male:Female  `r resOR$Gender$descriptive[3,2]`:`r resOR$Gender$descriptive[3,1]`, average age of `r resOR$ageInYears$descriptive[3,1]` sd: (`r resOR$ageInYears$descriptive[3,2]`) range: `r resOR$ageInYears$descriptive[3,3]`-`r resOR$ageInYears$descriptive[3,4]`)
-`r nrow(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal[NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal$AcidRefluxBRAVO=="Negative",])` negative for GORD (Male:Female `r resOR$Gender$descriptive[2,2]`: `r resOR$Gender$descriptive[2,1]` average age of `r resOR$ageInYears$descriptive[2,1]` sd:(`r resOR$ageInYears$descriptive[2,2]` range:`r resOR$ageInYears$descriptive[2,3]`-`r resOR$ageInYears$descriptive[2,4]`).
-
-Univariate analysis highlighted `r paste0(names(chosen),collapse=" ,")` for further investigation with a mulivariate analysis
-
-**Percentage time with pH <4 **
-
-
-Patients with a positive GORD diagnosis at BRAVO spent a higher percent of time with pH<4 at impedance when compared with negative GORD patients (positive patients mean: `r resOR$MainAcidExpTotalClearanceChannelPercentTime$descriptive[3,1]` sd: `r resOR$MainAcidExpTotalClearanceChannelPercentTime$descriptive[3,2]` range: `r resOR$MainAcidExpTotalClearanceChannelPercentTime$descriptive[3,3]` - `r resOR$MainAcidExpTotalClearanceChannelPercentTime$descriptive[3,4]` OR:  `r restabOR$descr["MainAcidExpTotalClearanceChannelPercentTime","OR"]` vs. negative patients mean: `r resOR$MainAcidExpTotalClearanceChannelPercentTime$descriptive[2,1]` sd: `r resOR$MainAcidExpTotalClearanceChannelPercentTime$descriptive[2,2]` range: `r resOR$MainAcidExpTotalClearanceChannelPercentTime$descriptive[2,3]` - `r resOR$MainAcidExpTotalClearanceChannelPercentTime$descriptive[2,4]` OR:  `r restabOR$descr["MainAcidExpTotalClearanceChannelPercentTime","OR"]`)
-
-Upright impedance AET was significantly increased in those with BRAVO positive GORD when compared with BRAVO negative (p=0.001). There was no difference in supine reflux. The number of refluxes and longest time spent in reflux did not show any significant difference. 
-
-
-**Distal latency**
-
-
-Patients with a positive GORD diagnosis at BRAVO had a lower distal latency when compared with negative GORD patients (positive patients mean: `r resOR$Distallatency$descriptive[3,1]` sd: `r resOR$Distallatency$descriptive[3,2]` range: `r resOR$Distallatency$descriptive[3,3]` - `r resOR$Distallatency$descriptive[3,4]` OR:  `r restabOR$descr["Distallatency","OR"]` vs. negative patients mean: `r resOR$Distallatency$descriptive[2,1]` sd: `r resOR$Distallatency$descriptive[2,2]` range: `r resOR$Distallatency$descriptive[2,3]` - `r resOR$Distallatency$descriptive[2,4]` OR:  `r restabOR$descr["Distallatency","OR"]`)
-
-
-
-**Distal contractile integral** and **Basal Respiratory Mean**
-
-Patients with a positive GORD diagnosis at BRAVO had a lower DCI when compared with negative GORD patients (positive patients mean: `r resOR$DistalcontractileintegralmeanmmHgcms$descriptive[3,1]` sd: `r resOR$DistalcontractileintegralmeanmmHgcms$descriptive[3,2]` range: `r resOR$DistalcontractileintegralmeanmmHgcms$descriptive[3,3]` - `r resOR$DistalcontractileintegralmeanmmHgcms$descriptive[3,4]` OR:  `r restabOR$descr["DistalcontractileintegralmeanmmHgcms","OR"]` vs. negative patients mean: `r resOR$DistalcontractileintegralmeanmmHgcms$descriptive[2,1]` sd: `r resOR$DistalcontractileintegralmeanmmHgcms$descriptive[2,2]` range: `r resOR$DistalcontractileintegralmeanmmHgcms$descriptive[2,3]` - `r resOR$DistalcontractileintegralmeanmmHgcms$descriptive[2,4]` OR:  `r restabOR$descr["DistalcontractileintegralmeanmmHgcms","OR"]`)
-
-
-**Basal respiratory mean **
-
-Patients with a positive GORD diagnosis at BRAVO had a lower basal respiratory mean  when compared with negative GORD patients (positive patients mean: `r resOR$BasalrespiratorymeanmmHg$descriptive[3,1]` sd: `r resOR$BasalrespiratorymeanmmHg$descriptive[3,2]` range: `r resOR$BasalrespiratorymeanmmHg$descriptive[3,3]` - `r resOR$BasalrespiratorymeanmmHg$descriptive[3,4]` OR:  `r restabOR$descr["BasalrespiratorymeanmmHg","OR"]` vs. negative patients mean: `r resOR$BasalrespiratorymeanmmHg$descriptive[2,1]` sd: `r resOR$BasalrespiratorymeanmmHg$descriptive[2,2]` range: `r resOR$BasalrespiratorymeanmmHg$descriptive[2,3]` - `r resOR$BasalrespiratorymeanmmHg$descriptive[2,4]` OR:  `r restabOR$descr["BasalrespiratorymeanmmHg","OR"]`)
-
-
-Although univariate analysis suggested a difference in the distal contractile integral, this was not demonstrated on multivariate analysis. 
-
-
 
 <br>
 <br>
+
+### Baseline demographic data
+
+Of the `r nrow(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2)` included, `r nrow(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2[NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$AcidRefluxBRAVO=="Positive",])` studies were positive for GORD (Male:Female  `r resOR$Gender$descriptive[3,2]`: `r resOR$Gender$descriptive[3,1]`, average age of `r restabOR$descr["Age (years)","Positive"]`  and
+`r nrow(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2[NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$AcidRefluxBRAVO=="Negative",])` negative for GORD (Male:Female `r resOR$Gender$descriptive[2,2]`: `r resOR$Gender$descriptive[2,1]` average age of `r restabOR$descr["Age (years)","Negative"]`).
+
 <br>
 <br>
 
-```{r UnivariatePredictorsGraph,echo=FALSE,fig.width=10}
+### Measures of contractile vigour
+
+WPM-GORD-positive diagnosis at WPM had a significantly lower DCI when compared with WPM-GORD-negative patients (WPM-GORD-positive patients mean: `r restabOR$descr["DCI (mean mmHg/cm/s)","Positive"]`  vs. WPM-GORD-negative patients mean: `r restabOR$descr["DCI (mean mmHg/cm/s)","Negative"]`  OR:  `r restabOR$descr["DCI (mean mmHg/cm/s)","OR"]` p-value= `r restabOR$descr["DCI (mean mmHg/cm/s)","p.overall"]`).  There was no significant difference in the distal latency between the two groups (WPM-GORD-positive patients mean: `r restabOR$descr["DL","Positive"]` vs. WPM-GORD-negative patients mean: `r restabOR$descr["DL","Negative"]` p-value=`r restabOR$descr["DL","p.overall"]`. 
+
+No significant difference was observed between the two groups for large breaks (WPM-GORD-negative: `r restabOR$descr["% Large Breaks","Negative"]` WPM-GORD-positive: `r restabOR$descr["% Large Breaks","Positive"]`, p-value=`r restabOR$descr["% Large Breaks","p.overall"]`) or for small breaks (WPM-GORD-negative: `r restabOR$descr["Number of small breaks","Negative"]` WPM-GORD-positive: `r restabOR$descr["Number of small breaks","Positive"]`, p-value=`r restabOR$descr["Number of small breaks","p.overall"]`)
+
+<br>
+<br>
+
+### Measures of lower oesophageal sphincter
+
+There was no significant difference in the basal respiratory mean (mmHg) between the two groups (WPM-GORD-positive: `r restabOR$descr["BasalrespiratorymeanmmHg","Positive"]` vs WPM-GORD-negative: `r restabOR$descr["BasalrespiratorymeanmmHg","Negative"]` p-value=`r restabOR$descr["BasalrespiratorymeanmmHg","p.overall"]` ).  Similarly there was no difference between the two groups in measurements of Contractile front velocity (WPM-GORD-negative: `r restabOR$descr["CFV (m/s)","Negative"]` WPM-GORD-positive: `r restabOR$descr["CFV (m/s)","Positive"]`, p-value=`r restabOR$descr["CFV (m/s)","p.overall"]`), rapid contraction (WPM-GORD-negative: `r restabOR$descr["% Rapid contraction","Negative"]` WPM-GORD-positive: `r restabOR$descr["% Rapid contraction","Positive"]`, p-value=`r restabOR$descr["% Rapid contraction","p.overall"]`) or panoesophageal pressurization: (WPM-GORD-negative: `r restabOR$descr["% Panoesophageal pressurization","Negative"]` WPM-GORDpositive: `r restabOR$descr["% Panoesophageal pressurization","Positive"]`, p-value=`r restabOR$descr["% Panoesophageal pressurization","p.overall"]`)
+
+<br>
+<br>
+
+### Percentage time with pH <4 
+
+WPM-GORD-positive patients spent a higher percent of time with pH<4 at PH impedance when compared with WPM-GORD-positive patients (WPM-GORD-positive patients mean: `r restabOR$descr["Percentage Time pH <4","Positive"] `  vs. WPM-GORD-negative patients mean: `r restabOR$descr["Percentage Time pH <4","Negative"]`  OR:  `r restabOR$descr["Percentage Time pH <4","OR"]`)
+
+Upright impedance AET was significantly increased in WPM-GORD-positive patients when compared with the WPM-GORD-negative group (p=0.001). There was no difference in supine reflux (data not shown). The number of refluxes and longest time spent in reflux did not show any significant difference.  Univariate analysis highlighted `r paste0(Hmisc::label(chosen[2]),collapse=" ,")` and `r paste0(Hmisc::label(chosen[3]),collapse=" ,")`  for further investigation with a mulivariate analysis
+
+\pagebreak
+
+
+
+
+```{r UnivariatePredictorsValue} 
+
 ```
 
-<br>
-<br>
-<br>
-<br>
 
-**Statistical modelling:** 
 
-A stepwise multiple logistic regression analysis was performed where the independent variables were those being analysed and the dependent variable was the presence of pathological acid reflux on a BRAVO study. ( performed using the package MASS in R (version and citation))
+\pagebreak
 
-<br>
-<br>
-<br>
+```{r UnivariatePredictorsGraph,echo=FALSE,fig.width=12,fig.height=8,fig.align="left",fig.cap="pH impedance characteristics for predictors of a positive wireless capsule study for pH impedance negative studies. a) b)"} 
+
+
+```
+
+\pagebreak
+
+## Multivariate analysis:
+
 
 ```{r HRM_MultipleLogRegression2,echo=FALSE}
 ```
-**Table 2:** Table of  odds ratios for univariate and multivariate analysis
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-
-```{r HRM_MultipleLogRegressionOR,echo=FALSE,fig.width=10}
-```
-**Table 3:** Table of multiple logistic regression odds ratios with forrest plot
-
-**Multivariate regression analysis**
-
-<br>
-<br>
-
-**ROC curve analysis of predictors of postive BRAVO result**
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-
-```{r HRM_MultipleLogRegressionOR2,echo=FALSE,fig.width=12}
-```
-
-**Figure 2:** Comparison of predictors of a positive wireless acid monitor result between GORD positive GORD negative patients 
-
-
-```{r HRM_MultipleLogRegressionROC_plot,echo=FALSE}
-```
-
-```{r HRM_MultipleLogRegressionROC_AUC,echo=FALSE}
-```
-
-**Figure 3:** A ROC curve of significant predictors
-
-### Determination of the optimal anticipatory AET ###
-
-Given that AET can predict a positive BRAVO, Youden's cutpoint estimation determined that an AET of => `r vb$optimal_cutpoint` gave a sensitivity of `r vb$sensitivity` % and a specificity of `r vb$specificty` % for the prediction of a positive subsequent BRAVO study.
-To further improve the predictive ability we added a significant SAP for oesophageal symptoms and other factors from the multivariate analysis.
 
 
 
+A stepwise multiple logistic regression analysis was performed where the independent variables were those being analysed and the dependent variable was the presence of pathological acid reflux on a WPM study (**Table 2**). Both the `r Hmisc::label(chosen[2:ncol(chosen)])` were significant predictors of a WPM-GORD-positive study as independent variables (`r mytable[1,1]` :WPM-GORD-positive `r mytable[1,4]` vs WPM-GORD-negative: `r mytable[1,4]`. OR=`r mytable[1,6]`. `r mytable[2,1]` :WPM-GORD-positive `r mytable[2,4]` vs WPM-GORD-negative: `r mytable[2,4]`. OR= `r mytable[2,6]`).
 
-```{r CutPointForAcid,echo=FALSE}
-```
+\newpage
 
-
-
-
-### Does anticipatory AET exist within BRAVO results? ###
-
-
-
-```{r Day1NegDay2Pos,echo=FALSE}
-```
-
-Given that the high (albeit normal) AET predicted a positive BRAVO result, an assessment was made to see if this could be replicated with a BRAVO test. We therefore assessed whether a positive BRAVO result on Day2 could be predicted by a high normal result on Day 1. Linear regression demonstrated that day1 AET could predict day2 AET (Estimate:  `r dd$coefficients[2,1]`, Std. Error:  `r dd$coefficients[2,2]`,z value:  `r dd$coefficients[2,3]`,Pr(>|z|):  `r dd$coefficients[2,4]`,AIC:  `r dd$aic`  Given an AET of <5.3 and >2, the optimal cutpoint for predicting that the second day BRAVO will have an AET of >5.3 if the first day is negatitve, is `r vb$optimal_cutpoint` with a sensitivity of `r vb$sensitivity` and a specificity of `r vb$specificity `
-
-
-### Does anticipatory AET exist for pH impedance results? ###
-
-The two day assessment was also carried out for 48 hour pH impedance results
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-
-```{r diagrammeR,echo=FALSE}
+```{r CutPointForAcid,echo=FALSE,fig.width=12,fig.height=8,fig.cap="Optimal cutpoint with distribution by class and associated ROC curve analysis a) Acid Exposure time (%) b) Distal contractile integral (mean mmHg/cm/s)"}
 
 ```
-<br>
-<br>
-<br>
-<br>
 
-## Discussion
 
-1. Largest described cohort of ph impedance negative patients undergoing BRAVO
-1. Likely to demonstrate the same predictors as HRM for GORD (REF the Bredenoord paper).
+
+Given that `r mytable[2,1]` can predict a positive WPM, Youden's cutpoint estimation determined that an `r mytable[2,1]` of `r vb$optimal_cutpoint` gave a sensitivity of `r vb$sensitivity*100` % and a specificity of `r vb$specificity*100` % for the prediction of a positive subsequent WPM study.
+The optimal Youden's cutpoint estimation for`r mytable[1,1]` was `r vb2$optimal_cutpoint` gave a sensitivity of `r vb2$sensitivity*100` % and a specificity of `r vb2$specificity*100` % for the prediction of a positive subsequent WPM study.
+
+
+
+
+# Discussion
+
+A diagnosis of GORD can be made in a percentage (**REF**) of patients who have a negative pH impedance study, when this is subsequently followed up by a 96 hour wireless pH monitoring study (**REF Sweiss**). It is not clear however who should have further testing for GORD if the pH study is normal by conventional criteria. This in turn depends on the *a priori* risk of having GORD despite a negative pH study. Although the risk of having a positive 24 hour pH study has been assessed usually by the examination of concurrent motility studies, such as high reolution motility, there have been no studies to assess the likelihood of a positive WPM study based on both the prior HRM and 24 hour pH impedance study. These are the two likely studies to be available when a clinician is making a decision for further testing and therefore the aim of this study is to establish predictors from these clinical parameters available in clinic to aid the diagnostic decision making process.
+
+The current study represents the largest cohort of pH impedance GORD-negative patients who subsequently underwent WPM testing.It is notable that the WPM studies have shown a distribution of positivity similar to previous studies: the diagnosis of GORD is most often made on the basis of one day of positivity and of those patients who are positive for GORD, the worst day analysis is predominantely on the first day. (**REF Sweiss**)
+
+The fact that most motility variables were not associated with WPM GORD-positivity is in keeping with the established literature that there is no specific pattern at HRM that predicts the presence of GORD. There are findings however that are more likely in GORD. Distal contractile integral, a measure of contractile vigour, has been shown to be lower in GORD patients (**REF that Bredenoord paper**). The univariate and multivariate analysis shown here has also demonstrated this to be the case. The very low sensitivity when trying to determine the optimal cutpoint estimation for the DCI is again an indication that a low DCI can indicate but does not establish GORD as a potential diagnosis.
+
+The significant difference in the acid exposure time at pH impedance, between those who have GORD at WPM and those who do not is interesting. Some false negative pH studies may be related to patients altering their behaviour because of the presence of a nasal catheter (**REF**).
+
+It is possible that the pH study negative cases represent more borderline making the ability to use predictors more difficult.
+
+
+
 2. Also demonstrates the same issue that prolonged recording increases the number of patients picked up. The fact that there is a raised AET may demonstrate that patients are altering their behaviour as a result of the insertion of a catheter.
 3. Emphasises the hypersensitive oesophagus as a pre-GORD phenomenon with an underlying mechanism that is likely to be similar to actual GORD (ie TLESR's).
+4. Also agrees with the previous pattern of WPM studies
+5. Also demonstrates that the HRM can't predict positive WPMs (which we already know for pH impedance)
 
 
 
-## Limitations
+# Limitations
 
 
 1. Retrospective
-2. Inherent bias in that the patients were selected by clinicians at their discretion to undergo BRAVO likely due to a priori possibility of being GORD positive
+2. Inherent bias in that the patients were selected by clinicians at their discretion to undergo WPM likely due to a priori possibility of being GORD positive- unclear what the criteria were for choosing the patients to go and have a further WPM.
+3. 
+
+
+
+# To Do List
+
+- [ ] Table 1: Sort out gender.
+- [ ] Table 1: Sort out SAPs by extracting from the database.
+- [ ] Make sure statistical analyses are correctly described in the statistical analysis section.
+- [ ] Bibliography.
+- [ ] Abstract to write.
+- [ ] See whether variable labels I have created are correct eg %rapid contraction.
+- [ ] Make sure there are no conflicting variables eg %rapid contraction and premature contraction.
+- [ ] Add in non acid relux time as per criteria from Terry.
+- [ ] Find out what the OR of 1 and significant p-value means for DCI
 
 
 
@@ -377,8 +332,21 @@ The two day assessment was also carried out for 48 hour pH impedance results
 
 
 
+## Data analysis
+We used `r cite_r("r-references.bib")` for all our analyses.
 
 
 
+\newpage
 
+# References
+```{r create_r-references}
+r_refs(file = "r-references.bib")
+```
 
+\begingroup
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{0.5in}
+
+<div id = "refs"></div>
+\endgroup
