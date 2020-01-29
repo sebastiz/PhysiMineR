@@ -1,6 +1,6 @@
 ---
 title             : "Predictors of positive wireless pH monitoring study after a negative pH impedance study"
-shorttitle        : "Predictors of positive wireless pH monitoring study after a negative pH impedance study"
+shorttitle        : "Predictors of positive wireless pH monitoring study after a negative pH impedance study."
 
 author: 
   - name          : "Sebastian S Zeki"
