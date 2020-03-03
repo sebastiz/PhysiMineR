@@ -16,9 +16,6 @@ library(gtsummary)
 library(gt)
 library(ggpubr)
 
-#utility function for latex:
-
-
 
 
 ##### Import ####
