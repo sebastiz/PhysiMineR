@@ -7,10 +7,11 @@
 SupragastricBelching(x)
 }
 \arguments{
-\item{x}{the impedance dataset for extraction}
+\item{x}{the impedance merged with whole report dataset for extraction}
 }
 \description{
-Extracts all the patients with supragastric belchng
+Extracts all the patients with supragastric belching- can only be done once the whole report
+#has been merged with the impedance results
 }
 \examples{
 #SupragastricBelching(x)
