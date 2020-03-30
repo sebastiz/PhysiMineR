@@ -234,9 +234,14 @@ SAPWDA<-(nrow(NegImp_FromImpWithBRavoAndHRM %>%select(contains("SAP")) %>%filter
 SIWDA<-(nrow(NegImp_FromImpWithBRavoAndHRM %>%select(contains("SI")) %>%filter_all(any_vars(. >50)))/nrow(NegImp_FromImpWithBRavoAndHRM))*100
 
 
-#Trajectory assessment
+
+# DEFINITION OF POSITIVE WPM FOR GORD HERE
 #How many days positive of the 4? (ie how many days with pH>5.3 on any one day)
+#WDA definition:
 NegImp_FromImpWithBRavoAndHRMOnlyGORD<-NegImp_FromImpWithBRavoAndHRM[NegImp_FromImpWithBRavoAndHRM$AcidRefluxBRAVO==1,]
+
+#Average day analysis definition:
+#NegImp_FromImpWithBRavoAndHRMOnlyGORD<-NegImp_FromImpWithBRavoAndHRM[NegImp_FromImpWithBRavoAndHRM$average>5.2,]
 
 #Need to divide the number of positive results by the number for each day that actually have a result (from ReflDay1FractionTimepHLessThan4Total",
 #"ReflDay2FractionTimepHLessThan4Total","ReflDay1_2FractionTimepHLessThan4Total","ReflDay2_2FractionTimepHLessThan4Total"
@@ -259,7 +264,9 @@ a2<-ggplot(myworstDayTable,aes(x=Day,y=Percentage))+
   theme_Publication()+
   xlab("Worst Day AET pH<4 ")+
   ylab("% of studies")+
-  labs(fill = "GORD") + scale_fill_discrete(name = "GORD", labels = c("No", "Yes"))
+  labs(fill = "GORD") + scale_fill_discrete(name = "GORD", labels = c("No", "Yes"))+
+  theme(text=element_text(size=10, family="Arial"))+
+  ggsave("Figure1a.jpeg", width = 20, height = 20, dpi = 300, units="cm")
 
 #This graph looks at the worst pH for WPM-GORD positive and WPM-GORD negative patients
 #Cant seem to get rid of the outliers so have set the average limit to 25.
@@ -269,7 +276,9 @@ a3<-ggplot(NegImp_FromImpWithBRavoAndHRM%>%filter(worst<25), aes(x = as.factor(A
   theme_Publication()+
   xlab("GORD")+
   ylab("Worst day AET")+
-  labs(fill = "GORD") + scale_fill_discrete(name = "GORD", labels = c("No", "Yes"))
+  labs(fill = "GORD") + scale_fill_discrete(name = "GORD", labels = c("No", "Yes"))+
+  theme(text=element_text(size=10, family="Arial"))+
+  ggsave("Figure1b.jpeg", width = 20, height = 20, dpi = 300, units="cm")
 
 
 myNumDayspositiveTable<-data.frame(table(NegImp_FromImpWithBRavoAndHRMOnlyGORD$NumDaysBravoPositive))
@@ -293,7 +302,9 @@ a4<-ggplot(myNumDayspositiveTable[2:nrow(myNumDayspositiveTable),],aes(x=Day,y=P
   theme_Publication()+
   xlab("Number of days of GORD")+
   ylab("% of studies")+
-  labs(fill = "GORD") + scale_fill_discrete(name = "GORD", labels = c("No", "Yes"))
+  labs(fill = "GORD") + scale_fill_discrete(name = "GORD", labels = c("No", "Yes"))+
+  theme(text=element_text(size=10, family="Arial"))+
+  ggsave("Figure1c.jpeg", width = 20, height = 20, dpi = 300, units="cm")
 
 
 #Correlating the worst Day vs the number of positive days with BRAVO:
@@ -335,7 +346,9 @@ a5<-ggplot(Sympdf,aes(x=Symptom,y=Percentage)) +
   theme_Publication()+
   xlab("Symptom")+
   ylab("% of studies")+
-  theme(axis.text.x = element_text(angle = 45,hjust = 1,size = 10))
+  theme(axis.text.x = element_text(angle = 45,hjust = 1,size = 10))+
+  theme(text=element_text(size=10, family="Arial"))+
+  ggsave("Figure1d.jpeg", width = 20, height = 20, dpi = 300, units="cm")
 
 
 ggarrange(a2, a3,a4,a5,
@@ -579,7 +592,9 @@ p1<-ggplot(chosen, aes(x = AcidRefluxBRAVO, y = chosen[,2])) +
   scale_colour_Publication()+
   theme_Publication()+
   ylab(Hmisc::label(chosen[2]))+
-  xlab("WPM-GORD")
+  xlab("WPM-GORD")+
+  theme(text=element_text(size=10, family="Arial"))+
+  ggsave("Figure2a.jpeg", width = 20, height = 20, dpi = 300, units="cm")
 
 p2<-ggplot(chosen, aes(x = AcidRefluxBRAVO, y = chosen[,3])) +
   geom_violin(outlier.shape = NA,fill="red",alpha=0.3)+geom_beeswarm(size=1,priority='density',cex = 2)+
@@ -587,7 +602,9 @@ p2<-ggplot(chosen, aes(x = AcidRefluxBRAVO, y = chosen[,3])) +
   scale_colour_Publication()+
   theme_Publication()+
   ylab(Hmisc::label(chosen[3]))+
-  xlab("WPM-GORD")
+  xlab("WPM-GORD")+
+  theme(text=element_text(size=10, family="Arial"))+
+  ggsave("Figure2b.jpeg", width = 20, height = 20, dpi = 300, units="cm")
 
 p3<-ggplot(chosen, aes(x = AcidRefluxBRAVO, y = chosen[,4])) +
   geom_violin(outlier.shape = NA,fill="red",alpha=0.3)+geom_beeswarm(size=1,priority='density',cex = 2)+
@@ -595,7 +612,9 @@ p3<-ggplot(chosen, aes(x = AcidRefluxBRAVO, y = chosen[,4])) +
   scale_colour_Publication()+
   theme_Publication()+
   ylab(Hmisc::label(chosen[4]))+
-  xlab("WPM-GORD")
+  xlab("WPM-GORD")+
+  theme(text=element_text(size=10, family="Arial"))+
+  ggsave("Figure2c.jpeg", width = 20, height = 20, dpi = 300, units="cm")
 
 
 ggarrange(p1, p2,p3,
@@ -634,11 +653,15 @@ chosen$AcidRefluxBRAVO<-as.character(chosen$AcidRefluxBRAVO)
 #Determine optimal cutpoints for the Percent time <4 (the last column in the chosen table)
 library(cutpointr)
 vb<-cutpointr(x = chosen[,4], class = chosen$AcidRefluxBRAVO,na.rm=TRUE,method = maximize_metric, metric = sum_sens_spec)
-dens1<-plot_x(vb)+geom_density(color="darkblue", fill="lightblue")+
+dens1<-plot_x(vb)+geom_density(color="white", fill="grey")+
   xlab(Hmisc::label(names(chosen[ncol(chosen)])))+
   ggtitle(paste0(""))+
-  labs(subtitle = "")
-roc1<-plot_roc(vb)+ ggtitle(paste0(""))
+  labs(subtitle = "")+
+  theme(text=element_text(size=10, family="Arial"))+
+  ggsave("Figure3a.jpeg", width = 20, height = 20, dpi = 300, units="cm")
+roc1<-plot_roc(vb)+ ggtitle(paste0(""))+
+  theme(text=element_text(size=10, family="Arial"))+
+  ggsave("Figure3b.jpeg", width = 20, height = 20, dpi = 300, units="cm")
 
 
 ggarrange(dens1,roc1,
