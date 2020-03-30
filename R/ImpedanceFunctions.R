@@ -615,6 +615,27 @@ GORD_BravoWDAAndAverage<-function(x){
   #Only select the GORD patients by pH<4
   #x$SIDay1Heartburn<-as.numeric(x$SIDay1Heartburn)
   x$average<-rowMeans(select_if(x, is.numeric)%>%select(matches("y[0-9]*_*[0-9]FractionTimepHLessThan4Total")), na.rm = TRUE)
+
+  de1<- x %>%
+    #Check that Fraction is % Time Spent in Reflux
+    mutate(
+      AcidRefluxBRAVOAv = case_when(
+
+        average > 5.3        ~ "Acid",
+        #ReflDayTotalNumberofRefluxesTotal > 62 ~ "TotalAcid",
+        TRUE ~ "NoAcid"
+      )
+    )
+  #Recoding the BRAVO rewflux columns:
+  de1$AcidRefluxBRAVOAv<-gsub("NoAcid",0,de1$AcidRefluxBRAVOAv)
+  de1$AcidRefluxBRAVOAv<-gsub(".*Acid",1,de1$AcidRefluxBRAVOAv)
+  de1$AcidRefluxBRAVOAv<-as.numeric(de1$AcidRefluxBRAVOAv)
+
+
+
+
+
+
   x$worst<-do.call(pmax, c(select_if(x, is.numeric)%>%select(matches("y[0-9]*_*[0-9]FractionTimepHLessThan4Total")), na.rm = TRUE))
 
   #Need to get which day was the worst:
