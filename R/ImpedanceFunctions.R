@@ -371,6 +371,8 @@ dataBRAVODayLabeller<-function(x,HospNum_Id,VisitDate){
 
   #Now you need to select the columns that have the regular expression Day1\\.y and convert to Day 3 and Day2 to Day4
     #Select the columns with names Day1\\.y
+  #ReflDay1FractionTimepHLessThan4Total ReflDay2FractionTimepHLessThan4Total= Day 1 and Day 2
+  #ReflDay1_2FractionTimepHLessThan4Total ReflDay2_2FractionTimepHLessThan4Total = Day 3 and 4
 
     x<- x %>% rename_all(~gsub('(.*)Day1(.*)\\.y', '\\1Day1_2\\2', .x))
     x<- x %>% rename_all(~gsub('(.*)Day2(.*)\\.y', '\\1Day2_2\\2', .x))
@@ -614,9 +616,13 @@ GORD_BravoWDAAndAverage<-function(x){
 
   #Only select the GORD patients by pH<4
   #x$SIDay1Heartburn<-as.numeric(x$SIDay1Heartburn)
-  x$average<-rowMeans(select_if(x, is.numeric)%>%select(matches("y[0-9]*_*[0-9]FractionTimepHLessThan4Total")), na.rm = TRUE)
+  x$averageAll<-rowMeans(select_if(x, is.numeric)%>%select(matches("y[0-9]*_*[0-9]FractionTimepHLessThan4Total")), na.rm = TRUE)
 
-  de1<- x %>%
+  #This one just takes the first two days average so that on PPI measurements are not included.
+  x$average<-rowMeans(select_if(x, is.numeric)%>%select(matches("y[1-2].*FractionTimepHLessThan4Total")), na.rm = TRUE)
+
+
+  x<- x %>%
     #Check that Fraction is % Time Spent in Reflux
     mutate(
       AcidRefluxBRAVOAv = case_when(
@@ -627,9 +633,9 @@ GORD_BravoWDAAndAverage<-function(x){
       )
     )
   #Recoding the BRAVO rewflux columns:
-  de1$AcidRefluxBRAVOAv<-gsub("NoAcid",0,de1$AcidRefluxBRAVOAv)
-  de1$AcidRefluxBRAVOAv<-gsub(".*Acid",1,de1$AcidRefluxBRAVOAv)
-  de1$AcidRefluxBRAVOAv<-as.numeric(de1$AcidRefluxBRAVOAv)
+  x$AcidRefluxBRAVOAv<-gsub("NoAcid",0,x$AcidRefluxBRAVOAv)
+  x$AcidRefluxBRAVOAv<-gsub(".*Acid",1,x$AcidRefluxBRAVOAv)
+  x$AcidRefluxBRAVOAv<-as.numeric(x$AcidRefluxBRAVOAv)
 
 
 
