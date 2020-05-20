@@ -100,9 +100,6 @@ AllBravo<-GORD_BravoWDAAndAverage(AllBravo)
 
 
 
-
-
-
 #Get the BRAVO procedures
 
 Procs<-data.frame(Procs,stringsAsFactors = FALSE)
@@ -195,8 +192,10 @@ ImpAndBravoWithHRM<-ImpAndBravoWithHRM%>%filter(diffImpAndBravoDays<365)
 library(eeptools)
 ImpAndBravoWithHRM$ageInYears<-age_calc(na.omit(ImpAndBravoWithHRM$MainPtDataDateofBirth),ImpAndBravoWithHRM$MainPtDataDateofAdmission,precise=TRUE)/12
 
-#Get all the Negative Impedance patients (with both positive and negative BRAVO results-#AcidRefluxBRAVO is the outcome variable we will use;)
+#Get all the Negative Impedance patients (with both positive and negative BRAVO results-#AcidRefluxBRAVOAv is the outcome variable we will use)
 NegImp_FromImpWithBRavoAndHRM<-ImpAndBravoWithHRM %>% filter(AcidReflux_Imp==0)
+#Also need to get rid of the non-acid reflux patients defined as >80 reflux episodes in a patient with normal AET.
+NegImp_FromImpWithBRavoAndHRM<-NegImp_FromImpWithBRavoAndHRM%>% filter((MainRflxEpisodeTotalAcid+MainRflxEpisodeTotalNonacid)<80)
 
 #Get rid of all the BRAVO columns as we don't need these as predictive variables
 NegImp_FromImpWithBRavoAndHRM<-NegImp_FromImpWithBRavoAndHRM[ , !grepl( "^t[Dd]ay" , names( NegImp_FromImpWithBRavoAndHRM ) ) ]
@@ -205,9 +204,6 @@ NegImp_FromImpWithBRavoAndHRM<-NegImp_FromImpWithBRavoAndHRM[ , !grepl( "[Ss]wal
 #Add the BRAVO procedure information:
 NegImp_FromImpWithBRavoAndHRM<-merge(NegImp_FromImpWithBRavoAndHRM, Procs,by=c("HospNum_Id","VisitDate.x"),all.x=TRUE)
 NegImp_FromImpWithBRavoAndHRM$Oesophagitis<-ifelse(grepl("Y",NegImp_FromImpWithBRavoAndHRM$Oesophagitis),"Y","N")
-
-
-#merge(NegImp_FromImpWithBRavoAndHRM,Procs,by=c("HospNum_Id","VisitDate.x"))
 
 
 #Impute the gender
@@ -225,7 +221,7 @@ library(gridExtra)
 #Need to replicate Sweis paper and show 1. SAP worst day =63.2% 2. SI Worst day =61% 3. pH worst day <4 (>4.2%) =47% and most in the first 24 hours 4. 45% GERD based on worst day SAP or pH <4
 
 #Positive GORD by pH<4 in 5.3% Worst day overall analysis-
-pHWDA<-(nrow(NegImp_FromImpWithBRavoAndHRM[NegImp_FromImpWithBRavoAndHRM$worst>=5.3,])/nrow(NegImp_FromImpWithBRavoAndHRM))*100
+pHWDA<-(nrow(NegImp_FromImpWithBRavoAndHRM[NegImp_FromImpWithBRavoAndHRM$worstt>=5.3,])/nrow(NegImp_FromImpWithBRavoAndHRM))*100
 
 #Positive GORD by SAP Worst day overall analysis-
 SAPWDA<-(nrow(NegImp_FromImpWithBRavoAndHRM %>%select(contains("SAP")) %>%filter_all(any_vars(. >94.9)))/nrow(NegImp_FromImpWithBRavoAndHRM))*100
@@ -237,8 +233,8 @@ SIWDA<-(nrow(NegImp_FromImpWithBRavoAndHRM %>%select(contains("SI")) %>%filter_a
 
 # DEFINITION OF POSITIVE WPM FOR GORD HERE
 #How many days positive of the 4? (ie how many days with pH>5.3 on any one day)
-#WDA definition:
-NegImp_FromImpWithBRavoAndHRMOnlyGORD<-NegImp_FromImpWithBRavoAndHRM[NegImp_FromImpWithBRavoAndHRM$AcidRefluxBRAVO==1,]
+#Using the average day analysis definition:
+NegImp_FromImpWithBRavoAndHRMOnlyGORD<-NegImp_FromImpWithBRavoAndHRM[NegImp_FromImpWithBRavoAndHRM$AcidRefluxBRAVOAv==1,]
 
 #Average day analysis definition:
 #NegImp_FromImpWithBRavoAndHRMOnlyGORD<-NegImp_FromImpWithBRavoAndHRM[NegImp_FromImpWithBRavoAndHRM$average>5.2,]
@@ -264,21 +260,23 @@ a2<-ggplot(myworstDayTable,aes(x=Day,y=Percentage))+
   theme_Publication()+
   xlab("Worst Day AET pH<4 ")+
   ylab("% of studies")+
-  labs(fill = "GORD") + scale_fill_discrete(name = "GORD", labels = c("No", "Yes"))+
-  theme(text=element_text(size=10, family="Arial"))+
-  ggsave("Figure1a.jpeg", width = 20, height = 20, dpi = 300, units="cm")
+  labs(fill = "GORD") + scale_fill_discrete(name = "GORD", labels = c("No", "Yes"))
+# +
+#   theme(text=element_text(size=10, family="Arial"))+
+#   ggsave("Figure1a.jpeg", width = 20, height = 20, dpi = 300, units="cm")
 
 #This graph looks at the worst pH for WPM-GORD positive and WPM-GORD negative patients
 #Cant seem to get rid of the outliers so have set the average limit to 25.
-a3<-ggplot(NegImp_FromImpWithBRavoAndHRM%>%filter(worst<25), aes(x = as.factor(AcidRefluxBRAVO),y=worst,fill=as.factor(AcidRefluxBRAVO))) +
+a3<-ggplot(NegImp_FromImpWithBRavoAndHRM%>%filter(worstt<25), aes(x = as.factor(AcidRefluxBRAVOAv),y=worstt,fill=as.factor(AcidRefluxBRAVOAv))) +
   geom_boxplot(outlier.shape = NA)+geom_beeswarm(size=1,priority='density',cex=1.5)+
   scale_colour_Publication()+
   theme_Publication()+
   xlab("GORD")+
   ylab("Worst day AET")+
-  labs(fill = "GORD") + scale_fill_discrete(name = "GORD", labels = c("No", "Yes"))+
-  theme(text=element_text(size=10, family="Arial"))+
-  ggsave("Figure1b.jpeg", width = 20, height = 20, dpi = 300, units="cm")
+  labs(fill = "GORD") + scale_fill_discrete(name = "GORD", labels = c("No", "Yes"))
+# +
+#   theme(text=element_text(size=10, family="Arial"))+
+#   ggsave("Figure1b.jpeg", width = 20, height = 20, dpi = 300, units="cm")
 
 
 myNumDayspositiveTable<-data.frame(table(NegImp_FromImpWithBRavoAndHRMOnlyGORD$NumDaysBravoPositive))
@@ -290,21 +288,22 @@ Day4TotNumPosPts<-myNumDayspositiveTable$Freq[5]/nrow(NegImp_FromImpWithBRavoAnd
 Day5TotNumPosPts<-myNumDayspositiveTable$Freq[6]/nrow(NegImp_FromImpWithBRavoAndHRMOnlyGORD[!is.na(NegImp_FromImpWithBRavoAndHRMOnlyGORD$ReflDay3_2FractionTimepHLessThan4Total),])*100
 Day6TotNumPosPts<-myNumDayspositiveTable$Freq[7]/nrow(NegImp_FromImpWithBRavoAndHRMOnlyGORD[!is.na(NegImp_FromImpWithBRavoAndHRMOnlyGORD$ReflDay4_2FractionTimepHLessThan4Total),])*100
 
-myNumDayspositiveTable$Percentage<-c(NA,Day1TotNumPosPts,Day2TotNumPosPts,Day3TotNumPosPts,Day4TotNumPosPts,Day5TotNumPosPts,Day6TotNumPosPts)
+myNumDayspositiveTable$Percentage<-c(Day1TotNumPosPts,Day2TotNumPosPts,Day3TotNumPosPts,Day4TotNumPosPts,Day5TotNumPosPts,Day6TotNumPosPts)
 names(myNumDayspositiveTable)<-c("Day","Freq","Percentage")
 
 
 
 
-a4<-ggplot(myNumDayspositiveTable[2:nrow(myNumDayspositiveTable),],aes(x=Day,y=Percentage))+
+a4<-ggplot(myNumDayspositiveTable[1:nrow(myNumDayspositiveTable),],aes(x=Day,y=Percentage))+
   geom_histogram(stat="identity")+
   scale_colour_Publication()+
   theme_Publication()+
   xlab("Number of days of GORD")+
   ylab("% of studies")+
-  labs(fill = "GORD") + scale_fill_discrete(name = "GORD", labels = c("No", "Yes"))+
-  theme(text=element_text(size=10, family="Arial"))+
-  ggsave("Figure1c.jpeg", width = 20, height = 20, dpi = 300, units="cm")
+  labs(fill = "GORD") + scale_fill_discrete(name = "GORD", labels = c("No", "Yes"))
+# +
+#   theme(text=element_text(size=10, family="Arial"))+
+#   ggsave("Figure1c.jpeg", width = 20, height = 20, dpi = 300, units="cm")
 
 
 #Correlating the worst Day vs the number of positive days with BRAVO:
@@ -346,9 +345,10 @@ a5<-ggplot(Sympdf,aes(x=Symptom,y=Percentage)) +
   theme_Publication()+
   xlab("Symptom")+
   ylab("% of studies")+
-  theme(axis.text.x = element_text(angle = 45,hjust = 1,size = 10))+
-  theme(text=element_text(size=10, family="Arial"))+
-  ggsave("Figure1d.jpeg", width = 20, height = 20, dpi = 300, units="cm")
+  theme(axis.text.x = element_text(angle = 45,hjust = 1,size = 10))
+# +
+#   theme(text=element_text(size=10, family="Arial"))+
+#   ggsave("Figure1d.jpeg", width = 20, height = 20, dpi = 300, units="cm")
 
 
 ggarrange(a2, a3,a4,a5,
@@ -408,17 +408,20 @@ NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal<-NegImp_FromImpWithBRavoAndHRMMi
 ## @knitr HRM_UnivariateAnalysisOR
 
 
-NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal$AcidRefluxBRAVO<-factor(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal$AcidRefluxBRAVO,
+NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal$AcidRefluxBRAVOAv<-factor(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal$AcidRefluxBRAVOAv,
                                                                         levels=c(0,1),
                                                                         labels=c("Negative", # Reference
                                                                                  "Positive"))
 
-
+NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal$WorstD_ayAnalysisGORDPositive<-factor(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal$WorstD_ayAnalysisGORDPositive,
+                                                                          levels=c(0,1),
+                                                                          labels=c("Negative", # Reference
+                                                                                   "Positive"))
 
 
 
 #Rearrange columns so can do the univariate analysis more efficiently:
-NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal<-NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal %>% select(AcidRefluxBRAVO,1:12, everything())
+NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal<-NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal %>% select(AcidRefluxBRAVOAv,1:12, everything())
 
 
 #For the table get rid of variables you dont want to see
@@ -427,7 +430,6 @@ NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2<-NegImp_FromImpWithBRavoAndHRMM
   -DOBAge,
   -LowerOesoph,
   -AllSymps_BRAVOcompartment,
-  -AllSymps_BRAVOgrouped,
   -EsophageallengthLESUEScenterscm,
   -ProximalLESfromnarescm,
   -DistalLESfromnarescm,
@@ -438,7 +440,7 @@ NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2<-NegImp_FromImpWithBRavoAndHRMM
   -prematurecontraction,
   -rapidcontraction,
   -PIPfromnarescm,
-  dplyr::contains("Oesohagitis")
+  dplyr::contains("Oesophagitis")
   -dplyr::contains("TotalAcid"),
   -dplyr::contains("SAPDay"),
   -dplyr::contains("SAP",ignore.case = FALSE),
@@ -466,18 +468,19 @@ NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2<-NegImp_FromImpWithBRavoAndHRMM
   -SIOesophageal,
   -SIOther,
   -SILPR,
+  -contains("SAP"),
   -contains(".y"),
-  -matches("worst|Day2|ReflD|DeMeester|average|Recumbent|Prox|Upright|Day1Pos|Day2Pos|Day3Pos|Day4Pos|Day5Pos|Day6Pos|Trajec"))
+  -matches("worstt|worstDaypH|Day2|ReflD|DeMeester|average|Recumbent|Prox|Upright|Day1Pos|Day2Pos|Day3Pos|Day4Pos|Day5Pos|Day6Pos|Trajec"))
 
 #Symptom cleaning for analysis: Need to have as yes no answers rather than actual SAPs
-NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalHeartburn<-ifelse(!is.na(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalHeartburn),"Y","N")
-NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalChestPain<-ifelse(!is.na(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalChestPain),"Y","N")
-NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalRegurgitation<-ifelse(!is.na(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalRegurgitation),"Y","N")
-NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalBelch<-ifelse(!is.na(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalBelch),"Y","N")
-NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalCough<-ifelse(!is.na(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalCough),"Y","N")
-NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalThroat<-ifelse(!is.na(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalThroat),"Y","N")
-NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalEpigastric<-ifelse(!is.na(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalEpigastric),"Y","N")
-NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalVomiting<-ifelse(!is.na(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalVomiting),"Y","N")
+# NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalHeartburn<-ifelse(!is.na(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalHeartburn),"Y","N")
+# NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalChestPain<-ifelse(!is.na(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalChestPain),"Y","N")
+# NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalRegurgitation<-ifelse(!is.na(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalRegurgitation),"Y","N")
+# NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalBelch<-ifelse(!is.na(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalBelch),"Y","N")
+# NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalCough<-ifelse(!is.na(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalCough),"Y","N")
+# NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalThroat<-ifelse(!is.na(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalThroat),"Y","N")
+# NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalEpigastric<-ifelse(!is.na(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalEpigastric),"Y","N")
+# NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalVomiting<-ifelse(!is.na(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalVomiting),"Y","N")
 #NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPOesophageal<-ifelse(!is.na(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPOesophageal),"Y","N")
 #NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPOther<-ifelse(!is.na(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPOther),"Y","N")
 #NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPLPR<-ifelse(!is.na(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPLPR),"Y","N")
@@ -501,58 +504,45 @@ attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$LESmidpointfromnarescm, "l
 attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$BasalrespiratoryminmmHg, "label") <- "Basal resp. min. (mmHg)"
 attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$ResidualmeanmmHg, "label") <- "Residual mean (mmHg)"
 attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$failedChicagoClassification, "label") <- "% Failed peristalsis"
-attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalHeartburn, "label") <- "SAP Heartburn"
-attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalChestPain, "label") <- "SAP Chest Pain"
-attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalRegurgitation, "label") <- "SAP Regurgitation"
-attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalBelch, "label") <- "SAP Belching"
-attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalCough, "label") <- "SAP Cough"
-attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalThroat, "label") <- "SAP Throat Symptoms"
-attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalEpigastric, "label") <- "SAP Stomach pain"
-attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalVomiting, "label") <- "SAP Vomiting"
+attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$AllSymps_BRAVOgrouped, "label") <- "All symptoms grouped"
+attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$Oesophagitis, "label") <- "Endoscopic Findings"
+# attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalHeartburn, "label") <- "SAP Heartburn"
+# attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalChestPain, "label") <- "SAP Chest Pain"
+# attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalRegurgitation, "label") <- "SAP Regurgitation"
+# attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalBelch, "label") <- "SAP Belching"
+# attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalCough, "label") <- "SAP Cough"
+# attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalThroat, "label") <- "SAP Throat Symptoms"
+# attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalEpigastric, "label") <- "SAP Stomach pain"
+# attr(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$SAPTotalVomiting, "label") <- "SAP Vomiting"
 
 
 #Get rid of rows where the impedance data is missing following the merge:
 
 #Make sure the group to compare is the first column and then list the last column as the final variable to compare for each group:
 library(compareGroups)
-resOR <- compareGroups(AcidRefluxBRAVO ~ . , NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2, compute = TRUE)
+resOR <- compareGroups(AcidRefluxBRAVOAv ~ . , NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2, compute = TRUE)
 
 
 ########### Univariate predictors value #############################################
 ## @knitr UnivariatePredictorsValue
+#Rearrange columns so age and gender are together
+NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2<-NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2 %>% select(AcidRefluxBRAVOAv,ageInYears,1:12, everything())
+
+
+#Remove some columns that arent for this table but are for the WDA analysis
+NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal3<-NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2%>%select(-contains("worst"),-"AcidRefluxBRAVO")
 
 
 
 library(gtsummary)
 so<-tbl_summary(
-
-  data = NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2,
-  by = AcidRefluxBRAVO,missing = "no",
+  data = NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal3,
+  by = AcidRefluxBRAVOAv,missing = "no",
   type = list(all_numeric() ~ "continuous"),
   # change statistics printed in table
   statistic = list(all_continuous() ~ "{mean} ({sd})",
                    all_categorical() ~ "{n} / {N} ({p}%)"),
-  digits = list("marker" ~ c("Y", "N")),
-  value = list("SAP Chest Pain" ~ 1,
-               "SAPHeartburn"~ 1,
-               "SAPVomiting"~ 1,
-               "SAPNausea"~ 1,
-               "SAPRegurgitation"~ 1,
-               "SAPBelch"~ 1,
-               "SAPStomachPain"~ 1,
-               "SIHeartburn"~ 1,
-               "SIChestPain"~ 1,
-               "SIVomiting"~ 1,
-               "SINausea"~ 1,
-               "SIRegurgitation"~ 1,
-               "SIBelch"~ 1,
-               "SIStomachPain"~ 1,
-               "SAPOesophageal"~ 1,
-               "SAPOther"~ 1,
-               "SIOesophageal"~ 1,
-               "SIOther"~ 1,
-               "SAPLPR"~ 1,
-               "SILPR"~ 1)
+  digits = list("marker" ~ c("Y", "N"))
 )
 # add p-values, report t-test, round large pvalues to two decimal place
 so<-add_p(so,test = list(vars(marker) ~ "t.test"),
@@ -573,12 +563,56 @@ sodf<-data.frame(so$meta_data,stringsAsFactors = FALSE)
 sodf<-sodf%>%select(var_label,p.value)%>%filter(p.value < 0.5e-01)
 
 
-#Need to choose more variables here from the univariate above based on the p--value <0.05
-chosen<-data.frame(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$AcidRefluxBRAVO, NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2[, Hmisc::label(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2) %in% sodf$var_label])
-chosen<-chosen %>% dplyr::rename(AcidRefluxBRAVO = NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2.AcidRefluxBRAVO)
 
-#Rearrange columns so age and gender are together
-NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2<-NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2 %>% select(AcidRefluxBRAVO,ageInYears,1:12, everything())
+NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal4<-NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2%>%select(-"AcidRefluxBRAVOAv",-"AcidRefluxBRAVO")
+
+
+soWDA<-tbl_summary(
+
+  data = NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal4,
+  by = WorstD_ayAnalysisGORDPositive,missing = "no",
+  type = list(all_numeric() ~ "continuous"),
+  # change statistics printed in table
+  statistic = list(all_continuous() ~ "{mean} ({sd})",
+                   all_categorical() ~ "{n} / {N} ({p}%)"),
+  digits = list("marker" ~ c("Y", "N"))
+)
+# add p-values, report t-test, round large pvalues to two decimal place
+soWDA<-add_p(soWDA,test = list(vars(marker) ~ "t.test"),
+          pvalue_fun = function(x) style_pvalue(x, digits = 2))
+
+# bold variable labels, italicize levels
+soWDA<- bold_labels(soWDA)
+soWDA<-italicize_levels(soWDA)
+# bold p-values under a given threshold (default is 0.05)
+soWDA<-bold_p(soWDA,t = 0.05)
+# include percent in headers
+soWDA<-modify_header(soWDA,stat_by = "**{level}**, N = {n} ({style_percent(p, symbol = TRUE)})")
+as_gt(soWDA)
+
+#Choose variables automatically from the univariate analysis:
+soWDA_df<-data.frame(soWDA$meta_data,stringsAsFactors = FALSE)
+soWDA_df<-soWDA_df%>%select(var_label,p.value)%>%filter(p.value < 0.5e-01)
+
+
+options(gtsummary.as_gt.addl_cmds = "gt::tab_options(table.font.size = 'x-small', data_row.padding = gt::px(1))")
+
+soWDAandAV<-tbl_merge(list(so,soWDA),tab_spanner = c("Average day analysis", "Worst day analysis"))
+soWDAandAV
+
+
+
+
+#Need to choose more variables here from the univariate above based on the p--value <0.05
+chosen<-data.frame(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$AcidRefluxBRAVOAv, NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2[, Hmisc::label(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2) %in% sodf$var_label])
+chosen<-chosen %>% dplyr::rename(AcidRefluxBRAVOAv = NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2.AcidRefluxBRAVOAv)
+
+#Need to choose more variables here from the univariate above using average day analysis based on the p--value <0.05
+chosenWDA<-data.frame(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2$WorstD_ayAnalysisGORDPositive, NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2[, Hmisc::label(NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2) %in% soWDA_df$var_label])
+chosenWDA<-chosenWDA %>% dplyr::rename(WorstD_ayAnalysisGORDPositive = NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2.WorstD_ayAnalysisGORDPositive)
+
+
+
 
 
 ########### Univariate predictors graph #############################################
@@ -586,40 +620,43 @@ NegImp_FromImpWithBRavoAndHRMMinSetQualityFinal2<-NegImp_FromImpWithBRavoAndHRMM
 
 
 library(ggplot2)
-p1<-ggplot(chosen, aes(x = AcidRefluxBRAVO, y = chosen[,2])) +
+p1<-ggplot(chosen, aes(x = AcidRefluxBRAVOAv, y = chosen[,2])) +
   geom_violin(outlier.shape = NA,fill="red",alpha=0.3)+geom_beeswarm(size=1,priority='density',cex = 2)+
   geom_boxplot(width=0.1,alpha=0.4)+
   scale_colour_Publication()+
   theme_Publication()+
   ylab(Hmisc::label(chosen[2]))+
-  xlab("WPM-GORD")+
-  theme(text=element_text(size=10, family="Arial"))+
-  ggsave("Figure2a.jpeg", width = 20, height = 20, dpi = 300, units="cm")
+  xlab("WPM-GORD")
+# +
+#   theme(text=element_text(size=10, family="Arial"))+
+#   ggsave("Figure2.jpeg", width = 20, height = 20, dpi = 300, units="cm")
 
-p2<-ggplot(chosen, aes(x = AcidRefluxBRAVO, y = chosen[,3])) +
+p2<-ggplot(chosen, aes(x = AcidRefluxBRAVOAv, y = chosen[,3])) +
   geom_violin(outlier.shape = NA,fill="red",alpha=0.3)+geom_beeswarm(size=1,priority='density',cex = 2)+
   geom_boxplot(width=0.1,alpha=0.4)+
   scale_colour_Publication()+
   theme_Publication()+
   ylab(Hmisc::label(chosen[3]))+
-  xlab("WPM-GORD")+
-  theme(text=element_text(size=10, family="Arial"))+
-  ggsave("Figure2b.jpeg", width = 20, height = 20, dpi = 300, units="cm")
+  xlab("WPM-GORD")
+# +
+#   theme(text=element_text(size=10, family="Arial"))+
+#   ggsave("Figure2b.jpeg", width = 20, height = 20, dpi = 300, units="cm")
 
-p3<-ggplot(chosen, aes(x = AcidRefluxBRAVO, y = chosen[,4])) +
-  geom_violin(outlier.shape = NA,fill="red",alpha=0.3)+geom_beeswarm(size=1,priority='density',cex = 2)+
-  geom_boxplot(width=0.1,alpha=0.4)+
-  scale_colour_Publication()+
-  theme_Publication()+
-  ylab(Hmisc::label(chosen[4]))+
-  xlab("WPM-GORD")+
-  theme(text=element_text(size=10, family="Arial"))+
-  ggsave("Figure2c.jpeg", width = 20, height = 20, dpi = 300, units="cm")
+# p3<-ggplot(chosen, aes(x = AcidRefluxBRAVOAv, y = chosen[,4])) +
+#   geom_violin(outlier.shape = NA,fill="red",alpha=0.3)+geom_beeswarm(size=1,priority='density',cex = 2)+
+#   geom_boxplot(width=0.1,alpha=0.4)+
+#   scale_colour_Publication()+
+#   theme_Publication()+
+#   ylab(Hmisc::label(chosen[4]))+
+#   xlab("WPM-GORD")+
+#   theme(text=element_text(size=10, family="Arial"))
+# +
+#   ggsave("Figure2c.jpeg", width = 20, height = 20, dpi = 300, units="cm")
 
 
-ggarrange(p1, p2,p3,
-          labels = c("a)","b)","c)","d)"),
-          ncol = 2, nrow = 2)
+ggarrange(p1,p2,
+          labels = c("a)","b)"),
+          ncol = 2)
 
 
 ########### Multiple Logistic Regression2 #############################################
@@ -628,11 +665,11 @@ ggarrange(p1, p2,p3,
 
 #To get univariate and multivariate odds ratios:
 library(finalfit)
-chosen$AcidRefluxBRAVO<-as.factor(chosen$AcidRefluxBRAVO)
+chosen$AcidRefluxBRAVOAv<-as.factor(chosen$AcidRefluxBRAVOAv)
 
 #Note for some reason I cant get Age and SAP ones in here
-explanatory = names(chosen[,!grepl("AcidRefluxBRAVO",names(chosen))])
-dependent = 'AcidRefluxBRAVO'
+explanatory = names(chosen[,!grepl("AcidRefluxBRAVOAv",names(chosen))])
+dependent = 'AcidRefluxBRAVOAv'
 
 
 mytable<-chosen %>%
@@ -642,31 +679,55 @@ mytable<-chosen %>%
 #convert oesophagitis to numeric
 chosen$Oesophagitis<-ifelse(grepl("Y",chosen$Oesophagitis),1,0)
 
-mod1 <- glm(chosen$AcidRefluxBRAVO ~ ., data = dplyr::select_if(chosen, is.numeric), family = binomial(link = "logit"))
-tbl_regression(mod1, exponentiate = TRUE)%>%bold_p(t = 0.05)
+mod1 <- glm(chosen$AcidRefluxBRAVOAv ~ ., data = dplyr::select_if(chosen, is.numeric), family = binomial(link = "logit"))
+AvReg<-tbl_regression(mod1, exponentiate = TRUE)%>%bold_p(t = 0.05)
+
+
+
+####### For WDA:
+
+chosenWDA$WorstD_ayAnalysisGORDPositive<-as.factor(chosenWDA$WorstD_ayAnalysisGORDPositive)
+
+#Note for some reason I cant get Age and SAP ones in here
+explanatory = names(chosenWDA[,!grepl("WorstD_ayAnalysisGORDPositive",names(chosenWDA))])
+dependent = 'WorstD_ayAnalysisGORDPositive'
+
+
+mytableWDA<-chosenWDA %>%
+  finalfit.glm(dependent, explanatory)
+
+
+#convert oesophagitis to numeric
+chosenWDA$Oesophagitis<-ifelse(grepl("Y",chosenWDA$Oesophagitis),1,0)
+
+mod1WDA <- glm(chosenWDA$WorstD_ayAnalysisGORDPositive ~ ., data = dplyr::select_if(chosen, is.numeric), family = binomial(link = "logit"))
+WDAReg<-tbl_regression(mod1WDA, exponentiate = TRUE)%>%bold_p(t = 0.05)
+
+#tbl_merge(list(AvReg,WDAReg),tab_spanner = c("Average day analysis", "Worst day analysis"))
+
 
 
 ########## Cut Point For pH <4 #############################################
 ## @knitr CutPointForAcid
 
-chosen$AcidRefluxBRAVO<-as.character(chosen$AcidRefluxBRAVO)
+chosen$AcidRefluxBRAVOAv<-as.character(chosen$AcidRefluxBRAVOAv)
 #Determine optimal cutpoints for the Percent time <4 (the last column in the chosen table)
 library(cutpointr)
-vb<-cutpointr(x = chosen[,4], class = chosen$AcidRefluxBRAVO,na.rm=TRUE,method = maximize_metric, metric = sum_sens_spec)
+vb<-cutpointr(x = chosen[,2], class = chosen$AcidRefluxBRAVOAv,na.rm=TRUE,method = maximize_metric, metric = sum_sens_spec)
 dens1<-plot_x(vb)+geom_density(color="white", fill="grey")+
   xlab(Hmisc::label(names(chosen[ncol(chosen)])))+
   ggtitle(paste0(""))+
   labs(subtitle = "")+
-  theme(text=element_text(size=10, family="Arial"))+
-  ggsave("Figure3a.jpeg", width = 20, height = 20, dpi = 300, units="cm")
+theme(text=element_text(size=10, family="Arial"))
+#ggsave("Figure3a.jpeg", width = 20, height = 20, dpi = 300, units="cm")
 roc1<-plot_roc(vb)+ ggtitle(paste0(""))+
-  theme(text=element_text(size=10, family="Arial"))+
-  ggsave("Figure3b.jpeg", width = 20, height = 20, dpi = 300, units="cm")
+theme(text=element_text(size=10, family="Arial"))
+#ggsave("Figure3b.jpeg", width = 20, height = 20, dpi = 300, units="cm")
 
 
-ggarrange(dens1,roc1,
-          labels = c("a)","b)","c)","d)"),
-          ncol = 2, nrow = 2)
+#ggarrange(dens1,roc1,
+   #       labels = c("a)","b)"),
+   #       ncol = 2)
 
 
 

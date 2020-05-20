@@ -642,7 +642,7 @@ GORD_BravoWDAAndAverage<-function(x){
 
 
 
-  x$worst<-do.call(pmax, c(select_if(x, is.numeric)%>%select(matches("y[0-9]*_*[0-9]FractionTimepHLessThan4Total")), na.rm = TRUE))
+  x$worstt<-do.call(pmax, c(select_if(x, is.numeric)%>%select(matches("y[0-9]*_*[0-9]FractionTimepHLessThan4Total")), na.rm = TRUE))
 
   #Need to get which day was the worst:
   x$worstDaypH<-names(select_if(x, is.numeric)%>%select(matches("y[0-9]*_*[0-9]FractionTimepHLessThan4Total")))[max.col(replace(select_if(x, is.numeric)%>%select(matches("y[0-9]*_*[0-9]FractionTimepHLessThan4Total")), is.na(select_if(x, is.numeric)%>%select(matches("y[0-9]*_*[0-9]FractionTimepHLessThan4Total"))),0),ties.method = "first")]
@@ -691,6 +691,19 @@ GORD_BravoWDAAndAverage<-function(x){
   #Sum the rows to see how many days are positive
   x$NumDaysBravoPositive<-rowSums(x[grep("^Day", names(x))])
 
+  x<-x%>%
+    mutate(
+      WorstD_ayAnalysisGORDPositive=case_when(
+        Day6Pos ==1         ~ 1,
+        Day5Pos ==1         ~ 1,
+        Day4Pos ==1         ~ 1,
+        Day3Pos ==1         ~ 1,
+        Day2Pos ==1         ~ 1,
+        Day1Pos ==1         ~ 1,
+      TRUE ~ 0
+    ))
+
+
   return(x)
 
 
@@ -719,8 +732,9 @@ GORD_AcidImp<-function(x){
   x<-x %>%
     mutate(
       AcidReflux_Imp = case_when(
-        MainAcidExpTotalClearanceChannelPercentTime > 4.2        ~ "TotalAcid",
-        MainAcidExpTotalClearanceChannelPercentTime < 4.1        ~ "NoAcid",
+        MainAcidExpTotalClearanceChannelPercentTime > 5.9 ~ "TotalAcid",
+        MainAcidExpTotalClearanceChannelPercentTime > 4.1 & MainAcidExpTotalClearanceChannelNumberofAcidEpisodes>40     ~ "TotalAcid",
+        MainAcidExpTotalClearanceChannelPercentTime <= 4.1        ~ "NoAcid",
         #MainAcidExpRecumbentClearanceChannelPercentTime > 1.2        ~ "RecumbentAcid",
         #MainAcidExpUprightClearanceChannelPercentTime > 6.3        ~ "UprightAcid",
 
