@@ -33,7 +33,7 @@ options(warn = -1)
 BravoDayOneAndTwo <- read_excel(here::here("inst/Projects/BRAVOStudies/NegImpPredictorsOfAllPosBRAVO/data/BravoDay1And2.xls"))
 BravoDayThreeAndFour <- read_excel(here::here("inst/Projects/BRAVOStudies/NegImpPredictorsOfAllPosBRAVO/data/BravoDay3And4.xls"))
 BRAVOTotal <- read_excel(here::here("inst/Projects/BRAVOStudies/NegImpPredictorsOfAllPosBRAVO/data/BRAVOTotal.xls"))
-Diag <- read_excel(here::here("inst/Projects/BRAVOStudies/NegImpPredictorsOfAllPosBRAVO/data/Diag.xls"))
+#Diag <- read_excel(here::here("inst/Projects/BRAVOStudies/NegImpPredictorsOfAllPosBRAVO/data/Diag.xls"))
 HRMImportMain <- read_excel(here::here("inst/Projects/BRAVOStudies/NegImpPredictorsOfAllPosBRAVO/data/HRMImportMain.xls"))
 HRMImportSwallows <- read_excel(here::here("inst/Projects/BRAVOStudies/NegImpPredictorsOfAllPosBRAVO/data/HRMImportSwallows.xls"))
 Imp_Symp <- read_excel(here::here("inst/Projects/BRAVOStudies/NegImpPredictorsOfAllPosBRAVO/data/Imp_Symp.xls"))
@@ -71,7 +71,7 @@ ImpAll<-GORD_AcidImp(ImpAll)
 
 
 
-Diag<-dataDiagClean(Diag)
+#Diag<-dataDiagClean(Diag)
 
 
 
@@ -138,11 +138,11 @@ ImpAndBravo <- AllBravo %>% inner_join(ImpAll, by ="HospNum_Id") %>%
   group_by(HospNum_Id) %>%
   slice(1)
 
-ImpAnddiag <- Diag %>% inner_join(ImpAll, by ="HospNum_Id") %>%
-  mutate(Date_ABS_Diff = abs(VisitDate.x - VisitDate.y)) %>%
-  arrange(HospNum_Id, Date_ABS_Diff) %>%
-  group_by(HospNum_Id) %>%
-  slice(1)
+#ImpAnddiag <- Diag %>% inner_join(ImpAll, by ="HospNum_Id") %>%
+#  mutate(Date_ABS_Diff = abs(VisitDate.x - VisitDate.y)) %>%
+#  arrange(HospNum_Id, Date_ABS_Diff) %>%
+#  group_by(HospNum_Id) %>%
+#  slice(1)
 
 
 #BRAVO Merges:
@@ -152,19 +152,19 @@ BravoAnd_hrm <- HRMImportMainTwo %>% inner_join(AllBravo, by ="HospNum_Id") %>%
   group_by(HospNum_Id) %>%
   slice(1)
 
-BravoAnd_diag <- Diag %>% inner_join(AllBravo, by ="HospNum_Id") %>%
-  mutate(Date_ABS_Diff = abs(VisitDate.x - VisitDate.y)) %>%
-  arrange(HospNum_Id, Date_ABS_Diff) %>%
-  group_by(HospNum_Id) %>%
-  slice(1)
+#BravoAnd_diag <- Diag %>% inner_join(AllBravo, by ="HospNum_Id") %>%
+#  mutate(Date_ABS_Diff = abs(VisitDate.x - VisitDate.y)) %>%
+#  arrange(HospNum_Id, Date_ABS_Diff) %>%
+#  group_by(HospNum_Id) %>%
+#  slice(1)
 
 
 #Diag Merges:
-HRMAnd_diag <- HRMImportMainTwo %>% inner_join(Diag, by ="HospNum_Id") %>%
-  mutate(Date_ABS_Diff = abs(VisitDate.x - VisitDate.y)) %>%
-  arrange(HospNum_Id, Date_ABS_Diff) %>%
-  group_by(HospNum_Id) %>%
-  slice(1)
+#HRMAnd_diag <- HRMImportMainTwo %>% inner_join(Diag, by ="HospNum_Id") %>%
+#  mutate(Date_ABS_Diff = abs(VisitDate.x - VisitDate.y)) %>%
+#  arrange(HospNum_Id, Date_ABS_Diff) %>%
+#  group_by(HospNum_Id) %>%
+#  slice(1)
 
 
 #Three test merges:
