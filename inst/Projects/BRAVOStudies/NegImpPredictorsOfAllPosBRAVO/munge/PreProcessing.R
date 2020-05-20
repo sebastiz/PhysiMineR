@@ -268,7 +268,8 @@ a2<-ggplot(myworstDayTable,aes(x=Day,y=Percentage))+
 #This graph looks at the worst pH for WPM-GORD positive and WPM-GORD negative patients
 #Cant seem to get rid of the outliers so have set the average limit to 25.
 a3<-ggplot(NegImp_FromImpWithBRavoAndHRM%>%filter(worstt<25), aes(x = as.factor(AcidRefluxBRAVOAv),y=worstt,fill=as.factor(AcidRefluxBRAVOAv))) +
-  geom_boxplot(outlier.shape = NA)+geom_beeswarm(size=1,priority='density',cex=1.5)+
+  geom_violin(opacity="50%")+
+  geom_boxplot(outlier.shape = NA,width=0.4)+geom_beeswarm(size=0.3,priority='density',cex=1.5)+
   scale_colour_Publication()+
   theme_Publication()+
   xlab("GORD")+
