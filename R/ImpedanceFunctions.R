@@ -446,6 +446,7 @@ dataImpSymptoms<-function(x){
   x$AllSymps_Impgrouped<-gsub("Atypical,Typical","Mixed",new)
 
 
+
   return (x)
 }
 
@@ -467,7 +468,7 @@ dataImpSymptoms<-function(x){
 dataBRAVOSymptoms<-function(x){
 
 
-  myframe<-x[,grepl("ReflDayTotalTimepHLessThan4min|SITotal|SAPTotal",colnames(x))]
+  myframe<-x[,grepl("ReflDayTotalTimepHLessThan4min|SITotal|SAPTotal|ReflDay\\d+NumberofRefluxes",colnames(x))]
 
   #Add the colnames to each value in each row:
   mine<-data.frame(apply(myframe,1,function(y) unlist(paste0(colnames(myframe),y))))
@@ -476,15 +477,15 @@ dataBRAVOSymptoms<-function(x){
   AllSymps<-as.character(apply(mine, 2, paste, collapse=","))
 
   #Now extract the symptoms that have a value associated with them (ie should ignore the NA's)
-  AllSymps2<-stringr::str_extract_all(AllSymps,"(ReflDayTotalTimepHLessThan4min[A-Za-z]*\\d+)|SITotal[A-Za-z]*\\d+|SAPTotal[A-Za-z]*\\d+")
+  AllSymps2<-stringr::str_extract_all(AllSymps,"(ReflDay\\d+NumberofRefluxes[A-Za-z]*\\d+|ReflDayTotalTimepHLessThan4min[A-Za-z]*\\d+)|SITotal[A-Za-z]*\\d+|SAPTotal[A-Za-z]*\\d+")
 
   #Concatenate them:
   x$AllSymps_BRAVO<-unlist(lapply(AllSymps2,function(x) paste0(unlist(x),collapse=",")))
 
   #Now Clean it up
-  x$AllSymps_BRAVO<-gsub("ReflDayTotalTimepHLessThan4min|SITotal|SAPTotal","",x$AllSymps_BRAVO)
+  x$AllSymps_BRAVO<-gsub("ReflDayTotalTimepHLessThan4min|SITotal|SAPTotal|ReflDay\\d+NumberofRefluxes","",x$AllSymps_BRAVO)
   x$AllSymps_BRAVO<-gsub("\\d*","",x$AllSymps_BRAVO)
-  x$AllSymps_BRAVO<-gsub("Meal,|Other,|PostPr,|Supine,|Total,|Upright,|Upright|PostPr","",x$AllSymps_BRAVO)
+  x$AllSymps_BRAVO<-gsub("Meal,|Other,|PostPr,|Supine,|Total,|Upright,|Upright|PostPr|Day","",x$AllSymps_BRAVO)
 
   #Now put symptoms into compartments (oesophageal/LPR/other)
   x$AllSymps_BRAVOcompartment<-gsub("Heartburn|Regurgitation","Oesophageal",x$AllSymps_BRAVO)
@@ -506,8 +507,9 @@ dataBRAVOSymptoms<-function(x){
   interim<-lapply(interim,function(x) sort(x))
   new<-unlist(lapply(interim,function(x) paste0(x,collapse=",")))
 
-  x$AllSymps_BRAVOgrouped<-gsub("Atypical,Typical","Mixed",new)
-
+  x$AllSymps_BRAVOgrouped<-gsub("(Atypical,Typical)|(Atypical,Other,Typical)","Mixed",new)
+  x$AllSymps_BRAVOgrouped<-gsub("^,","",x$AllSymps_BRAVOgrouped)
+  x$AllSymps_BRAVOgrouped<-gsub("^$","Unlabelled",x$AllSymps_BRAVOgrouped)
   return(x)
 
 }
@@ -603,13 +605,15 @@ GORD_AcidBRAVO<-function(dd){
 #' Or if there are a large number of reflux events (>73) - field called
 #' Or if the the final report says pathological reflux or nocturnal (as the total may be normal) then the patient has a GORD diagnosis
 #' @param x the impedance dataset for extraction
+#' @param threshold the threshold for what is considered acid reflix based on time pH <4
 #' @keywords Impedance acid GORD
 #' @export
 #' @importFrom dplyr select
 #' @examples #GORD_AcidImpImp(x)
 
-GORD_BravoWDAAndAverage<-function(x){
+GORD_BravoWDAAndAverage<-function(x,threshold){
 
+  threshold<-as.numeric(threshold)
 
   #Use Fraction <pH4 as the analysis:
   #x<-ForBRAVODescriptionLater[,grepl("FractionTimepHLessThan4Total|AcidRefluxBRAVO|SAP|SI",names(ForBRAVODescriptionLater))]
@@ -627,7 +631,7 @@ GORD_BravoWDAAndAverage<-function(x){
     mutate(
       AcidRefluxBRAVOAv = case_when(
 
-        average > 5.3        ~ "Acid",
+        average > threshold        ~ "Acid",
         #ReflDayTotalNumberofRefluxesTotal > 62 ~ "TotalAcid",
         TRUE ~ "NoAcid"
       )
@@ -636,11 +640,6 @@ GORD_BravoWDAAndAverage<-function(x){
   x$AcidRefluxBRAVOAv<-gsub("NoAcid",0,x$AcidRefluxBRAVOAv)
   x$AcidRefluxBRAVOAv<-gsub(".*Acid",1,x$AcidRefluxBRAVOAv)
   x$AcidRefluxBRAVOAv<-as.numeric(x$AcidRefluxBRAVOAv)
-
-
-
-
-
 
   x$worstt<-do.call(pmax, c(select_if(x, is.numeric)%>%select(matches("y[0-9]*_*[0-9]FractionTimepHLessThan4Total")), na.rm = TRUE))
 
@@ -660,32 +659,32 @@ GORD_BravoWDAAndAverage<-function(x){
   x<-x%>%
     mutate(
       Day1Pos=case_when(
-        ReflDay1FractionTimepHLessThan4Total > 4.9        ~ 1,
+        ReflDay1FractionTimepHLessThan4Total > 7.1        ~ 1,
         TRUE ~ 0
       ))%>%
     mutate(
       Day2Pos=case_when(
-        ReflDay2FractionTimepHLessThan4Total > 4.9         ~ 1,
+        ReflDay2FractionTimepHLessThan4Total > 7.1         ~ 1,
         TRUE ~ 0
       ))%>%
     mutate(
       Day3Pos=case_when(
-        ReflDay1_2FractionTimepHLessThan4Total > 4.9         ~ 1,
+        ReflDay1_2FractionTimepHLessThan4Total > 7.1         ~ 1,
         TRUE ~ 0
       ))%>%
     mutate(
       Day4Pos=case_when(
-        ReflDay2_2FractionTimepHLessThan4Total > 4.9         ~ 1,
+        ReflDay2_2FractionTimepHLessThan4Total > 7.1         ~ 1,
         TRUE ~ 0
       ))%>%
     mutate(
       Day5Pos=case_when(
-        ReflDay3_2FractionTimepHLessThan4Total > 4.9         ~ 1,
+        ReflDay3_2FractionTimepHLessThan4Total > 7.1         ~ 1,
         TRUE ~ 0
       ))%>%
     mutate(
       Day6Pos=case_when(
-        ReflDay4_2FractionTimepHLessThan4Total > 4.9         ~ 1,
+        ReflDay4_2FractionTimepHLessThan4Total > 7.1         ~ 1,
         TRUE ~ 0
       ))
   #Sum the rows to see how many days are positive
