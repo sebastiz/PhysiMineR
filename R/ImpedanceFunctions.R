@@ -517,29 +517,16 @@ dataBRAVOSymptoms<-function(x){
 
 
 
-###### Categorise the BRAVO diagnoses according to Lyon consensus ######
-
 #' Classify BRAVO studies using a Lyon-style conclusive-positive rule
 #'
 #' A study is classified as BRAVO-positive only when at least two monitored
 #' days show acid exposure time (AET) greater than 6%. All other studies are
-#' classified as negative in this binary implementation, including studies that
-#' would otherwise be considered inconclusive.
-#'
-#' This is a conservative rule intended to identify only conclusively positive
-#' wireless pH studies.
+#' classified as negative in this binary implementation.
 #'
 #' @param dd A data frame containing BRAVO day-level acid exposure columns.
 #' @keywords BRAVO acid GORD Lyon wireless pH
 #' @export
-#' @import dplyr
-#' @examples
-#' # dd <- GORD_AcidBRAVO_LyonConclusiveOnly(dd)
-
-
-
 GORD_AcidBRAVO_LyonConclusiveOnly <- function(dd) {
-  
   day_cols <- c(
     "ReflDay1FractionTimepHLessThan4Total",
     "ReflDay2FractionTimepHLessThan4Total",
@@ -548,24 +535,18 @@ GORD_AcidBRAVO_LyonConclusiveOnly <- function(dd) {
     "ReflDay3_2FractionTimepHLessThan4Total",
     "ReflDay4_2FractionTimepHLessThan4Total"
   )
-  
+
   day_cols <- intersect(day_cols, names(dd))
-  
+
   if (length(day_cols) == 0) {
     stop("No BRAVO day-level AET columns were found in the dataframe.")
   }
-  
+
   dd[day_cols] <- lapply(dd[day_cols], function(x) as.numeric(as.character(x)))
-  
   dd$BRAVO_days_AET_gt_6 <- rowSums(dd[day_cols] > 6, na.rm = TRUE)
-  
-  dd <- dd %>%
-    dplyr::mutate(
-      AcidRefluxBRAVO_Lyon = ifelse(BRAVO_days_AET_gt_6 >= 2, 1, 0),
-      AcidRefluxBRAVO_LyonLabel = ifelse(BRAVO_days_AET_gt_6 >= 2, "Positive", "Negative")
-    )
-  
-  return(dd)
+  dd$AcidRefluxBRAVO_Lyon <- ifelse(dd$BRAVO_days_AET_gt_6 >= 2, 1, 0)
+
+  dd
 }
 
 
