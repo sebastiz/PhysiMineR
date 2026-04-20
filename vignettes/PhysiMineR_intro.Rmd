@@ -1,0 +1,187 @@
+---
+title: "Introduction to PhysiMineR"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to PhysiMineR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(PhysiMineR)
+```
+
+## Overview
+
+**PhysiMineR** provides a tidy, end-to-end workflow for importing, cleaning, and
+analysing upper gastrointestinal physiological test data.  The three core test
+types are:
+
+| Test | Functions |
+|------|-----------|
+| High-resolution manometry (HRM) | `HRMCleanUp1()`, `HRMSwallowSummary()`, `HRMDiagnoses()` |
+| Ambulatory pH-impedance | `dataImpClean()`, `dataImpSymptoms()`, `GORD_AcidImp_Lyon()` |
+| Wireless pH capsule (BRAVO) | `dataBRAVOClean()`, `dataBRAVODayLabeller()`, `GORD_AcidBRAVO_Lyon()` |
+
+---
+
+## 1. BRAVO wireless pH capsule
+
+### 1.1 Import and clean
+
+```{r bravo-clean, eval=FALSE}
+library(PhysiMineR)
+
+day12 <- read.csv("BravoDay1And2.csv")
+day34 <- read.csv("BravoDay3And4.csv")
+total <- read.csv("BRAVOTotal.csv")
+
+# Merge the three raw exports on the shared BRAVO study ID
+raw_bravo <- merge(day12, day34, by = "BravoID", all = TRUE) |>
+             merge(total, by = "BravoID", all = TRUE)
+
+# Standardise column types, drop duplicates
+clean_bravo <- dataBRAVOClean(raw_bravo)
+```
+
+### 1.2 Label per-day AET columns
+
+```{r bravo-label, eval=FALSE}
+labelled_bravo <- dataBRAVODayLabeller(clean_bravo,
+                                        id_col   = "HospNum_Id",
+                                        date_col = "VisitDate")
+# New columns: bravoDay1 … bravoDay6, bravoNDays
+```
+
+### 1.3 Classify with Lyon Consensus 2.0
+
+```{r bravo-lyon, eval=TRUE}
+# Synthetic example data
+df <- data.frame(
+  HospNum_Id = c("A001", "A002", "A003", "A004"),
+  bravoDay1  = c(7.2,  3.1,  5.0,  6.5),
+  bravoDay2  = c(6.8,  2.9,  4.5,  5.8),
+  bravoDay3  = c(7.5,  3.5,  4.8,  NA ),
+  bravoDay4  = c(6.1,  3.0,  5.2,  NA ),
+  bravoNDays = c(4,    4,    4,    2  )
+)
+
+classified <- GORD_AcidBRAVO_Lyon(df)
+classified[, c("HospNum_Id", "AcidRefluxBRAVO_Lyon",
+               "AcidRefluxBRAVO", "AcidRefluxBRAVOTotalOnly")]
+```
+
+**Lyon Consensus 2.0 thresholds applied:**
+
+- AET > 6% on ≥ 2 days → **Conclusive GORD**
+- AET < 4% on all available days → **GORD excluded**
+- All other patterns → **Inconclusive**
+
+---
+
+## 2. Ambulatory pH-impedance monitoring
+
+### 2.1 Clean merged data
+
+```{r imp-clean, eval=FALSE}
+imp  <- read.csv("Impedance2.csv")
+symp <- read.csv("Imp_Symp.csv")
+raw  <- merge(imp, symp, by = "Imp_Id", all = TRUE)
+clean_imp <- dataImpClean(raw)
+```
+
+### 2.2 Classify with Lyon Consensus 2.0
+
+```{r imp-lyon, eval=TRUE}
+df_imp <- data.frame(
+  HospNum_Id = c("B001", "B002", "B003", "B004"),
+  MainAcidExpTotalClearanceChannelPercentTime = c(8.2, 5.1, 2.8, 4.9),
+  M1_av      = c(1800, 2500, 3100, 2000),   # MNBI
+  pspw_index = c(45,   70,   80,   55)       # PSPW %
+)
+
+out_imp <- GORD_AcidImp_Lyon(df_imp,
+                              mnbi_col = "M1_av",
+                              pspw_col = "pspw_index")
+out_imp[, c("HospNum_Id", "AcidReflux_Lyon", "AcidReflux_Imp")]
+```
+
+In the inconclusive (borderline) zone (AET 4–6%), patients with MNBI < 2292 Ω
+or PSPW index < 61% are upgraded to **Conclusive GORD (adjunctive)**.
+
+---
+
+## 3. High-resolution manometry
+
+### 3.1 Clean HRM data
+
+```{r hrm-clean, eval=FALSE}
+main     <- read.csv("HRMImportMain.csv")
+swallows <- read.csv("HRMImportSwallows.csv")
+# Remove per-swallow raw trace columns
+swallows <- swallows[, !grepl("Num\\d+", names(swallows))]
+merged   <- merge(main, swallows, by = "HRM_Id", all = TRUE)
+clean_hrm <- HRMCleanUp1(merged)
+```
+
+### 3.2 Diagnose with Chicago Classification v4.0
+
+```{r hrm-cc4, eval=TRUE}
+df_hrm <- data.frame(
+  HRM_Id = c("H001", "H002", "H003", "H004", "H005", "H006"),
+  ResidualmeanmmHg             = c(20,  18,   8,  6,  10,  12),
+  failedChicagoClassification  = c(100, 30,   0,  100, 80,   0),
+  panesophagealpressurization  = c(0,   25,   0,  0,   0,    0),
+  prematurecontraction         = c(0,    0,  25,  0,   0,    0),
+  rapidcontraction             = c(0,    0,   0,  0,   5,   25),
+  DistalcontractileintegralmeanmmHgcms = c(50, 300, 1200, 60, 200, 9000),
+  largebreaks                  = c(0,    0,   0,  0,  55,   0),
+  smallbreaks                  = c(0,    0,   0,  0,   0,   0),
+  Simultaneous                 = c(0,    0,   0,  0,   0,   0)
+)
+
+result <- HRMDiagnoses(df_hrm)
+result[, c("HRM_Id", "ChicagoV4Diagnosis", "ChicagoV4DiagnosisGroup")]
+```
+
+---
+
+## 4. Cross-test merging
+
+When combining tests from the same patient, use `testMerge()` to select the
+pair of studies that are closest in time:
+
+```{r merge-ex, eval=TRUE}
+hrm <- data.frame(
+  HospNum_Id  = c("A", "A", "B"),
+  VisitDate.x = as.Date(c("2020-01-01", "2021-06-01", "2020-03-01")),
+  IRP = c(8, 9, 12)
+)
+bravo <- data.frame(
+  HospNum_Id  = c("A", "B"),
+  VisitDate.y = as.Date(c("2020-01-15", "2020-03-10")),
+  AET_day1 = c(7.2, 3.1)
+)
+# Patient A has two HRM studies; the one closest to the BRAVO date is chosen
+testMerge(hrm, bravo)
+```
+
+Use `max_days_apart` to enforce a maximum allowed interval between tests:
+
+```{r merge-ex2, eval=FALSE}
+testMerge(AllHRM, AllBravo, max_days_apart = 365)
+```
+
+---
+
+## 5. References
+
+- Gyawali CP, Kahrilas PJ, Savarino E, et al. (2021). Modern diagnosis of GERD:
+  the Lyon Consensus. *Gut*, 70(7), 1351–1362.
+  doi:10.1136/gutjnl-2020-323270
+
+- Yadlapati R, Kahrilas PJ, Fox MR, et al. (2021). Esophageal motility disorders
+  on high-resolution manometry: Chicago Classification version 4.0.
+  *Neurogastroenterology & Motility*, 33(1), e14058.
+  doi:10.1111/nmo.14058
