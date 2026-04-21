@@ -1,23 +1,39 @@
 Package: PhysiMineR
-Title: Functions to extract, clean, manipulate and analyse upper gastrointestinal physiological parameters
-Version: 0.0.0.9000
-Authors@R: person("Sebastian", "Zeki", email = "sebastiz@hotmail.com",
-  role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-Depends: R (>= 3.4.0)
-Imports:
-        RODBC,
-        magrittr,
-        tidyr,
-        lubridate,
-        stringr,
-        rlang,
-        dplyr,
-        tidyverse,
-        EndoMineR
+Type: Package
+Title: Extraction, Cleaning and Analysis of Upper GI Physiological Data
+Version: 1.0.0
+Authors@R: person(
+    given  = "Sebastian",
+    family = "Zeki",
+    role   = c("aut", "cre"),
+    email  = "sebastian.zeki@nhs.net"
+  )
+Description: Tools for importing, cleaning, classifying and analysing
+    upper gastrointestinal physiological test data, including
+    high-resolution manometry (HRM), ambulatory pH-impedance monitoring,
+    and wireless pH capsule (BRAVO) studies.
+    Acid reflux is classified according to the Lyon Consensus 2.0 criteria
+    (Gyawali et al., 2021) and oesophageal motility is diagnosed according
+    to the Chicago Classification version 4.0 (Yadlapati et al., 2021).
 License: GPL-3
+URL: https://github.com/sebastiz/PhysiMineR
+BugReports: https://github.com/sebastiz/PhysiMineR/issues
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.0.2
-URL: https://sebastiz.github.io/PhysiMineR/index.html
-BugReports: https://github.com/sebastiz/PhysiMineR/issues
+RoxygenNote: 7.3.1
+Depends: R (>= 4.0.0)
+Imports:
+    dplyr (>= 1.1.0),
+    tidyr (>= 1.3.0),
+    stringr (>= 1.5.0),
+    lubridate (>= 1.9.0),
+    rlang (>= 1.1.0),
+    lifecycle
+Suggests:
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown,
+    ggplot2,
+    gtsummary
+VignetteBuilder: knitr
+Config/testthat/edition: 3
