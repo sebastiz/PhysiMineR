@@ -120,9 +120,16 @@ tripleTestMerge <- function(df_a,
                   id_col         = id_col,
                   join_type      = join_type,
                   max_days_apart = max_days_apart)
+
+  # After the first merge dplyr appends .x / .y suffixes to date columns.
+  # Detect the left-hand date column from the merged result rather than
+  # hard-coding "VisitDate.x".
+  left_date <- grep("^VisitDate", names(ab), value = TRUE)[1]
+  if (is.na(left_date)) left_date <- "VisitDate.x"
+
   testMerge(ab, df_c,
             id_col         = id_col,
-            date_col_left  = "VisitDate.x",
+            date_col_left  = left_date,
             date_col_right = "VisitDate.y",
             join_type      = join_type,
             max_days_apart = max_days_apart)
