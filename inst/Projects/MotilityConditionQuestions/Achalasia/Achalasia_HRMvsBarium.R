@@ -8,6 +8,8 @@ HRMAnd_diag <- HRMImportMainTwo %>% inner_join(Diag, by ="HospNum_Id") %>%
   mutate(Date_ABS_Diff = abs(VisitDate.x - VisitDate.y)) %>%
   arrange(HospNum_Id, Date_ABS_Diff) %>%
   group_by(HospNum_Id)
+  
+  #I think thats enough
 
 #Then get the achalasias just by grepping- will need manual sorting from here
 Achalasias<-HRMAnd_diag[grepl("achalasia",HRMAnd_diag$WholeReport,ignore.case = TRUE),]
