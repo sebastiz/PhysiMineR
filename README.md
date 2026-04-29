@@ -1,34 +1,43 @@
-## Welcome to PhysiMineR
+## PhysiMineR
 
+<img src="img/PhysiMineRLogo.png" align="right" width="180" alt="PhysiMineR logo"/>
 
-# <img src="img/PhysiMineRLogo.png" align="right" />
+PhysiMineR is an R package for cleaning, standardising, and analysing upper GI physiology datasets, including:
 
+- High-resolution manometry (HRM)
+- Ambulatory pH-impedance monitoring
+- Wireless pH capsule (BRAVO)
 
-PhysiMineR is a package written in R to help in the extraction, cleaning and analysis of upper GI physiology results. Once completed the package will provide the ability to extract results from a series of file formats and then clean the results so that diagnoses can be automated from the raw numbers. It should also be able to give cross patient analyses.
+The package includes modernized, test-backed workflows for:
 
-The current workflow with associated functions is shown the the diagram below:
+- Data cleaning (`HRMCleanUp1`, `dataImpClean`, `dataBRAVOClean`)
+- Merge and completeness utilities (`testMerge`, `tripleTestMerge`, `filterByCompleteness`)
+- Classification logic aligned to Lyon/Chicago frameworks (`GORD_AcidImp_Lyon`, `GORD_AcidBRAVO_Lyon`, `HRMDiagnoses`)
 
-# <img src="img/PhysiMineR.png" align="right" />
+## Installation
 
-The package is divided into dta extraction, extrapolation and generic analyses functions
-
-In addition there is a template associated with the package which will structure an abstract. 
-
-The commonly asked questions in upper GI physiology are all contained within a folder called AnalysisFiles_Questions and subfolders are separated by condition and measurement type
-
-In order to ask a question the user should create a new abstract template and then fill out each section.
-
-The abstract template is separated into a data extraction and preparation section.
-
-For example, if you want to assess HRM data, you wold extract first with
-
-``` r dataHRM``` (extractng from the database) OR use the dummy data (HRMAll_Diag)
-
-then clean it up with:
-
-``` r
-HRMAll_Diag2<-HRMCleanUp1(HRMAll_Diag)
+```r
+# install.packages("remotes")
+remotes::install_github("sebastiz/PhysiMineR")
 ```
 
-Then the data can be used with the analysis functions
+## Quick start
 
+```r
+library(PhysiMineR)
+
+# Example: clean and classify impedance data
+imp_clean <- dataImpClean(raw_impedance_df)
+imp_sx    <- dataImpSymptoms(imp_clean)
+lyon_out  <- GORD_AcidImp_Lyon(imp_sx)
+
+# Example: clean HRM and derive diagnoses
+hrm_clean <- HRMCleanUp1(raw_hrm_df)
+hrm_dx    <- HRMDiagnoses(hrm_clean)
+```
+
+## Development notes
+
+- Legacy scripts are still present for historical workflows.
+- The package `Collate` order in `DESCRIPTION` forces deterministic loading so the modern APIs are the canonical active definitions.
+- CI is configured through GitHub Actions (`.github/workflows/R-CMD-check.yaml`).
