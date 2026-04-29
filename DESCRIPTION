@@ -30,6 +30,7 @@ Imports:
     rlang (>= 1.1.0),
     lifecycle
 Suggests:
+    EndoMineR,
     testthat (>= 3.0.0),
     knitr,
     rmarkdown,
@@ -37,3 +38,18 @@ Suggests:
     gtsummary
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+Collate:
+    'Anonymizer.R'
+    'BreathTests.R'
+    'DemographicFunctions.R'
+    'DiagFunctions.R'
+    'ImpedanceFunctions.R'
+    'MotilityFunctions.R'
+    'utils.R'
+    'merge_utils.R'
+    'impedance_functions.R'
+    'bravo_functions.R'
+    'symptom_functions.R'
+    'hrm_functions.R'
+    'lyon_consensus.R'
+    'chicago_classification.R'

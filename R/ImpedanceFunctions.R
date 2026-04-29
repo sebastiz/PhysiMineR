@@ -349,7 +349,14 @@ dataBRAVODayLabeller<-function(x,HospNum_Id,VisitDate){
 
   # 1. Firstly order the dataset by patientID and then by date.
   x<-x[order(x["HospNum_Id"],x["VisitDate"]),]
-  x<-EndoMineR::SurveilTimeByRow(x,"HospNum_Id","VisitDate")
+  if (requireNamespace("EndoMineR", quietly = TRUE)) {
+    x <- EndoMineR::SurveilTimeByRow(x, "HospNum_Id", "VisitDate")
+  } else {
+    x <- x %>%
+      group_by(.data$HospNum_Id) %>%
+      mutate(diffDate = as.numeric(.data$VisitDate - dplyr::lag(.data$VisitDate))) %>%
+      ungroup()
+  }
 
   # create an id to flag consecutive rows within each HospNum
 
@@ -861,5 +868,4 @@ HypersensitiveOesophagus<-function(x){
 
 FunctionalHeartburn<-function(x){
 }
-
 
